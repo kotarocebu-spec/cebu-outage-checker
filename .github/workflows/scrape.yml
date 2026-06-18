@@ -34,14 +34,14 @@ jobs:
       - name: Run Scraper
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
-         run: python parse_veco.py
+        run: python parse_veco.py
 
       - name: Commit and Push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 🌟 ここをご指摘の通り、2つのファイルを追跡するようにマージ修正しました
+          # 🌟 data.js とキャッシュファイルの両方を保存します
           git add data.js translation_cache.json
           if ! git diff --cached --quiet; then
             git commit -m "Auto-update Cebu outage data (PHT: $(date -d '8 hours' '+%Y-%m-%d %H:%M:%S'))"
