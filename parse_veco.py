@@ -3,7 +3,7 @@ import re
 import time
 import datetime
 import os
-import unicodedata  # 🌟 特殊ユニコード太字を標準英字に直すために追加
+import unicodedata  # 特殊ユニコード太字を標準英字に直すために追加
 from urllib.parse import urljoin
 from curl_cffi import requests
 from playwright.sync_api import sync_playwright
@@ -13,7 +13,7 @@ from deep_translator import GoogleTranslator
 # ==========================================
 # 🛡️ 設定 & マスターデータ
 # ==========================================
-APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
+APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "apify_api_1dlEaBWhmrSr9hxe2fbpbQ")
 
 CEBU_AREAS = [
   { "id": "cebu-itpark", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
@@ -182,13 +182,12 @@ def parse_time_for_sorting(time_str):
         pass
     return (23, 59)
 
-# 🌟 定型文カット＆特殊太字ユニコードの標準化対応
 def clean_text_pipeline(text):
     if not text: return ""
     
     text = unicodedata.normalize('NFKC', text)
     
-    # 🌟 不要な定型文・フッターの注意書きを一括切り落とし
+    # 不要な定型文・フッターの注意書きをカット
     footers_to_strip = [
         r"Your safety is important to us.*",
         r"The complete details of the scheduled.*",
@@ -228,7 +227,6 @@ def clean_text_pipeline(text):
             
     return " ".join(unique_sentences).strip()
 
-# 🌟 本日の終了済みスケジュールを自動削除する判定関数
 def is_event_finished(item_date, item_time, current_dt_pht):
     today_pht = current_dt_pht.date()
     
@@ -305,7 +303,6 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
                         city_name = city_name.strip()
                         
                         barangays_str = re.sub(r"\s*View the map.*", "", barangays_str, flags=re.IGNORECASE).strip()
-                        # 🌟 Canduman分断回避のため、\band\b正規表現を採用
                         brgy_list = [b.strip().rstrip('.') for b in re.split(r",|\band\b|&", barangays_str) if b.strip()]
                         
                         if city_name not in city_groups:
@@ -673,7 +670,7 @@ def main():
     today_str = datetime.datetime.now(pht_tz).strftime("%Y/%m/%d")
     print(f"=== Cebu Outage Auto Update Pipeline (セブ現地時間: {today_str}) ===")
 
-    # 🌟 直近の最大3記事を二次元リストとして取得（今週・翌週分の抜け漏れ防止）
+    # 直近3記事を二次元リストとして取得（今週・翌週分の抜け漏れ防止）
     veco_raw_articles = scrape_veco_raw_content()
     
     if APIFY_TOKEN:
@@ -683,7 +680,7 @@ def main():
 
     final_veco_outages = []
 
-    # A. 通常のウェブサイトデータを処理 (🌟 各記事ごとに独立したループ解析を実行)
+    # A. 通常のウェブサイトデータを処理 (各記事ごとに独立したループ解析を実行)
     if veco_raw_articles:
         print("\n⚡ 3. VECO停電スケジュールデータの解析処理中...")
         for veco_raw in veco_raw_articles:
@@ -733,6 +730,9 @@ def main():
                     continue
                     
                 if current_item:
+                    # 🌟 ラベル「Purpose:」や「Areas Affected:」を消去したクリーンな行
+                    clean_line = re.sub(r"^(Purpose|Areas Affected)\s*:\s*", "", line, flags=re.IGNORECASE).strip()
+                    
                     if line in current_item["time_raw"] or line in current_item["purpose"] or line in current_item["area"]: continue
                     if (current_item["time_raw"] and line in current_item["time_raw"]) or \
                        (current_item["purpose"] and line in current_item["purpose"]) or \
@@ -740,22 +740,28 @@ def main():
                     if line.upper() == "CANCELLED":
                         current_item["cancelled"] = True
                         continue
-                    if line in ["Purpose:", "Areas Affected:"]: continue
-                    if line.lower().startswith("to "):
-                        if not current_item["purpose"]: current_item["purpose"] = line
-                        else: current_item["purpose"] += " " + line
+                    if line.strip() in ["Purpose:", "Areas Affected:"]: continue
+                    
+                    # 🌟 "Purpose: To..." または "To..." の場合に目的として格納
+                    if line.lower().startswith("purpose:") or line.lower().startswith("to "):
+                        if not current_item["purpose"]: current_item["purpose"] = clean_line
+                        else: current_item["purpose"] += " " + clean_line
                         continue
-                    if line.lower().startswith("portion"):
-                        if not current_item["area"]: current_item["area"] = line
-                        else: current_item["area"] += " " + line
+                    
+                    # 🌟 "Areas Affected: Portion..." または "Portion..." の場合に対象地域として格納
+                    if line.lower().startswith("areas affected:") or line.lower().startswith("portion"):
+                        if not current_item["area"]: current_item["area"] = clean_line
+                        else: current_item["area"] += " " + clean_line
                         continue
+                        
+                    # それ以外の行のフォールバック
                     if current_item["purpose"] and not current_item["area"]:
                         if any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"]):
-                            current_item["area"] = line
+                            current_item["area"] = clean_line
                         else:
-                            current_item["purpose"] += " " + line
+                            current_item["purpose"] += " " + clean_line
                     elif current_item["area"]:
-                        current_item["area"] += " " + line
+                        current_item["area"] += " " + clean_line
 
             if current_item and current_item.get("time_raw") and current_item.get("area"):
                 veco_outages.append(current_item)
@@ -799,7 +805,7 @@ def main():
         for post in veco_fb_raw:
             post_lower = post.lower()
             
-            # 🌟 計画外の自動遮断（突発停電）のアナウンスは不要なためスキップする
+            # 計画外の自動遮断（突発停電）のアナウンスは不要なためスキップする
             unplanned_keywords = ["safety device to help protect", "automatically switched off", "unplanned power outage"]
             if any(k in post_lower for k in unplanned_keywords):
                 print("⏭️ 計画外の自動遮断（突発停電）アナウンスをスキップしました。")
@@ -913,7 +919,7 @@ export const VECO_OUTAGES = {outages_json_str};
         f.write(new_data_js_content)
 
     print("\n--- 【すべてのパイプライン処理が正常に完了しました】 ---")
-    print(f"   ✅ 電気（都市・時間・終了済マージ処理後）: {len(filtered_outages)} 件")
+    print(f"   ✅ 電気（都市・時間・終了済マージ処理後）: {len(final_veco_outages)} 件")
     print(f"   ✅ 水道（MCWD計画断水情報）: {len(final_mcwd_outages)} 件")
     print(f"   💾 ファイル保存先: data.js")
 
