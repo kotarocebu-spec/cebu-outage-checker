@@ -9,12 +9,17 @@ from curl_cffi import requests
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
+from dotenv import load_dotenv  # 🌟 ローカル環境変数読み込み用に追加
+
+# 🌟 ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロードします
+load_dotenv()
 
 # ==========================================
 # ⚙️ 設定 & マスターデータ
 # ==========================================
-APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "apify_api_1dlEaBWhmrSr9hxe2fbpbQ")
-CACHE_FILE = "translation_cache.json"  # 🌟 ディスクキャッシュファイル
+# 🌟 安全対策：APIキーの直書きを完全に排除し、環境変数からのみ取得するように修正
+APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
+CACHE_FILE = "translation_cache.json"  # ディスクキャッシュファイル
 
 CEBU_AREAS = [
   { "id": "cebu-itpark", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
@@ -63,7 +68,7 @@ CURRENT_YEAR = datetime.datetime.now(pht_tz).year
 translation_cache = {}
 translator = GoogleTranslator(source='en', target='ja')
 
-# 🌟 ディスクキャッシュのロード
+# ディスクキャッシュのロード
 if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
@@ -109,28 +114,28 @@ def extract_mcwd_date(line):
     if match_ymd:
         m_en, d_str, y_str = match_ymd.groups()
         m_capital = m_en.capitalize()
-        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正：直接months_abbrevを検索するように簡素化
+        m_num = months_abbrev.get(m_capital[:3], "01")  # 直接months_abbrevを検索するように簡素化
         return f"{y_str}/{m_num}/{int(d_str):02d}"
         
     match_dym = re.search(rf"(\d+)\s*({months_pattern})\s*(\d{{4}})", line, re.IGNORECASE)
     if match_dym:
         d_str, m_en, y_str = match_dym.groups()
         m_capital = m_en.capitalize()
-        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
+        m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{y_str}/{m_num}/{int(d_str):02d}"
 
     match_md = re.search(rf"({months_pattern})\s*(\d+)", line, re.IGNORECASE)
     if match_md:
         m_en, d_str = match_md.groups()
         m_capital = m_en.capitalize()
-        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
+        m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{CURRENT_YEAR}/{m_num}/{int(d_str):02d}"
 
     match_dm = re.search(rf"(\d+)\s*({months_pattern})", line, re.IGNORECASE)
     if match_dm:
         d_str, m_en = match_dm.groups()
         m_capital = m_en.capitalize()
-        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
+        m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{CURRENT_YEAR}/{m_num}/{int(d_str):02d}"
         
     return None
@@ -377,9 +382,9 @@ def merge_duplicate_outages(outages):
     grouped = {}
     for item in outages:
         is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
-        is_cancelled = "CANCELLED" in item["detailsEn"]  # 🌟 修正：中止（CANCELLED）の判定をキーに追加
+        is_cancelled = "CANCELLED" in item["detailsEn"]
         
-        # 🌟 修正：マージキーに is_cancelled を組み込み、中止データが通常予定と誤マージされないように修正
+        # マージキーに is_cancelled を組み込み、中止データが通常予定と誤マージされないように修正
         key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled)
         if key not in grouped:
             grouped[key] = []
@@ -392,7 +397,7 @@ def merge_duplicate_outages(outages):
             continue
             
         first = items[0]
-        date, time_str, item_type, is_conditional, is_cancelled = key # 🌟 修正
+        date, time_str, item_type, is_conditional, is_cancelled = key
         
         city_brgys_map = {}
         for it in items:
@@ -495,10 +500,10 @@ def scrape_veco_raw_content():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
-        # VECOのメインページへのアクセス自体を try-except で囲み、タイムアウトを15秒に制限
+        # VECO의 メインページへのアクセス自体を try-except で囲み、タイムアウトを15秒に制限
         try:
             page.goto(advisory_url, timeout=15000)
-            page.wait_for_load_state("networkidle")  # 🌟 修正：スリープを排してネットワーク休止を待機
+            page.wait_for_load_state("networkidle")  # スリープを排してネットワーク休止を待機
             time.sleep(1.5)  # 念のためのごく短いウェイト
             soup = BeautifulSoup(page.content(), 'html.parser')
         except Exception as e:
@@ -529,7 +534,7 @@ def scrape_veco_raw_content():
             try:
                 # 各記事の読み込みにもタイムアウトとネットワークアイドル待機を採用（セブ遅延対策）
                 page.goto(url, timeout=15000)
-                page.wait_for_load_state("networkidle")  # 🌟 修正
+                page.wait_for_load_state("networkidle")
                 time.sleep(1.5) # 念のための安全マージン
                 
                 detail_soup = BeautifulSoup(page.content(), 'html.parser')
@@ -633,9 +638,10 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
         return None
         
     time_formatted = "TBD / Flexible"
-    time_match = re.search(r"(?:Time|⏰):\s*(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*(\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
+    # 🌟 修正：正規表現の閉じ括弧不足を修正し、安定動作を確保
+    time_match = re.search(r"(?:Time|⏰):\s*(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
     if not time_match:
-        time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*(\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
+        time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
     if time_match:
         time_formatted = parse_time(time_match.group(1))
     elif is_urgent_alert:
@@ -646,7 +652,7 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
     purpose_clean = "Rotational Brownouts / Grid Alert" if is_urgent_alert else ("Scheduled Maintenance Advisory" if not is_water else "Scheduled Water Interruption")
     purpose_match = re.search(r"Purpose:\s*(.*?)(?=\bAreas Affected:|\bAreas:|\Z)", text, re.DOTALL | re.IGNORECASE)
     
-    # 🌟 修正：purpose_clean ではなく、抽出された purpose_match.group(1) を正しくクリーニングするように修正
+    # 修正：purpose_clean ではなく、抽出された purpose_match.group(1) を正しくクリーニングするように修正
     if purpose_match:
         purpose_clean = clean_text_pipeline(purpose_match.group(1))
         
