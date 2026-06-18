@@ -11,9 +11,10 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 
 # ==========================================
-# 🛡️ 設定 & マスターデータ
+# ⚙️ 設定 & マスターデータ
 # ==========================================
 APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "apify_api_1dlEaBWhmrSr9hxe2fbpbQ")
+CACHE_FILE = "translation_cache.json"  # 🌟 ディスクキャッシュファイル
 
 CEBU_AREAS = [
   { "id": "cebu-itpark", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
@@ -57,10 +58,19 @@ pht_tz = datetime.timezone(datetime.timedelta(hours=8))
 CURRENT_YEAR = datetime.datetime.now(pht_tz).year
 
 # ==========================================
-# 🔄 翻訳キャッシュシステム
+# 🔄 翻訳キャッシュシステム（永続ディスクキャッシュ）
 # ==========================================
 translation_cache = {}
 translator = GoogleTranslator(source='en', target='ja')
+
+# 🌟 ディスクキャッシュのロード
+if os.path.exists(CACHE_FILE):
+    try:
+        with open(CACHE_FILE, "r", encoding="utf-8") as f:
+            translation_cache = json.load(f)
+        print(f"💾 翻訳ディスクキャッシュを読み込みました（{len(translation_cache)} 件の履歴）")
+    except Exception as e:
+        print(f"⚠️ キャッシュの読み込みに失敗しました: {e}")
 
 def cached_translate(text):
     if not text:
@@ -99,28 +109,28 @@ def extract_mcwd_date(line):
     if match_ymd:
         m_en, d_str, y_str = match_ymd.groups()
         m_capital = m_en.capitalize()
-        m_num = months_map.get(m_capital, months_abbrev.get(m_capital[:3], "01"))
+        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正：直接months_abbrevを検索するように簡素化
         return f"{y_str}/{m_num}/{int(d_str):02d}"
         
     match_dym = re.search(rf"(\d+)\s*({months_pattern})\s*(\d{{4}})", line, re.IGNORECASE)
     if match_dym:
         d_str, m_en, y_str = match_dym.groups()
         m_capital = m_en.capitalize()
-        m_num = months_map.get(m_capital, months_abbrev.get(m_capital[:3], "01"))
+        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
         return f"{y_str}/{m_num}/{int(d_str):02d}"
 
     match_md = re.search(rf"({months_pattern})\s*(\d+)", line, re.IGNORECASE)
     if match_md:
         m_en, d_str = match_md.groups()
         m_capital = m_en.capitalize()
-        m_num = months_map.get(m_capital, months_abbrev.get(m_capital[:3], "01"))
+        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
         return f"{CURRENT_YEAR}/{m_num}/{int(d_str):02d}"
 
     match_dm = re.search(rf"(\d+)\s*({months_pattern})", line, re.IGNORECASE)
     if match_dm:
         d_str, m_en = match_dm.groups()
         m_capital = m_en.capitalize()
-        m_num = months_map.get(m_capital, months_abbrev.get(m_capital[:3], "01"))
+        m_num = months_abbrev.get(m_capital[:3], "01")  # 🌟 修正
         return f"{CURRENT_YEAR}/{m_num}/{int(d_str):02d}"
         
     return None
@@ -367,7 +377,10 @@ def merge_duplicate_outages(outages):
     grouped = {}
     for item in outages:
         is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
-        key = (item["date"], item["time"], item["type"], is_conditional)
+        is_cancelled = "CANCELLED" in item["detailsEn"]  # 🌟 修正：中止（CANCELLED）の判定をキーに追加
+        
+        # 🌟 修正：マージキーに is_cancelled を組み込み、中止データが通常予定と誤マージされないように修正
+        key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled)
         if key not in grouped:
             grouped[key] = []
         grouped[key].append(item)
@@ -379,7 +392,7 @@ def merge_duplicate_outages(outages):
             continue
             
         first = items[0]
-        date, time_str, item_type, is_conditional = key
+        date, time_str, item_type, is_conditional, is_cancelled = key # 🌟 修正
         
         city_brgys_map = {}
         for it in items:
@@ -469,7 +482,7 @@ def merge_duplicate_outages(outages):
     return merged
 
 # ==========================================
-# 🌐 VECO公式サイト スクレイピング部 (🌟 直近3記事マルチクローラに強化)
+# 🌐 VECO公式サイト スクレイピング部 (🌟 接続タイムアウト・ネットワーク遅延耐久強化)
 # ==========================================
 def scrape_veco_raw_content():
     base_url = "https://www.visayanelectric.com"
@@ -481,9 +494,17 @@ def scrape_veco_raw_content():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto(advisory_url)
-        time.sleep(4)
-        soup = BeautifulSoup(page.content(), 'html.parser')
+        
+        # VECOのメインページへのアクセス自体を try-except で囲み、タイムアウトを15秒に制限
+        try:
+            page.goto(advisory_url, timeout=15000)
+            page.wait_for_load_state("networkidle")  # 🌟 修正：スリープを排してネットワーク休止を待機
+            time.sleep(1.5)  # 念のためのごく短いウェイト
+            soup = BeautifulSoup(page.content(), 'html.parser')
+        except Exception as e:
+            print(f"⚠️ VECO公式サイトへの接続に失敗しました（ブロックされた可能性があります）: {e}")
+            browser.close()
+            return []
         
         links = []
         for a in soup.find_all('a'):
@@ -499,15 +520,18 @@ def scrape_veco_raw_content():
             browser.close()
             return []
             
-        # 🌟 最新の最大3記事をスクレイピング
+        # 最新の最大3記事をスクレイピング
         target_links = links[:3]
         print(f"👉 VECO最新の {len(target_links)} 件の記事を巡回スクレイピングします...")
         
         for url in target_links:
             print(f"   - 巡回中: {url}")
             try:
-                page.goto(url)
-                time.sleep(3)
+                # 各記事の読み込みにもタイムアウトとネットワークアイドル待機を採用（セブ遅延対策）
+                page.goto(url, timeout=15000)
+                page.wait_for_load_state("networkidle")  # 🌟 修正
+                time.sleep(1.5) # 念のための安全マージン
+                
                 detail_soup = BeautifulSoup(page.content(), 'html.parser')
                 
                 article = detail_soup.find('article')
@@ -609,9 +633,9 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
         return None
         
     time_formatted = "TBD / Flexible"
-    time_match = re.search(r"(?:Time|⏰):\s*(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
+    time_match = re.search(r"(?:Time|⏰):\s*(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*(\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
     if not time_match:
-        time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
+        time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*(\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
     if time_match:
         time_formatted = parse_time(time_match.group(1))
     elif is_urgent_alert:
@@ -621,8 +645,10 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
         
     purpose_clean = "Rotational Brownouts / Grid Alert" if is_urgent_alert else ("Scheduled Maintenance Advisory" if not is_water else "Scheduled Water Interruption")
     purpose_match = re.search(r"Purpose:\s*(.*?)(?=\bAreas Affected:|\bAreas:|\Z)", text, re.DOTALL | re.IGNORECASE)
+    
+    # 🌟 修正：purpose_clean ではなく、抽出された purpose_match.group(1) を正しくクリーニングするように修正
     if purpose_match:
-        purpose_clean = clean_text_pipeline(purpose_clean)
+        purpose_clean = clean_text_pipeline(purpose_match.group(1))
         
     affected_clean = ""
     areas_match = re.search(r"(?:Areas Affected|Areas):\s*(.*)", text, re.DOTALL | re.IGNORECASE)
@@ -917,6 +943,14 @@ export const VECO_OUTAGES = {outages_json_str};
 
     with open('data.js', 'w', encoding='utf-8') as f:
         f.write(new_data_js_content)
+
+    # 🌟 翻訳キャッシュの保存
+    try:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(translation_cache, f, ensure_ascii=False, indent=2)
+        print(f"💾 翻訳ディスクキャッシュを保存しました（計 {len(translation_cache)} 件の履歴）")
+    except Exception as e:
+        print(f"⚠️ キャッシュの保存に失敗しました: {e}")
 
     print("\n--- 【すべてのパイプライン処理が正常に完了しました】 ---")
     print(f"   ✅ 電気（都市・時間・終了済マージ処理後）: {len(final_veco_outages)} 件")
