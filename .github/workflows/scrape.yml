@@ -1,0 +1,50 @@
+name: Cebu Outage Scraper
+
+on:
+  schedule:
+    # 🌟 フィリピン時間の「11時、13時、17時、20時、0時」に自動実行するスケジュール（UTC換算）
+    - cron: '0 3,5,9,12,16 * * *'
+  workflow_dispatch: # 手動実行ボタン
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Playwright browsers & system dependencies
+      run: |
+        python -m playwright install --with-deps chromium
+
+    - name: Run Scraper
+      env:
+        APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+      run: python parse_veco.py
+
+    - name: Commit and Push if changed
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        git add data.js
+        if ! git diff --cached --quiet; then
+          git commit -m "Auto-update Cebu outage data (PHT: $(date -d '8 hours' '+%Y-%m-%d %H:%M:%S'))"
+          git push
+        else
+          echo "No changes in data.js. Skipping push."
+        fi
