@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>セブ計画停電・断水チェッカー</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .update-time {
+      text-align: center;
+      font-size: 0.9em;
+      color: #7f8c8d;
+      margin-bottom: 20px;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 5px solid #3498db;
+    }
+    .card.water {
+      border-left-color: #2980b9;
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 0.8em;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #fff;
+      background-color: #e74c3c; /* 確定停電 */
+    }
+    .badge.water {
+      background-color: #2980b9;
+    }
+    .badge.conditional {
+      background-color: #f39c12;
+    }
+    .details {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #555;
+      white-space: pre-wrap;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+    .brgys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .brgy-tag {
+      background-color: #e8f4fd;
+      color: #1d9bf0;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔌 セブインフラチェッカー 💧</h1>
+    <div class="update-time" id="last-update">データ読み込み中...</div>
+    <div id="outages-list">ローディング中...</div>
+  </div>
+
+  <script type="module">
+    import { VECO_OUTAGES } from './data.js';
+
+    const listElement = document.getElementById('outages-list');
+    const updateElement = document.getElementById('last-update');
+
+    // 最後にデータが更新された現地時間を表示
+    updateElement.innerHTML = `更新時刻: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Manila' })} (フィリピン時間)`;
+
+    if (!VECO_OUTAGES || VECO_OUTAGES.length === 0) {
+      listElement.innerHTML = '<div style="text-align:center; padding: 40px; color: #7f8c8d;">🎉 現在、今後の計画停電・断水予定はありません。</div>';
+    } else {
+      listElement.innerHTML = '';
+      VECO_OUTAGES.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `card ${item.type}`;
+        
+        // バッジの設定
+        let badgeClass = 'badge';
+        let badgeText = '計画停電（ほぼ確定）';
+        
+        if (item.type === 'water') {
+          badgeClass = 'badge water';
+          badgeText = '断水情報';
+        } else if (item.detailsJa.includes('条件付き') || item.detailsJa.includes('赤アラート')) {
+          badgeClass = 'badge conditional';
+          badgeText = '条件付き停電（予測）';
+        }
+
+        // 影響エリアのカンマ区切りをきれいな「バッジタグ」へ変換する処理
+        let brgyTags = '';
+        const parts = item.affectedJa.split(': ');
+        if (parts.length > 1) {
+          const brgyList = parts[1].split(', ');
+          brgyTags = brgyList.map(b => `<span class="brgy-tag">${b}</span>`).join('');
+        } else {
+          // 区切りがない場合
+          brgyTags = `<span class="brgy-tag">${item.affectedJa}</span>`;
+        }
+
+        card.innerHTML = `
+          <h3>
+            <span>📅 ${item.date} (${item.day}) ⏰ ${item.time}</span>
+            <span class="${badgeClass}">${badgeText}</span>
+          </h3>
+          <p><strong>概要エリア:</strong> ${item.areaJa}</p>
+          <div class="brgys">${brgyTags}</div>
+          <div class="details"><strong>詳細情報:</strong><br>${item.detailsJa}</div>
+        `;
+        listElement.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
