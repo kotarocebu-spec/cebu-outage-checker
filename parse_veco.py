@@ -9,15 +9,14 @@ from curl_cffi import requests
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from dotenv import load_dotenv  # 🌟 ローカル環境変数読み込み用に追加
+from dotenv import load_dotenv  # ローカル環境変数読み込み用
 
-# 🌟 ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロードします
+# ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロード
 load_dotenv()
 
 # ==========================================
 # ⚙️ 設定 & マスターデータ
 # ==========================================
-# 🌟 安全対策：APIキーの直書きを完全に排除し、環境変数からのみ取得するように修正
 APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
 CACHE_FILE = "translation_cache.json"  # ディスクキャッシュファイル
 
@@ -102,7 +101,7 @@ def parse_date(date_str):
     match = re.search(r"(\w+)\s+(\d+),\s+(\d{4})\s*\((.*?)\)", date_str)
     if match:
         m_en, d_str, y_str, day_en = match.groups()
-        m_num = months_map.get(m_en, "01")
+        m_num = months_map.get(m_en.capitalize(), "01")
         d_num = f"{int(d_str):02d}"
         return f"{y_str}/{m_num}/{d_num}", days_map.get(day_en, "Sun")
     return f"{CURRENT_YEAR}/06/01", "Sun"
@@ -114,7 +113,7 @@ def extract_mcwd_date(line):
     if match_ymd:
         m_en, d_str, y_str = match_ymd.groups()
         m_capital = m_en.capitalize()
-        m_num = months_abbrev.get(m_capital[:3], "01")  # 直接months_abbrevを検索するように簡素化
+        m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{y_str}/{m_num}/{int(d_str):02d}"
         
     match_dym = re.search(rf"(\d+)\s*({months_pattern})\s*(\d{{4}})", line, re.IGNORECASE)
@@ -487,7 +486,7 @@ def merge_duplicate_outages(outages):
     return merged
 
 # ==========================================
-# 🌐 VECO公式サイト スクレイピング部 (🌟 接続タイムアウト・ネットワーク遅延耐久強化)
+# 🌐 VECO公式サイト スクレイピング部 (接続タイムアウト・ネットワーク遅延耐久強化)
 # ==========================================
 def scrape_veco_raw_content():
     base_url = "https://www.visayanelectric.com"
@@ -498,13 +497,17 @@ def scrape_veco_raw_content():
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        # 一般的なデスクトップブラウザをシミュレート
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 800}
+        )
+        page = context.new_page()
         
-        # VECO의 メインページへのアクセス自体を try-except で囲み、タイムアウトを15秒に制限
+        # タイムアウトを引き起こす networkidle を避け、domcontentloaded で進める
         try:
-            page.goto(advisory_url, timeout=15000)
-            page.wait_for_load_state("networkidle")  # スリープを排してネットワーク休止を待機
-            time.sleep(1.5)  # 念のためのごく短いウェイト
+            page.goto(advisory_url, timeout=30000, wait_until="domcontentloaded")
+            page.wait_for_timeout(3000)  # 3秒間の確実な固定待機
             soup = BeautifulSoup(page.content(), 'html.parser')
         except Exception as e:
             print(f"⚠️ VECO公式サイトへの接続に失敗しました（ブロックされた可能性があります）: {e}")
@@ -532,10 +535,8 @@ def scrape_veco_raw_content():
         for url in target_links:
             print(f"   - 巡回中: {url}")
             try:
-                # 各記事の読み込みにもタイムアウトとネットワークアイドル待機を採用（セブ遅延対策）
-                page.goto(url, timeout=15000)
-                page.wait_for_load_state("networkidle")
-                time.sleep(1.5) # 念のための安全マージン
+                page.goto(url, timeout=30000, wait_until="domcontentloaded")
+                page.wait_for_timeout(3000)  # 各記事の描画に3秒間の固定待機
                 
                 detail_soup = BeautifulSoup(page.content(), 'html.parser')
                 
@@ -568,10 +569,16 @@ def scrape_mcwd_raw_content():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(base_url, timeout=40000)
-            page.wait_for_load_state("networkidle")
-            time.sleep(5)
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                viewport={"width": 1280, "height": 800}
+            )
+            page = context.new_page()
+            
+            # タイムアウト上限を60秒へ延長。Oracle APEXの読み込み負荷に対応するため、
+            # networkidle を廃止し domcontentloaded + 8秒の長めの固定スリープでデータを確実に展開。
+            page.goto(base_url, timeout=60000, wait_until="domcontentloaded")
+            page.wait_for_timeout(8000)
             
             soup = BeautifulSoup(page.content(), 'html.parser')
             browser.close()
@@ -638,7 +645,6 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
         return None
         
     time_formatted = "TBD / Flexible"
-    # 🌟 修正：正規表現の閉じ括弧不足を修正し、安定動作を確保
     time_match = re.search(r"(?:Time|⏰):\s*(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
     if not time_match:
         time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", text, re.IGNORECASE)
@@ -652,7 +658,6 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
     purpose_clean = "Rotational Brownouts / Grid Alert" if is_urgent_alert else ("Scheduled Maintenance Advisory" if not is_water else "Scheduled Water Interruption")
     purpose_match = re.search(r"Purpose:\s*(.*?)(?=\bAreas Affected:|\bAreas:|\Z)", text, re.DOTALL | re.IGNORECASE)
     
-    # 修正：purpose_clean ではなく、抽出された purpose_match.group(1) を正しくクリーニングするように修正
     if purpose_match:
         purpose_clean = clean_text_pipeline(purpose_match.group(1))
         
@@ -762,7 +767,6 @@ def main():
                     continue
                     
                 if current_item:
-                    # 🌟 ラベル「Purpose:」や「Areas Affected:」を消去したクリーンな行
                     clean_line = re.sub(r"^(Purpose|Areas Affected)\s*:\s*", "", line, flags=re.IGNORECASE).strip()
                     
                     if line in current_item["time_raw"] or line in current_item["purpose"] or line in current_item["area"]: continue
@@ -774,13 +778,13 @@ def main():
                         continue
                     if line.strip() in ["Purpose:", "Areas Affected:"]: continue
                     
-                    # 🌟 "Purpose: To..." または "To..." の場合に目的として格納
+                    # "Purpose: To..." または "To..." の場合に目的として格納
                     if line.lower().startswith("purpose:") or line.lower().startswith("to "):
                         if not current_item["purpose"]: current_item["purpose"] = clean_line
                         else: current_item["purpose"] += " " + clean_line
                         continue
                     
-                    # 🌟 "Areas Affected: Portion..." または "Portion..." の場合に対象地域として格納
+                    # "Areas Affected: Portion..." または "Portion..." の場合に対象地域として格納
                     if line.lower().startswith("areas affected:") or line.lower().startswith("portion"):
                         if not current_item["area"]: current_item["area"] = clean_line
                         else: current_item["area"] += " " + clean_line
@@ -858,7 +862,7 @@ def main():
                 if parsed_post:
                     final_veco_outages.append(parsed_post)
 
-    # 🌟 計画停電データ重複マージプロセスの実行（都市をまたぐデータもマージ）
+    # 計画停電データ重複マージプロセスの実行（都市をまたぐデータもマージ）
     print("\n⚡ 3-C. 重複する停電スケジュールの統合マージ処理を実行中...")
     final_veco_outages = merge_duplicate_outages(final_veco_outages)
 
@@ -920,10 +924,10 @@ def main():
     # ------------------------------------------
     merged_outages = final_veco_outages + final_mcwd_outages
     
-    # 🌟 現在のセブ現地時間（PHT）を取得
+    # 現在のセブ現地時間（PHT）を取得
     now_pht = datetime.datetime.now(pht_tz)
     
-    # 🌟 既に終了時間を過ぎているイベントを自動判定して綺麗に除外
+    # 既に終了時間を過ぎているイベントを自動判定して除外
     filtered_outages = []
     for item in merged_outages:
         if is_event_finished(item["date"], item["time"], now_pht):
@@ -950,7 +954,7 @@ export const VECO_OUTAGES = {outages_json_str};
     with open('data.js', 'w', encoding='utf-8') as f:
         f.write(new_data_js_content)
 
-    # 🌟 翻訳キャッシュの保存
+    # 翻訳キャッシュの保存
     try:
         with open(CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(translation_cache, f, ensure_ascii=False, indent=2)
