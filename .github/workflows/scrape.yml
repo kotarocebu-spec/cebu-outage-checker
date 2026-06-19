@@ -36,17 +36,6 @@ jobs:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: python parse_veco.py
 
-      - name: Commit and Push cache only
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git pull --rebase origin main
-          git add translation_cache.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Update translation cache"
-            git push
-          fi
-
       - name: Upload data.js to Sakura Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -55,3 +44,15 @@ jobs:
           password: ${{ secrets.SAKURA_PASSWORD }}
           source: "data.js"
           target: "/home/saisa/www/office-luna.com/infra/"
+
+      - name: Commit and Push cache only
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git fetch origin main
+          git rebase origin/main
+          git add translation_cache.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update translation cache"
+            git push
+          fi
