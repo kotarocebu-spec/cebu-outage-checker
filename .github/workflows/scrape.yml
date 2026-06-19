@@ -3,7 +3,7 @@ name: Cebu Outage Scraper
 on:
   schedule:
     # 🌟 フィリピン時間の「11時、13時、17時、20時、0時」に自動実行するスケジュール（UTC換算）
-    - cron: '0 3,5,9,12,16 * * *'
+    - cron: '23 3,5,9,12,16 * * *'
   workflow_dispatch: # 手動実行ボタン
 
 jobs:
