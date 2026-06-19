@@ -93,19 +93,6 @@ export const VECO_OUTAGES = [
   {
     "id": 100,
     "type": "electricity",
-    "date": "2026/06/19",
-    "day": "Fri",
-    "time": "22:00 - 06/20 (Sat) 04:00",
-    "areaEn": "Cebu City (Camputhaw)",
-    "areaJa": "セブ市 (カンピュソー)",
-    "affectedEn": "Portion of Basak, Centro, Paknaan & Tabok, Mandaue City, along portion of Labogon Road, including portions of Sitios Caimito, Canumay, Chicos, Cumpang, Kalabasa, Kamanggahan, Kasagingan, Lapyahan, Latasan, Law-O, Locus, Mabolo, Mahayahay, Pamilya, Sab-A, San Jose, Sta. Cruz, Tabay, Tuburan, & Valleriano, and Agbay Compound, Almers Compound, Baguio Compound, Deca Homes, Kimwa Compound, Ma. Antonia Village, Mafria Teresa Village, Marcelino Village, Palm Hills Subdivision, Sacred Heart Village, Sliding Hills, Tikay Compound, & Yy Compound. Portion of Camputhaw, Cebu City, along portion of N. Escario Street. Portion of Tipolo, along portions of A. Seno Extension.",
-    "affectedJa": "マンダウエ市バサク、セントロ、パクナン、タボクの一部、ラボゴン通り沿いのシティオス・カイミト、カヌマイ、チコス、クンパン、カラバサ、カマンガハン、カサギンガン、ラピヤハン、ラタサン、ロー・オー、ローカス、マボロ、マハヤハイ、パミルヤ、サブ・A、サンノゼ、スタの一部を含む。クルーズ、タベイ、トゥブラン、バレリアーノ、アグベイ コンパウンド、アルマース コンパウンド、バギオ コンパウンド、デカ ホームズ、キムワ コンパウンド、マサチューセッツ州。アントニア ビレッジ、マフリア テレサ ビレッジ、マルセリーノ ビレッジ、パーム ヒルズ サブディビジョン、セイクリッド ハート ビレッジ、スライディング ヒルズ、ティカイ コンパウンド、Yy コンパウンド。セブ市カンピュソーの一部、N. エスカリオ ストリートの一部沿い。ティポロの一部、A. セノ延長の一部沿い。",
-    "detailsEn": "To improve the reliability of the distribution system serving Brgy. Basak, Centro, Paknaan & Tabok by facilitating installation of primary lines and installation of primary pole and rerouting of primary lines. Camputhaw by facilitating reconstruction of primary lines. Tipolo by facilitating isolation of equipment due to safety concern.",
-    "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。バサク、セントロ、パクナン、タボクでは、主線の設置、主柱の設置、主線の配線変更が容易になります。主要ラインの再構築を促進することによるカンピューソー。 Tipolo は、安全上の懸念から機器の隔離を容易にします。"
-  },
-  {
-    "id": 101,
-    "type": "electricity",
     "date": "2026/06/20",
     "day": "Sat",
     "time": "08:00 - 09:00",
@@ -117,7 +104,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "ラインで作業する人の安全を確保するため。"
   },
   {
-    "id": 102,
+    "id": 101,
     "type": "electricity",
     "date": "2026/06/20",
     "day": "Sat",
@@ -130,7 +117,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。 Adlaon、Tagba-o、Taptap の一次回線のメンテナンスを容易にします。 Adlaon と Taptap により、一次回線のメンテナンスが容易になります。"
   },
   {
-    "id": 103,
+    "id": 102,
     "type": "electricity",
     "date": "2026/06/20",
     "day": "Sat",
@@ -143,7 +130,124 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。配電変圧器の設置と一次線の延長（線引き）を容易にすることでスバンダクを実現します。"
   },
   {
+    "id": 103,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "09:00 - 11:00",
+    "areaEn": "Cebu City (Banilad and Busay)",
+    "areaJa": "セブ市 (バニラッドとブサイ)",
+    "affectedEn": "⏰ 9:00 AM to 11:00 AM (2 hours)\n• Portions of Banilad, Budlaan, and Busay along Paseo Don Sergio Road, Paseo Elizabeth Road, Paseo John-John, and Paseo Salud Road. ⏰ 1:00 PM to 2:00 PM (1 hour)\n• Portions of Banilad and Busay, Cebu City, along portions of Paseo Yvette. ⏰ 2:00 PM to 3:00 PM (1 hour)\n• Portions of Banilad and Busay, along portions of Paseo Rodolfo. ⏰ 3:00 PM to 4:00 PM (1 hour)\n• Portions of Banilad and Busay, along portions of Paseo Estefania. ⏰ 4:00 PM to 5:00 PM (1 hour)\n• Portions of Banilad and Busay, along portions of Paseo Anabelle. ⚠",
+    "affectedJa": "⏰ 午前9時から午前11時まで（2時間）\n• パセオ・ドン・セルジオ・ロード、パセオ・エリザベス・ロード、パセオ・ジョン・ジョン、パセオ・サルード・ロード沿いのバニラッド、ブドラーン、ブサイの一部。 ⏰ 午後1時から午後2時まで（1時間）\n• セブ市バニラッドとブサイの一部、パセオ イベットの一部沿い。 ⏰ 午後 2 時から午後 3 時まで (1 時間)\n• バニラドとブサイの一部、パセオ ロドルフォの一部沿い。 ⏰ 午後 3 時から午後 4 時まで (1 時間)\n• バニラッドとブサイの一部、パセオ エステファニアの一部。 ⏰ 午後4時から午後5時まで（1時間）\n• バニラッドとブサイの一部、パセオ アナベルの一部沿い。 ⚠",
+    "detailsEn": "Rotational Brownouts / Grid Alert",
+    "detailsJa": "循環停電 / グリッドアラート"
+  },
+  {
     "id": 104,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "14:00 - 15:00",
+    "areaEn": "Cebu City (Banilad, Kasambagan...) / Mandaue City (Subangdaku, Tipolo)",
+    "areaJa": "セブ市 (バニラッド, カサンバガン...) / マンダウエ市 (スバンダク, ティポロ)",
+    "affectedEn": "Portion of Cebu City: Banilad, Kasambagan, Mabolo \n Portion of Mandaue City: Subangdaku, Tipolo",
+    "affectedJa": "セブ市の一部エリア: バニラッド, カサンバガン, マボロ \n マンダウエ市の一部エリア: スバンダク, ティポロ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 105,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "15:00 - 16:00",
+    "areaEn": "Cebu City (Ermita, Mambaling...) / Liloan (Cabadiangan, Cotco...)",
+    "areaJa": "セブ市 (エルミタ, マンバリング...) / リロアン (カバディアンガン, コットコ...)",
+    "affectedEn": "Portion of Cebu City: Ermita, Mambaling, Pahina Central, Pasil, San Nicolas Proper, San Roque, Sawang Calero, Suba, Tisa \n Portion of Liloan: Cabadiangan, Cotco, Jubay, Lataban, Mulao, Poblacion, San Vicente, Sta. Cruz, Yati",
+    "affectedJa": "セブ市の一部エリア: エルミタ, マンバリング, パヒナ セントラル, パシル, サン・ニコラス・プロパー, サンロケ, サワン・カレロ, スバ, ティサ \n リロアンの一部エリア: カバディアンガン, コットコ, ジュベイ, ラタバン, ムラオ, ポブラシオン, サンビセンテ, 駅クルーズ, ヤティ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 106,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "16:00 - 17:00",
+    "areaEn": "Cebu City (Camputhaw, Capitol Site...) / Consolacion (Cansaga, Jugan...) / Liloan (Lataban, Pitogo...)",
+    "areaJa": "セブ市 (カンピュソー, 国会議事堂跡...) / コンソラシオン (カンサガ, ジュガン...) / リロアン (ラタバン, ピトーゴ...)",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Capitol Site, Guadalupe, Kalunasan, Sapangdaku \n Portion of Consolacion: Cansaga, Jugan, Lamac, Poblacion Oriental, San Roque, San Vicente, Sta. Cruz \n Portion of Liloan: Lataban, Pitogo, Tilhaong, Yati",
+    "affectedJa": "セブ市の一部エリア: カンピュソー, 国会議事堂跡, グアダルーペ, カルナサン, サパンダク \n コンソラシオンの一部エリア: カンサガ, ジュガン, ラマック, ポブラシオン オリエンタル, サンロケ, サンビセンテ, 駅クルーズ \n リロアンの一部エリア: ラタバン, ピトーゴ, ティルハオン, ヤティ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 107,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "17:00 - 18:00",
+    "areaEn": "City of Naga (Alpaco, Balirong...) / Mandaue City (Cabancalan, Canduman...) / Minglanilla (Camp 8, Guindaruhan...) / Other (Balud, Greenhills...)",
+    "areaJa": "ナガ市 (アルパコ, バリロン...) / マンダウエ市 (カバンカラン, カンドゥマン...) / ミングラニラ (キャンプ8, ギンダルハン...) / Other (バルド, グリーンヒルズ...)",
+    "affectedEn": "Portion of City of Naga: Alpaco, Balirong, Cantao-An, Cogon, Colon, Inayagan, Jaguimit, Lutac, North Poblacion, South Poblacion, Tangke, Tinaan, Uling \n Portion of Mandaue City: Cabancalan, Canduman, Casuntingan, Maguikay, Pagsabungan, Tingub, Tingug \n Portion of Minglanilla: Camp 8, Guindaruhan, Lanas, Lataban, Mayana, Panas, Pangdan, Tagjaguimit, Tunghaan, Tungkop, Tuyan \n Portion of Other: Balud, Greenhills, Lantawan, Panadtaran, Sangat, Tonggo",
+    "affectedJa": "ナガ市の一部エリア: アルパコ, バリロン, カンタオアン, コゴン, 結腸, イナヤガン, ジャギミット, ルタック, 北ポブラシオン, 南ポブラシオン, タンケ, ティナーン, ウリン \n マンダウエ市の一部エリア: カバンカラン, カンドゥマン, カサンティンガン, マグカイ, パグサブンガン, ティンガブ, ティンググ \n ミングラニラの一部エリア: キャンプ8, ギンダルハン, ラナス, ラタバン, マヤナ, パナス, パンダン, タジャギミット, トゥンハーン, トゥンコップ, トゥヤン \n Otherの一部エリア: バルド, グリーンヒルズ, ランタワン, パナタラン, サンガット, トンゴ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 108,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "18:00 - 19:00",
+    "areaEn": "Cebu City (Banilad, Talamban) / Mandaue City (Bakilid, Cabancalan...) / Minglanilla (Biasong, Cansojong...) / Talisay City (Dumlog, Mohon...)",
+    "areaJa": "セブ市 (バニラッド, タランバン) / マンダウエ市 (ベイキリッド, カバンカラン...) / ミングラニラ (ビアソン, カンソジョン...) / タリサイ市 (ダムログ, モホン...)",
+    "affectedEn": "Portion of Cebu City: Banilad, Talamban \n Portion of Mandaue City: Bakilid, Cabancalan, Casuntingan, Ibabao-Estancia, Maguikay, Paknaan, Tabok \n Portion of Minglanilla: Biasong, Cansojong, Linao, Lipata, Pakigne, Poblacion, Tungkil \n Portion of Talisay City: Dumlog, Mohon, Pooc, San Isidro",
+    "affectedJa": "セブ市の一部エリア: バニラッド, タランバン \n マンダウエ市の一部エリア: ベイキリッド, カバンカラン, カサンティンガン, イババオ-エスタンシア, マグカイ, パクナン, タボク \n ミングラニラの一部エリア: ビアソン, カンソジョン, リナオ, リパタ, パキーニ, ポブラシオン, トゥンキル \n タリサイ市の一部エリア: ダムログ, モホン, プーク, サン・イシドロ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 109,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "19:00 - 20:00",
+    "areaEn": "Cebu City (Apas, Banilad...) / Minglanilla (Cadulawan, Calajo-an...) / Talisay City (Lawaan I, Lawaan II...)",
+    "areaJa": "セブ市 (アパス, バニラッド...) / ミングラニラ (カドゥラワン, カラジョアン...) / タリサイ市 (ラワーン I, ラワーン II...)",
+    "affectedEn": "Portion of Cebu City: Apas, Banilad, Basak Pardo, Basak San Nicolas, Buhisan, Bulacao, Kasambagan, Kinasang-an Pardo, Lahug, Pardo, Poblacion Pardo, Punta Princesa, Quiot, Quiot Pardo, San Roque \n Portion of Minglanilla: Cadulawan, Calajo-an, Camp 7, Camp 8, Cuanos, Linao, Lipata, Manduang, Pakigne, Tubod, Tunghaan, Vito \n Portion of Talisay City: Lawaan I, Lawaan II, Lawaan III, Ward 1, Ward 3, Ward 4",
+    "affectedJa": "セブ市の一部エリア: アパス, バニラッド, バサック・パルド, バサク・サン・ニコラス, ぶひさん, ブラカオ, カサンバガン, キナサンアン パルド, ラハグ, パルド, ポブラシオン・パルド, プンタ プリンセサ, クイオット, クイオット・パルド, サンロケ \n ミングラニラの一部エリア: カドゥラワン, カラジョアン, キャンプ 7, キャンプ8, クアノス, リナオ, リパタ, マンドゥアン, パキーニ, トゥボッド, トゥンハーン, ヴィト \n タリサイ市の一部エリア: ラワーン I, ラワーン II, ラワーンⅢ, 1区, 3区, 4区",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 110,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "20:00 - 21:00",
+    "areaEn": "Cebu City (Camputhaw, Capitol Site...) / Talisay City (San Roque, Tangke)",
+    "areaJa": "セブ市 (カンピュソー, 国会議事堂跡...) / タリサイ市 (サンロケ, タンケ)",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Capitol Site, Cogon Ramos, Guadalupe, Kalubihan, Kalunasan, Lahug, Lorega, Mambaling, Zapatera \n Portion of Talisay City: San Roque, Tangke",
+    "affectedJa": "セブ市の一部エリア: カンピュソー, 国会議事堂跡, コゴン・ラモス, グアダルーペ, カルビハン, カルナサン, ラハグ, ロレガ, マンバリング, サパテラ \n タリサイ市の一部エリア: サンロケ, タンケ",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 111,
+    "type": "electricity",
+    "date": "2026/06/20",
+    "day": "Sat",
+    "time": "21:00 - 22:00",
+    "areaEn": "Cebu City (Calamba, Kalubihan...)",
+    "areaJa": "セブ市 (カランバ, カルビハン...)",
+    "affectedEn": "Portion of Cebu City: Calamba, Kalubihan, Labangon, Punta Princesa, Sambag 1, San Jose, Tisa. Please note that schedules may change depending on actual grid conditions, cooperation as we work to support grid stability, further directives from NGCP. We continue to monitor the situation, will provide updates should there be any changes to the schedule. We appreciate your patience",
+    "affectedJa": "セブ市の一部エリア: カランバ, カルビハン, ラバンゴン, プンタ プリンセサ, サンバッグ 1, サンノゼ, ティサ。実際のグリッド状況によりスケジュールが変更される場合がありますのでご了承ください, 送電網の安定性をサポートするために協力してください, NGCP からのさらなる指示。引き続き状況を監視していきます, スケジュールに変更があった場合は更新情報を提供します。ご理解のほどよろしくお願いいたします",
+    "detailsEn": "⚠️ [CONDITIONAL - RED ALERT] Scheduled power reduction due to limited grid generation capacity.",
+    "detailsJa": "⚠️ 【赤アラート時のみ実施（可能性あり）】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+  },
+  {
+    "id": 112,
     "type": "electricity",
     "date": "2026/06/21",
     "day": "Sun",
@@ -156,7 +260,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。プライマリ ラインのメンテナンスとプライマリ ラインのアップグレードを容易にすることで、ビナリウ、ピオス、プランバトを実現します。"
   },
   {
-    "id": 105,
+    "id": 113,
     "type": "electricity",
     "date": "2026/06/23",
     "day": "Tue",
@@ -169,7 +273,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。一次回線のメンテナンスを容易にすることで、Garing、Panas、Panoypoy を実現します。腐ったポールの交換を容易にすることでマンバリングを防止します。引き込み線の盗聴を容易にするパヒナ・セントラル。サンノゼの幹線鉄道の再建を促進する。"
   },
   {
-    "id": 106,
+    "id": 114,
     "type": "electricity",
     "date": "2026/06/23",
     "day": "Tue",
@@ -182,7 +286,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配電システムの容量を増やすため。 Tuyan は配電変圧器のアップグレードを促進します。"
   },
   {
-    "id": 107,
+    "id": 115,
     "type": "electricity",
     "date": "2026/06/23",
     "day": "Tue",
@@ -195,7 +299,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。配電変圧器の設置と一次極の設置を容易にすることでCasiliを実現します。ラグタンにより一次ポールの交換が容易になります。"
   },
   {
-    "id": 108,
+    "id": 116,
     "type": "electricity",
     "date": "2026/06/23",
     "day": "Tue",
@@ -208,7 +312,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。主柱の設置を容易にすることで Jubay を実現します。"
   },
   {
-    "id": 109,
+    "id": 117,
     "type": "electricity",
     "date": "2026/06/25",
     "day": "Thu",
@@ -221,7 +325,7 @@ export const VECO_OUTAGES = [
     "detailsJa": "Brgy にサービスを提供する配信システムの信頼性を向上させるため。サン ビセンテの二次回線の設置を容易にする。西ポブラシオンの主要路線の再建を促進する。カスンティンガンとマグイカイでは、配電変圧器の設置と一次極の設置が容易になります。"
   },
   {
-    "id": 110,
+    "id": 118,
     "type": "electricity",
     "date": "2026/06/27",
     "day": "Sat",
