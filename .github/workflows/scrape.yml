@@ -38,7 +38,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git checkout -- data.js
+          git stash
           git fetch origin main
           git rebase origin/main
           git add translation_cache.json
