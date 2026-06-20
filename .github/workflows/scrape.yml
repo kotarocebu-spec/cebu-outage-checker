@@ -1,7 +1,5 @@
 name: Cebu Outage Scraper
 on:
-  schedule:
-    - cron: '23 3,5,9,12,16 * * *'
   workflow_dispatch:
 jobs:
   scrape:
