@@ -130,28 +130,41 @@ def parse_date(date_str):
 def extract_mcwd_date(line):
     months_pattern = "|".join(list(months_map.keys()) + list(months_abbrev.keys()))
     
-    match_ymd = re.search(rf"({months_pattern})\s*(\d+),\s*(\d{{4}})", line, re.IGNORECASE)
+    # パターン0: "1JUL26" のようなフォーマット (日 月 年2桁)
+    match_compact = re.search(rf"\b(\d{{1,2}})({months_pattern})(\d{{2}})\b", line, re.IGNORECASE)
+    if match_compact:
+        d_str, m_en, y_str = match_compact.groups()
+        m_capital = m_en.capitalize()
+        m_num = months_abbrev.get(m_capital[:3], "01")
+        year = f"20{y_str}" if len(y_str) == 2 else y_str
+        return f"{year}/{m_num}/{int(d_str):02d}"
+
+    # パターン1: "July 26, 2026" / "Jul 26, 2026"
+    match_ymd = re.search(rf"\b({months_pattern})\s*(\d{{1,2}}),\s*(\d{{4}})\b", line, re.IGNORECASE)
     if match_ymd:
         m_en, d_str, y_str = match_ymd.groups()
         m_capital = m_en.capitalize()
         m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{y_str}/{m_num}/{int(d_str):02d}"
         
-    match_dym = re.search(rf"(\d+)\s*({months_pattern})\s*(\d{{4}})", line, re.IGNORECASE)
+    # パターン2: "26 July 2026"
+    match_dym = re.search(rf"\b(\d{{1,2}})\s*({months_pattern})\s*(\d{{4}})\b", line, re.IGNORECASE)
     if match_dym:
         d_str, m_en, y_str = match_dym.groups()
         m_capital = m_en.capitalize()
         m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{y_str}/{m_num}/{int(d_str):02d}"
 
-    match_md = re.search(rf"({months_pattern})\s*(\d+)", line, re.IGNORECASE)
+    # パターン3: "July 26" / "Jul 26" (年は現在)
+    match_md = re.search(rf"\b({months_pattern})\s*(\d{{1,2}})\b(?!\s*,\s*\d{{4}}|\s+\d{{4}})", line, re.IGNORECASE)
     if match_md:
         m_en, d_str = match_md.groups()
         m_capital = m_en.capitalize()
         m_num = months_abbrev.get(m_capital[:3], "01")
         return f"{CURRENT_YEAR}/{m_num}/{int(d_str):02d}"
 
-    match_dm = re.search(rf"(\d+)\s*({months_pattern})", line, re.IGNORECASE)
+    # パターン4: "26 July" (年は現在)
+    match_dm = re.search(rf"\b(\d{{1,2}})\s*({months_pattern})\b", line, re.IGNORECASE)
     if match_dm:
         d_str, m_en = match_dm.groups()
         m_capital = m_en.capitalize()
@@ -173,6 +186,9 @@ def parse_time(time_str):
     time_str_clean = re.sub(r"–|—|~", "-", time_str)
     time_str_clean = re.sub(r"\bto\b", "-", time_str_clean, flags=re.IGNORECASE)
     time_str_clean = re.sub(r"\(\d+hrs?\)", "", time_str_clean).strip()
+    
+    # 終了時間の分が省略されている場合（例: 9:55 AM - 10 AM）は自動補正
+    time_str_clean = re.sub(r"-\s*(\d{1,2})\s*(AM|PM)\b", r"- \1:00 \2", time_str_clean, flags=re.IGNORECASE)
     
     # 形式: 10:00 AM - 5:00 PM / 10:00 - 11:00 PM / 22:00 - 23:00 などに対応
     pattern_std = r"(\d{1,2}):(\d{2})\s*(AM|PM)?\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)?"
@@ -1013,7 +1029,7 @@ def main():
         print("\n💧 4. MCWD計画断水スケジュールデータの解析処理中...")
         for line in mcwd_raw:
             line_lower = line.lower()
-            is_valid_advisory = any(k in line_lower for k in ["interruption", "water service", "repair", "maintenance", "leak", "shut"])
+            is_valid_advisory = ("interruption" in line_lower) or ("shut off" in line_lower) or ("waterless" in line_lower)
             
             if is_valid_advisory:
                 date_formatted = extract_mcwd_date(line)
@@ -1037,15 +1053,28 @@ def main():
                 affected_ja = clean_translated_japanese(cached_translate(affected_en))
                 area_en, area_ja = parse_area_summary(affected_en)
 
-                # ダッシュ等の特殊記号 (-, –, —, ~) に完全対応した時間抽出
+                # 時間抽出
                 time_formatted = "TBD / Flexible"
-                time_match = re.search(
-                    r"(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*(?:to|-|–|—|~)\s*\d{1,2}:\d{2}\s*(?:AM|PM)?)", 
-                    line, 
+                # 特殊パターン: 9:55AM-2JUL 10AM (日付が挟まる場合)
+                time_match_special = re.search(
+                    r"(\d{1,2}:\d{2}\s*(?:AM|PM)?)\s*(?:to|-|–|—|~)\s*(?:\d{1,2}[A-Z]{3})\s*(\d{1,2}(?::\d{2})?\s*(?:AM|PM))",
+                    line,
                     re.IGNORECASE
                 )
-                if time_match:
-                    time_formatted = parse_time(time_match.group(1))
+                if time_match_special:
+                    start_t, end_t = time_match_special.groups()
+                    if ":" not in end_t:
+                        end_t = re.sub(r"(\d{1,2})\s*(AM|PM)", r"\1:00 \2", end_t, flags=re.IGNORECASE)
+                    time_formatted = parse_time(f"{start_t} - {end_t}")
+                else:
+                    # 通常パターン (終了時間の分なし対応)
+                    time_match = re.search(
+                        r"(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*(?:to|-|–|—|~)\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM)?)", 
+                        line, 
+                        re.IGNORECASE
+                    )
+                    if time_match:
+                        time_formatted = parse_time(time_match.group(1))
 
                 is_emergency = "emergency" in line_lower or "leak" in line_lower
                 details_en_val = "Emergency water service interruption announced by MCWD. Please store water in advance." if is_emergency else "Scheduled water service interruption announced by MCWD. Please store water."
