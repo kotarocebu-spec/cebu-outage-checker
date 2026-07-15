@@ -544,7 +544,7 @@ def scrape_veco_raw_content():
                 target_area = article if article else detail_soup
                 
                 article_lines = []
-                for element in target_area.find_all(['p', 'span', 'li', 'h2', 'h3']):
+                for element in target_area.find_all(['p', 'span', 'li', 'h2', 'h3', 'td']):
                     text = element.get_text(strip=True)
                     if text and len(text) > 5 and text not in article_lines:
                         article_lines.append(text)
@@ -776,7 +776,7 @@ def main():
                     if line.upper() == "CANCELLED":
                         current_item["cancelled"] = True
                         continue
-                    if line.strip() in ["Purpose:", "Areas Affected:"]: continue
+                    if line.strip() in ["Purpose:", "Areas Affected:", "Time:", "Map:"]: continue
                     
                     # "Purpose: To..." または "To..." の場合に目的として格納
                     if line.lower().startswith("purpose:") or line.lower().startswith("to "):
