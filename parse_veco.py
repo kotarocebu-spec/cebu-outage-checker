@@ -76,7 +76,6 @@ CURRENT_YEAR = datetime.datetime.now(pht_tz).year
 translation_cache = {}
 translator = GoogleTranslator(source='en', target='ja')
 
-# ディスクキャッシュのロード
 if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
@@ -387,8 +386,8 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
                         "areaJa": f"{city_ja} ({', '.join(translated_brgys[:2])}...)" if len(translated_brgys) > 2 else f"{city_ja} ({', '.join(translated_brgys)})",
                         "affectedEn": affected_en,
                         "affectedJa": affected_ja,
-                        "detailsEn": f"{status_tag_en} Scheduled power reduction due to limited grid generation capacity.",
-                        "detailsJa": f"{status_tag_ja} 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+                        "detailsEn": status_tag_en,
+                        "detailsJa": status_tag_ja
                     })
         return section_entries
         
@@ -516,7 +515,7 @@ def scrape_veco_raw_content():
     base_url = "https://www.visayanelectric.com"
     advisory_url = f"{base_url}/customer-services/service-advisory"
     
-    print("\n⚡ 1. VECO公式サイトのスクレイピングを開始します...")
+    print("\n⚡ 1. VECO公式サイト of スクレイピングを開始します...")
     articles_data = [] # 各記事の行データを個別で保持する二次元リスト
     
     with sync_playwright() as p:
@@ -771,7 +770,16 @@ def main():
                     # 日付が変わったら仕掛かり中データを保存してリセット
                     if active_item and active_item.get("area"):
                         veco_outages.append(active_item)
-                    active_item = None
+                        
+                    # 日付が出現した時点で、新しいアイテムをデフォルト時間 "TBD / Flexible" で仮初期化する
+                    current_time = "TBD / Flexible"
+                    active_item = {
+                        "date_raw": current_date,
+                        "time_raw": current_time,
+                        "purpose": "",
+                        "area": "",
+                        "cancelled": False
+                    }
                     continue
                 
                 if not current_date:
@@ -780,21 +788,25 @@ def main():
                 # 2. 時間行の判定
                 is_time_line = bool(re.search(r"\d{1,2}:\d{2}\s*(?:AM|PM)", line, re.IGNORECASE))
                 if is_time_line:
-                    # 時間が変わったら仕掛かり中データを保存
-                    if active_item and active_item.get("area"):
-                        veco_outages.append(active_item)
-                        
                     is_cancelled = "CANCELLED" in line.upper()
                     clean_time = re.sub(r"CANCELLED", "", line, flags=re.IGNORECASE).strip()
                     current_time = clean_time
                     
-                    active_item = {
-                        "date_raw": current_date,
-                        "time_raw": clean_time,
-                        "purpose": "",
-                        "area": "",
-                        "cancelled": is_cancelled
-                    }
+                    # まだ目的もエリアも入っていない初期状態なら、時間の値を上書きする
+                    if active_item and not active_item["purpose"] and not active_item["area"]:
+                        active_item["time_raw"] = clean_time
+                        active_item["cancelled"] = is_cancelled
+                    else:
+                        # すでにデータが入っている場合は、前のアイテムを保存して新しく作成
+                        if active_item and active_item.get("area"):
+                            veco_outages.append(active_item)
+                        active_item = {
+                            "date_raw": current_date,
+                            "time_raw": clean_time,
+                            "purpose": "",
+                            "area": "",
+                            "cancelled": is_cancelled
+                        }
                     continue
                     
                 # 3. 目的および地域データの蓄積
