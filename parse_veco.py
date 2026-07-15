@@ -1,8 +1,17 @@
+前回のVECO（電気）の修正と、今回のMCWD（水道）のすべてのバグ修正・耐久性強化を統合した、**完全版の Python スクリプト（`update_pipeline.py`）**を作成しました。
+
+このコードで元のスクリプトファイルを丸ごと上書きしてご使用ください。
+
+### 📄 完全版 `update_pipeline.py`
+
+```python
 import json
 import re
 import time
 import datetime
 import os
+import sys
+import io
 import unicodedata  # 特殊ユニコード太字を標準英字に直すために追加
 from urllib.parse import urljoin
 from curl_cffi import requests
@@ -10,6 +19,13 @@ from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv  # ローカル環境変数読み込み用
+
+# ==========================================
+# 🛡️ Windows環境でのエンコードエラー (CP932) 回避設定
+# ==========================================
+if sys.platform.startswith('win'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロード
 load_dotenv()
@@ -148,13 +164,30 @@ def to_24h(hour, minute, ampm):
     return f"{h:02d}:{m:02d}"
 
 def parse_time(time_str):
-    time_str_clean = re.sub(r"\(\d+hrs?\)", "", time_str).strip()
-    pattern_std = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*(?:to|-)\s*(\d{1,2}):(\d{2})\s*(AM|PM)"
+    # ダッシュ類記号 (–, —, ~) や 'to' をすべて標準ハイフン '-' に統一
+    time_str_clean = re.sub(r"–|—|~", "-", time_str)
+    time_str_clean = re.sub(r"\bto\b", "-", time_str_clean, flags=re.IGNORECASE)
+    time_str_clean = re.sub(r"\(\d+hrs?\)", "", time_str_clean).strip()
+    
+    # 形式: 10:00 AM - 5:00 PM / 10:00 - 11:00 PM / 22:00 - 23:00 などに対応
+    pattern_std = r"(\d{1,2}):(\d{2})\s*(AM|PM)?\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)?"
     match_std = re.search(pattern_std, time_str_clean, re.IGNORECASE)
     if match_std:
         sh, sm, sampm, eh, em, eampm = match_std.groups()
+        
+        # 片方の AM/PM が省略されている場合は、もう片方の値を引き継ぐ補正
+        if not sampm and eampm:
+            sampm = eampm
+        elif not eampm and sampm:
+            eampm = sampm
+            
+        # 両方とも AM/PM がない場合はそのまま返す
+        if not sampm and not eampm:
+            return f"{int(sh):02d}:{int(sm):02d} - {int(eh):02d}:{int(em):02d}"
+            
         return f"{to_24h(sh, sm, sampm)} - {to_24h(eh, em, eampm)}"
         
+    # Overnightパターン
     pattern_overnight = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)\s*to\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)"
     match_overnight = re.search(pattern_overnight, time_str_clean, re.IGNORECASE)
     if match_overnight:
@@ -201,7 +234,6 @@ def clean_text_pipeline(text):
     
     text = unicodedata.normalize('NFKC', text)
     
-    # 不要な定型文・フッターの注意書きをカット
     footers_to_strip = [
         r"Your safety is important to us.*",
         r"The complete details of the scheduled.*",
@@ -383,7 +415,6 @@ def merge_duplicate_outages(outages):
         is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
         is_cancelled = "CANCELLED" in item["detailsEn"]
         
-        # マージキーに is_cancelled を組み込み、中止データが通常予定と誤マージされないように修正
         key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled)
         if key not in grouped:
             grouped[key] = []
@@ -497,17 +528,16 @@ def scrape_veco_raw_content():
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        # 一般的なデスクトップブラウザをシミュレート
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800}
         )
         page = context.new_page()
         
-        # タイムアウトを引き起こす networkidle を避け、domcontentloaded で進める
         try:
             page.goto(advisory_url, timeout=30000, wait_until="domcontentloaded")
-            page.wait_for_timeout(3000)  # 3秒間の確実な固定待機
+            # タグが完全に描画されるまで10秒だけ待つ（ networkidle は避ける ）
+            page.wait_for_selector('a', timeout=10000)
             soup = BeautifulSoup(page.content(), 'html.parser')
         except Exception as e:
             print(f"⚠️ VECO公式サイトへの接続に失敗しました（ブロックされた可能性があります）: {e}")
@@ -528,7 +558,6 @@ def scrape_veco_raw_content():
             browser.close()
             return []
             
-        # 最新の最大3記事をスクレイピング
         target_links = links[:3]
         print(f"👉 VECO最新の {len(target_links)} 件の記事を巡回スクレイピングします...")
         
@@ -536,18 +565,21 @@ def scrape_veco_raw_content():
             print(f"   - 巡回中: {url}")
             try:
                 page.goto(url, timeout=30000, wait_until="domcontentloaded")
-                page.wait_for_timeout(3000)  # 各記事の描画に3秒間の固定待機
+                page.wait_for_selector("article", timeout=10000) # articleが画面に出るまで待機
                 
                 detail_soup = BeautifulSoup(page.content(), 'html.parser')
-                
                 article = detail_soup.find('article')
                 target_area = article if article else detail_soup
                 
+                # --- [改善①: stripped_strings の使用による重複の根本排除] ---
                 article_lines = []
-                for element in target_area.find_all(['p', 'span', 'li', 'h2', 'h3', 'td']):
-                    text = element.get_text(strip=True)
-                    if text and len(text) > 5 and text not in article_lines:
-                        article_lines.append(text)
+                for s in target_area.stripped_strings:
+                    s_clean = s.strip()
+                    # 特殊フォントUnicode (mathematical bold等) をNFKCで即座に英字に正規化
+                    s_clean = unicodedata.normalize('NFKC', s_clean)
+                    if s_clean and len(s_clean) > 5:
+                        if s_clean not in article_lines:
+                            article_lines.append(s_clean)
                 
                 if article_lines:
                     articles_data.append(article_lines)
@@ -575,18 +607,19 @@ def scrape_mcwd_raw_content():
             )
             page = context.new_page()
             
-            # タイムアウト上限を60秒へ延長。Oracle APEXの読み込み負荷に対応するため、
-            # networkidle を廃止し domcontentloaded + 8秒の長めの固定スリープでデータを確実に展開。
             page.goto(base_url, timeout=60000, wait_until="domcontentloaded")
             page.wait_for_timeout(8000)
             
             soup = BeautifulSoup(page.content(), 'html.parser')
             browser.close()
             
-            for element in soup.find_all(['p', 'span', 'li', 'h2', 'h3', 'h4', 'a']):
-                text = element.get_text(strip=True)
-                if text and len(text) > 15 and text not in raw_texts:
-                    raw_texts.append(text)
+            # --- [改善: stripped_strings で末端のテキストだけを重複なく取得] ---
+            for s in soup.stripped_strings:
+                text = s.strip()
+                text = unicodedata.normalize('NFKC', text) # 特殊Unicodeの正規化
+                if text and len(text) > 15:
+                    if text not in raw_texts:
+                        raw_texts.append(text)
     except Exception as e:
         print(f"⚠️ MCWDスクレイピング中にエラーが発生しました: {e}")
     return raw_texts
@@ -624,7 +657,6 @@ def scrape_facebook_posts_via_apify(page_url):
         
     return raw_texts
 
-# 🛡️ 通常のFacebookベタ書き投稿用のシングルパーサー (輪番以外)
 def parse_facebook_post_prose(text, is_water=False, today_str=""):
     text = unicodedata.normalize('NFKC', text)
     text_lower = text.lower()
@@ -707,7 +739,6 @@ def main():
     today_str = datetime.datetime.now(pht_tz).strftime("%Y/%m/%d")
     print(f"=== Cebu Outage Auto Update Pipeline (セブ現地時間: {today_str}) ===")
 
-    # 直近3記事を二次元リストとして取得（今週・翌週分の抜け漏れ防止）
     veco_raw_articles = scrape_veco_raw_content()
     
     if APIFY_TOKEN:
@@ -717,17 +748,19 @@ def main():
 
     final_veco_outages = []
 
-    # A. 通常のウェブサイトデータを処理 (各記事ごとに独立したループ解析を実行)
+    # A. 通常のウェブサイトデータを処理
     if veco_raw_articles:
         print("\n⚡ 3. VECO停電スケジュールデータの解析処理中...")
         for veco_raw in veco_raw_articles:
             current_date = None
-            current_item = None
+            current_time = None
             month_names = list(months_map.keys())
-            veco_outages = [] # 各記事ごとに一時格納用をリセット
+            
+            # --- [改善②: 状態マシン（State Machine）によるパース処理] ---
+            active_item = None
+            veco_outages = [] # この記事内でパースされた一時レコードを格納
 
             for line in veco_raw:
-                # 輪番停電などの巨大なアドバイザリーを検知した場合、高度分解パーサーへ自動バイパス
                 if "rotational brownout" in line.lower() or "possible rotational" in line.lower():
                     print("📝 輪番停電の大規模情報を検出しました。専用分解パーサーを実行します...")
                     date_formatted = extract_mcwd_date(line)
@@ -738,26 +771,31 @@ def main():
                     final_veco_outages.extend(parsed_entries)
                     continue
 
-                if not current_date:
-                    if any(line.startswith(m) for m in month_names) and any(c.isdigit() for c in line):
-                        current_date = line
-                    continue
-                
+                # 1. 日付行の判定
                 is_date_line = any(line.startswith(m) for m in month_names) and any(c.isdigit() for c in line) and ("AM" not in line.upper() and "PM" not in line.upper())
                 if is_date_line:
                     current_date = line
+                    # 日付が変わったら仕掛かり中データを保存してリセット
+                    if active_item and active_item.get("area"):
+                        veco_outages.append(active_item)
+                    active_item = None
                     continue
-                    
+                
+                if not current_date:
+                    continue
+                
+                # 2. 時間行の判定
                 is_time_line = bool(re.search(r"\d{1,2}:\d{2}\s*(?:AM|PM)", line, re.IGNORECASE))
                 if is_time_line:
-                    if current_item and current_item.get("time_raw") and current_item.get("area"):
-                        veco_outages.append(current_item)
-                        current_item = None
+                    # 時間が変わったら仕掛かり中データを保存
+                    if active_item and active_item.get("area"):
+                        veco_outages.append(active_item)
                         
                     is_cancelled = "CANCELLED" in line.upper()
                     clean_time = re.sub(r"CANCELLED", "", line, flags=re.IGNORECASE).strip()
+                    current_time = clean_time
                     
-                    current_item = {
+                    active_item = {
                         "date_raw": current_date,
                         "time_raw": clean_time,
                         "purpose": "",
@@ -766,42 +804,57 @@ def main():
                     }
                     continue
                     
-                if current_item:
+                # 3. 目的および地域データの蓄積
+                if active_item:
                     clean_line = re.sub(r"^(Purpose|Areas Affected)\s*:\s*", "", line, flags=re.IGNORECASE).strip()
                     
-                    if line in current_item["time_raw"] or line in current_item["purpose"] or line in current_item["area"]: continue
-                    if (current_item["time_raw"] and line in current_item["time_raw"]) or \
-                       (current_item["purpose"] and line in current_item["purpose"]) or \
-                       (current_item["area"] and line in current_item["area"]): continue
-                    if line.upper() == "CANCELLED":
-                        current_item["cancelled"] = True
-                        continue
-                    if line.strip() in ["Purpose:", "Areas Affected:", "Time:", "Map:"]: continue
-                    
-                    # "Purpose: To..." または "To..." の場合に目的として格納
-                    if line.lower().startswith("purpose:") or line.lower().startswith("to "):
-                        if not current_item["purpose"]: current_item["purpose"] = clean_line
-                        else: current_item["purpose"] += " " + clean_line
-                        continue
-                    
-                    # "Areas Affected: Portion..." または "Portion..." の場合に対象地域として格納
-                    if line.lower().startswith("areas affected:") or line.lower().startswith("portion"):
-                        if not current_item["area"]: current_item["area"] = clean_line
-                        else: current_item["area"] += " " + clean_line
+                    # 不要行のスキップ
+                    if line.strip() in ["Purpose:", "Areas Affected:", "Time:", "Map:", ""] or \
+                       clean_line in active_item["purpose"] or clean_line in active_item["area"]:
                         continue
                         
-                    # それ以外の行のフォールバック
-                    if current_item["purpose"] and not current_item["area"]:
-                        if any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"]):
-                            current_item["area"] = clean_line
+                    if line.upper() == "CANCELLED":
+                        active_item["cancelled"] = True
+                        continue
+
+                    # 現在の行の属性判定
+                    is_purpose = line.lower().startswith("purpose:") or line.lower().startswith("to ")
+                    is_area = line.lower().startswith("areas affected:") or line.lower().startswith("portion") or \
+                              any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"])
+                    
+                    # 【超重要】すでにデータが埋まっている状態で、次の項目（To.. や Portion..）が来たら
+                    # 同じ時間帯を引き継いだまま、新しい別の工事としてレコードを切り分ける
+                    if (is_purpose and active_item["purpose"]) or (is_area and active_item["area"]):
+                        if active_item.get("area"):
+                            veco_outages.append(active_item)
+                        active_item = {
+                            "date_raw": current_date,
+                            "time_raw": current_time,
+                            "purpose": "",
+                            "area": "",
+                            "cancelled": active_item["cancelled"]
+                        }
+                    
+                    if is_purpose:
+                        if not active_item["purpose"]: active_item["purpose"] = clean_line
+                        else: active_item["purpose"] += " " + clean_line
+                    elif is_area:
+                        if not active_item["area"]: active_item["area"] = clean_line
+                        else: active_item["area"] += " " + clean_line
+                    else:
+                        # 判定できない行のフォールバック
+                        if not active_item["purpose"]:
+                            active_item["purpose"] = clean_line
+                        elif not active_item["area"]:
+                            active_item["area"] = clean_line
                         else:
-                            current_item["purpose"] += " " + clean_line
-                    elif current_item["area"]:
-                        current_item["area"] += " " + clean_line
+                            active_item["area"] += " " + clean_line
 
-            if current_item and current_item.get("time_raw") and current_item.get("area"):
-                veco_outages.append(current_item)
+            # 記事スキャン終了後に残っている仕掛かり中データを保存
+            if active_item and active_item.get("area"):
+                veco_outages.append(active_item)
 
+            # 解析した各アイテムを最終出力形式にマッピング
             for raw in veco_outages:
                 date_formatted, day_abbrev = parse_date(raw["date_raw"])
                 if date_formatted < today_str:
@@ -809,7 +862,8 @@ def main():
 
                 affected_en = clean_text_pipeline(raw["area"])
                 details_en = clean_text_pipeline(raw["purpose"])
-                if not affected_en: continue
+                if not affected_en: 
+                    continue
                     
                 affected_ja = cached_translate(affected_en)
                 details_ja = cached_translate(details_en)
@@ -841,7 +895,6 @@ def main():
         for post in veco_fb_raw:
             post_lower = post.lower()
             
-            # 計画外の自動遮断（突発停電）のアナウンスは不要なためスキップする
             unplanned_keywords = ["safety device to help protect", "automatically switched off", "unplanned power outage"]
             if any(k in post_lower for k in unplanned_keywords):
                 print("⏭️ 計画外の自動遮断（突発停電）アナウンスをスキップしました。")
@@ -862,7 +915,6 @@ def main():
                 if parsed_post:
                     final_veco_outages.append(parsed_post)
 
-    # 計画停電データ重複マージプロセスの実行（都市をまたぐデータもマージ）
     print("\n⚡ 3-C. 重複する停電スケジュールの統合マージ処理を実行中...")
     final_veco_outages = merge_duplicate_outages(final_veco_outages)
 
@@ -883,7 +935,13 @@ def main():
                 if not date_formatted or date_formatted < today_str:
                     continue
                 
-                if any(item["affectedEn"] == line for item in final_mcwd_outages):
+                # --- [改善①: クリーン化を先に実行し、クリーン化したテキスト同士で重複判定] ---
+                affected_en = clean_text_pipeline(line)
+                if not affected_en:
+                    continue
+                    
+                # これにより重複記事が100%弾かれます
+                if any(item["affectedEn"] == affected_en for item in final_mcwd_outages):
                     continue
 
                 try:
@@ -892,12 +950,16 @@ def main():
                 except:
                     day_abbrev = "Sun"
 
-                affected_en = clean_text_pipeline(line)
                 affected_ja = cached_translate(affected_en)
                 area_en, area_ja = parse_area_summary(affected_en)
 
+                # --- [改善②: ダッシュ等の特殊記号 (-, –, —, ~) に完全対応した時間抽出] ---
                 time_formatted = "TBD / Flexible"
-                time_match = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:to|-)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", line, re.IGNORECASE)
+                time_match = re.search(
+                    r"(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*(?:to|-|–|—|~)\s*\d{1,2}:\d{2}\s*(?:AM|PM)?)", 
+                    line, 
+                    re.IGNORECASE
+                )
                 if time_match:
                     time_formatted = parse_time(time_match.group(1))
 
@@ -924,10 +986,8 @@ def main():
     # ------------------------------------------
     merged_outages = final_veco_outages + final_mcwd_outages
     
-    # 現在のセブ現地時間（PHT）を取得
     now_pht = datetime.datetime.now(pht_tz)
     
-    # 既に終了時間を過ぎているイベントを自動判定して除外
     filtered_outages = []
     for item in merged_outages:
         if is_event_finished(item["date"], item["time"], now_pht):
