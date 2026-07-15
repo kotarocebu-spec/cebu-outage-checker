@@ -11,7 +11,11 @@ from curl_cffi import requests
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from dotenv import load_dotenv  # ローカル環境変数読み込み用
+try:
+    from dotenv import load_dotenv  # ローカル環境変数読み込み用
+    load_dotenv()
+except ImportError:
+    pass
 
 # ==========================================
 # 🛡️ Windows環境でのエンコードエラー (CP932) 回避設定
@@ -21,7 +25,6 @@ if sys.platform.startswith('win'):
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロード
-load_dotenv()
 
 # ==========================================
 # ⚙️ 設定 & マスターデータ
@@ -76,6 +79,7 @@ CURRENT_YEAR = datetime.datetime.now(pht_tz).year
 translation_cache = {}
 translator = GoogleTranslator(source='en', target='ja')
 
+# ディスクキャッシュのロード
 if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
@@ -386,8 +390,8 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
                         "areaJa": f"{city_ja} ({', '.join(translated_brgys[:2])}...)" if len(translated_brgys) > 2 else f"{city_ja} ({', '.join(translated_brgys)})",
                         "affectedEn": affected_en,
                         "affectedJa": affected_ja,
-                        "detailsEn": status_tag_en,
-                        "detailsJa": status_tag_ja
+                        "detailsEn": f"{status_tag_en} Scheduled power reduction due to limited grid generation capacity.",
+                        "detailsJa": f"{status_tag_ja} 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
                     })
         return section_entries
         
@@ -399,7 +403,7 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
     return entries
 
 # ==========================================
-# ⚡ 統合マージプロセッサ
+# ⚡ 統合マージプロセッサ (異なる工事の誤マージを防止)
 # ==========================================
 def merge_duplicate_outages(outages):
     grouped = {}
@@ -407,7 +411,10 @@ def merge_duplicate_outages(outages):
         is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
         is_cancelled = "CANCELLED" in item["detailsEn"]
         
-        key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled)
+        # 目的 (detailsEn) をキーに含めることで、同じ日時だからといって別々の工事が誤合体されるのを防ぐ
+        purpose_key = clean_text_pipeline(item["detailsEn"]).lower()
+        
+        key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled, purpose_key)
         if key not in grouped:
             grouped[key] = []
         grouped[key].append(item)
@@ -419,7 +426,7 @@ def merge_duplicate_outages(outages):
             continue
             
         first = items[0]
-        date, time_str, item_type, is_conditional, is_cancelled = key
+        date, time_str, item_type, is_conditional, is_cancelled, _ = key
         
         city_brgys_map = {}
         for it in items:
@@ -515,7 +522,7 @@ def scrape_veco_raw_content():
     base_url = "https://www.visayanelectric.com"
     advisory_url = f"{base_url}/customer-services/service-advisory"
     
-    print("\n⚡ 1. VECO公式サイト of スクレイピングを開始します...")
+    print("\n⚡ 1. VECO公式サイトのスクレイピングを開始します...")
     articles_data = [] # 各記事の行データを個別で保持する二次元リスト
     
     with sync_playwright() as p:
@@ -532,7 +539,7 @@ def scrape_veco_raw_content():
             page.wait_for_selector('a', timeout=10000)
             soup = BeautifulSoup(page.content(), 'html.parser')
         except Exception as e:
-            print(f"⚠️ VECO公式サイトへの接続に失敗しました（ブロックされた可能性があります）: {e}")
+            print(f"⚠️ VECO公式サイトへの接続に失敗しました: {e}")
             browser.close()
             return []
         
@@ -563,15 +570,18 @@ def scrape_veco_raw_content():
                 article = detail_soup.find('article')
                 target_area = article if article else detail_soup
                 
-                # --- [改善①: stripped_strings の使用による重複の根本排除] ---
+                # --- [改善①: 連続重複のみを排除し、別日程での同じ時間表現は残す] ---
                 article_lines = []
+                last_line = None
                 for s in target_area.stripped_strings:
                     s_clean = s.strip()
                     # 特殊フォントUnicode (mathematical bold等) をNFKCで即座に英字に正規化
                     s_clean = unicodedata.normalize('NFKC', s_clean)
                     if s_clean and len(s_clean) > 5:
-                        if s_clean not in article_lines:
+                        # 連続する同一テキストのみ排除
+                        if s_clean != last_line:
                             article_lines.append(s_clean)
+                            last_line = s_clean
                 
                 if article_lines:
                     articles_data.append(article_lines)
@@ -827,7 +837,7 @@ def main():
                     is_area = line.lower().startswith("areas affected:") or line.lower().startswith("portion") or \
                               any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"])
                     
-                    # 【超重要】すでにデータが埋まっている状態で、次の項目（To.. や Portion..）が来たら
+                    # すでにデータが埋まっている状態で、次の項目（To.. や Portion..）が来たら
                     # 同じ時間帯を引き継いだまま、新しい別の工事としてレコードを切り分ける
                     if (is_purpose and active_item["purpose"]) or (is_area and active_item["area"]):
                         if active_item.get("area"):
@@ -940,12 +950,11 @@ def main():
                 if not date_formatted or date_formatted < today_str:
                     continue
                 
-                # --- [改善①: クリーン化を先に実行し、クリーン化したテキスト同士で重複判定] ---
+                # クリーン化したテキスト同士で重複判定
                 affected_en = clean_text_pipeline(line)
                 if not affected_en:
                     continue
                     
-                # これにより重複記事が100%弾かれます
                 if any(item["affectedEn"] == affected_en for item in final_mcwd_outages):
                     continue
 
@@ -958,7 +967,7 @@ def main():
                 affected_ja = cached_translate(affected_en)
                 area_en, area_ja = parse_area_summary(affected_en)
 
-                # --- [改善②: ダッシュ等の特殊記号 (-, –, —, ~) に完全対応した時間抽出] ---
+                # ダッシュ等の特殊記号 (-, –, —, ~) に完全対応した時間抽出
                 time_formatted = "TBD / Flexible"
                 time_match = re.search(
                     r"(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*(?:to|-|–|—|~)\s*\d{1,2}:\d{2}\s*(?:AM|PM)?)", 
