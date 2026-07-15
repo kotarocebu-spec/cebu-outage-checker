@@ -222,8 +222,13 @@ def clean_translated_japanese(text):
         r"\1工事を行うためです（対象エリア: \3）。",
         text
     )
-    
-    # 2. その後に、一般的な直訳語の置換を行う
+    # 顧客の要請に基づくシャットダウン要求の語順崩れ補正
+    # 例: 「Tisa は、顧客からのシャットダウン要求を容易にします。」 ➔ 「顧客の要請に基づく送電停止工事を行うためです（対象エリア: Tisa）。」
+    text = re.sub(
+        r"([\w\s・]+)\s*は、顧客からの(?:シャットダウン要求|シャットダウン要請)を(?:容易にします|行います)。",
+        r"顧客の要請に基づく送電停止（シャットダウン）工事を行うためです（対象エリア: \1）。",
+        text
+    )
     replacements = {
         r"配信システム": "配電システム",
         r"配信系統": "配電系統",
@@ -246,11 +251,21 @@ def clean_translated_japanese(text):
     return text
 
 def parse_area_summary(affected_en):
-    pattern = r"Portion[s]? of\s+([^,]+),\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
-    match = re.search(pattern, affected_en, re.IGNORECASE)
-
-    if match:
-        brgys, city = match.groups()
+    # パターン1: Portion of Brgy. XXX, City
+    pattern1 = r"Portion[s]? of\s+([^,]+),\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
+    match1 = re.search(pattern1, affected_en, re.IGNORECASE)
+    if match1:
+        brgys, city = match1.groups()
+        brgys_clean = brgys.replace("Brgy. ", "").replace("Brgys. ", "").strip()
+        city_ja = cities_map_ja.get(city, city)
+        brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
+        return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
+        
+    # パターン2: Portion of City (Brgy. XXX)
+    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)\s*\((.*?)\)"
+    match2 = re.search(pattern2, affected_en, re.IGNORECASE)
+    if match2:
+        city, brgys = match2.groups()
         brgys_clean = brgys.replace("Brgy. ", "").replace("Brgys. ", "").strip()
         city_ja = cities_map_ja.get(city, city)
         brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
@@ -263,12 +278,22 @@ def parse_area_summary(affected_en):
 
 def parse_time_for_sorting(time_str):
     try:
-        match = re.search(r'(\d{2}):(\d{2})', time_str)
-        if match:
-            return (int(match.group(1)), int(match.group(2)))
+        # 開始時間と終了時間の両方を抽出
+        # 例: "09:00 - 17:00" -> 開始 (9, 0), 終了 (17, 0)
+        times = re.findall(r'(\d{2}):(\d{2})', time_str)
+        if len(times) >= 2:
+            start_h, start_m = int(times[0][0]), int(times[0][1])
+            end_h, end_m = int(times[1][0]), int(times[1][1])
+            # 日付またぎ (+1d) の場合は終了時間に24時間を足して順序を正確にする
+            if "+1d" in time_str:
+                end_h += 24
+            return (start_h, start_m, end_h, end_m)
+        elif len(times) == 1:
+            start_h, start_m = int(times[0][0]), int(times[0][1])
+            return (start_h, start_m, 23, 59)
     except:
         pass
-    return (23, 59)
+    return (23, 59, 23, 59)
 
 def clean_text_pipeline(text):
     if not text: return ""
