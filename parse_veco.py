@@ -110,12 +110,21 @@ def cached_translate(text):
 # 🛠️ 変換用ヘルパー関数群
 # ==========================================
 def parse_date(date_str):
-    match = re.search(r"(\w+)\s+(\d+),\s+(\d{4})\s*\((.*?)\)", date_str)
+    # "July 17-18, 2026 (Friday-Saturday)" のような複数日ハイフン表記に対応
+    # ハイフン以降の終了日を削って、"July 17, 2026 (Friday-Saturday)" に変形
+    date_str_clean = re.sub(r"(\d+)-\d+", r"\1", date_str)
+    
+    match = re.search(r"(\w+)\s+(\d+),\s+(\d{4})\s*\((.*?)\)", date_str_clean)
     if match:
         m_en, d_str, y_str, day_en = match.groups()
         m_num = months_map.get(m_en.capitalize(), "01")
         d_num = f"{int(d_str):02d}"
-        return f"{y_str}/{m_num}/{d_num}", days_map.get(day_en, "Sun")
+        
+        # 曜日がハイフンで繋がっている場合（例: "Friday-Saturday"）は開始側の曜日だけにする
+        day_first = day_en.split('-')[0].strip()
+        day_abbrev = days_map.get(day_first, "Sun")
+        
+        return f"{y_str}/{m_num}/{d_num}", day_abbrev
     return f"{CURRENT_YEAR}/06/01", "Sun"
 
 def extract_mcwd_date(line):
@@ -845,7 +854,7 @@ def main():
                         active_item = {
                             "date_raw": current_date,
                             "time_raw": current_time,
-                            "purpose": "",
+                            "purpose": active_item["purpose"],
                             "area": "",
                             "cancelled": active_item["cancelled"]
                         }
