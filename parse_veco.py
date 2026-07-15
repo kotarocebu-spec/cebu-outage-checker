@@ -1,10 +1,3 @@
-前回のVECO（電気）の修正と、今回のMCWD（水道）のすべてのバグ修正・耐久性強化を統合した、**完全版の Python スクリプト（`update_pipeline.py`）**を作成しました。
-
-このコードで元のスクリプトファイルを丸ごと上書きしてご使用ください。
-
-### 📄 完全版 `update_pipeline.py`
-
-```python
 import json
 import re
 import time
