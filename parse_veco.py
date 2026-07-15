@@ -192,22 +192,58 @@ def parse_time(time_str):
             
         return f"{to_24h(sh, sm, sampm)} - {to_24h(eh, em, eampm)}"
         
-    # Overnightパターン
-    pattern_overnight = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)\s*to\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)"
+    # Overnightパターン (toまたはハイフンの両方に対応)
+    pattern_overnight = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)\s*(?:to|-)\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)"
     match_overnight = re.search(pattern_overnight, time_str_clean, re.IGNORECASE)
     if match_overnight:
         sh, sm, sampm, smonth, sday, eh, em, eampm, emonth, eday = match_overnight.groups()
         start_24 = to_24h(sh, sm, sampm)
         end_24 = to_24h(eh, em, eampm)
-        try:
-            m_num = int(months_map[emonth.capitalize()])
-            d_num = int(eday)
-            dt = datetime.date(CURRENT_YEAR, m_num, d_num)
-            day_abbrev = dt.strftime("%a")
-            return f"{start_24} - {m_num:02d}/{d_num:02d} ({day_abbrev}) {end_24}"
-        except:
-            return f"{start_24} - {emonth[:3]} {eday} {end_24}"
+        return f"{start_24} - {end_24} (+1d)"
     return time_str_clean
+
+def clean_translated_japanese(text):
+    if not text:
+        return ""
+        
+    # バランガイやサービス提供の表現をインフラ用語として自然に
+    text = re.sub(r"Brgy\s*にサービスを提供する", "周辺地域へ電力を供給する", text, flags=re.IGNORECASE)
+    text = re.sub(r"Brgy\s*に電力を供給する", "周辺地域へ電力を供給する", text, flags=re.IGNORECASE)
+    
+    # 1. 【超重要】「〜を促進することにより[Brgy名]。」のような語順崩れを正規表現で先に補正する！
+    text = re.sub(
+        r"([\w・（）]+)の(アップグレード|設置|移設|再建|タップ|交換|整備)を(促進することにより|促進することで|容易にすることにより|容易にすることで|促進することによって|行うことで|行うことにより|行うことによって)(\w+)。$",
+        r"\1の\2工事を行うためです（対象エリア: \4）。",
+        text
+    )
+    # 単純な目的語の補正
+    text = re.sub(
+        r"(\w+)を(促進することにより|促進することで|容易にすることにより|容易にすることで|促進することによって|行うことで|行うことにより|行うことによって)(\w+)。$",
+        r"\1工事を行うためです（対象エリア: \3）。",
+        text
+    )
+    
+    # 2. その後に、一般的な直訳語の置換を行う
+    replacements = {
+        r"配信システム": "配電システム",
+        r"配信系統": "配電系統",
+        r"主極": "高圧電柱",
+        r"一次電柱": "高圧電柱",
+        r"容易になります": "行うためです",
+        r"容易にします": "行います",
+        r"容易にすることで": "行うことで",
+        r"容易にするため": "行うため",
+        r"を容易にすることによって": "を行うことによって",
+        r"の障害による不要な s を防ぐ": "の障害による不要な停電を防ぐ",
+        r"不要な電力供給を防止": "突発的な停電を防止",
+        r"不要な停電を防止": "突発的な停電を防止",
+        r"不要な中断を防止": "突発的な停電を防止",
+        r"の信頼性を向上させるため。": "の信頼性を向上させるため、"
+    }
+    for pattern, repl in replacements.items():
+        text = re.sub(pattern, repl, text)
+        
+    return text
 
 def parse_area_summary(affected_en):
     pattern = r"Portion[s]? of\s+([^,]+),\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
@@ -889,8 +925,8 @@ def main():
                 if not affected_en: 
                     continue
                     
-                affected_ja = cached_translate(affected_en)
-                details_ja = cached_translate(details_en)
+                affected_ja = clean_translated_japanese(cached_translate(affected_en))
+                details_ja = clean_translated_japanese(cached_translate(details_en))
                 
                 if raw["cancelled"]:
                     details_en = f"【CANCELLED】{details_en}"
@@ -973,7 +1009,7 @@ def main():
                 except:
                     day_abbrev = "Sun"
 
-                affected_ja = cached_translate(affected_en)
+                affected_ja = clean_translated_japanese(cached_translate(affected_en))
                 area_en, area_ja = parse_area_summary(affected_en)
 
                 # ダッシュ等の特殊記号 (-, –, —, ~) に完全対応した時間抽出
