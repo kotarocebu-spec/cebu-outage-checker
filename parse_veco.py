@@ -522,6 +522,16 @@ def merge_duplicate_outages(outages):
                     item_city = known_city
                     break
             
+            # もし他に知られている都市（Liloanなど）の正常データが同グループに存在する場合、
+            # "Other (Manual Input)" のようなプレースホルダー行はマージ対象からスキップして無視する
+            if item_city == "Other" and len(items) > 1:
+                has_known_city = any(
+                    any(known.lower() in x["areaEn"].lower() for known in ["cebu city", "mandaue city", "talisay city", "liloan", "minglanilla", "consolacion", "cordova", "city of naga", "naga city"])
+                    for x in items
+                )
+                if has_known_city:
+                    continue
+            
             en_brgys = []
             en_match = re.search(r"Portion[s]? of\s+[^:]+:\s*(.*)", it["affectedEn"], re.IGNORECASE)
             if en_match:
