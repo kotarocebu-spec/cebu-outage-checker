@@ -615,6 +615,29 @@ def merge_duplicate_outages(outages):
         
     return merged
 
+def remove_tbd_duplicates(outages):
+    has_concrete_time = {}
+    for item in outages:
+        t = item["time"].lower()
+        is_tbd = "tbd" in t or "flexible" in t or "as of" in t
+        if not is_tbd:
+            area_key = clean_text_pipeline(item["areaEn"]).lower()
+            key = (item["date"], area_key)
+            has_concrete_time[key] = True
+            
+    filtered = []
+    for item in outages:
+        t = item["time"].lower()
+        is_tbd = "tbd" in t or "flexible" in t or "as of" in t
+        if is_tbd:
+            area_key = clean_text_pipeline(item["areaEn"]).lower()
+            key = (item["date"], area_key)
+            if key in has_concrete_time:
+                print(f"⏰ 重複するTBD予定を除外しました: {item['date']} {item['areaEn']} (確定時間データが存在するため)")
+                continue
+        filtered.append(item)
+    return filtered
+
 # ==========================================
 # 🌐 VECO公式サイト スクレイピング部 (接続タイムアウト・ネットワーク遅延耐久強化)
 # ==========================================
@@ -1032,6 +1055,7 @@ def main():
 
     print("\n⚡ 3-C. 重複する停電スケジュールの統合マージ処理を実行中...")
     final_veco_outages = merge_duplicate_outages(final_veco_outages)
+    final_veco_outages = remove_tbd_duplicates(final_veco_outages)
 
     # ------------------------------------------
     # 💧 MCWD（水道）処理
