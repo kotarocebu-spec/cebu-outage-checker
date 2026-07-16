@@ -658,8 +658,8 @@ def scrape_veco_raw_content():
         
         try:
             page.goto(advisory_url, timeout=30000, wait_until="domcontentloaded")
-            # タグが完全に描画されるまで10秒だけ待つ（ networkidle は避ける ）
-            page.wait_for_selector('a', timeout=10000)
+            # 計画停電の個別記事リンク（hrefに "/post/" を含むaタグ）が描画されるまで待つ
+            page.wait_for_selector('a[href*="/post/"]', timeout=15000)
             soup = BeautifulSoup(page.content(), 'html.parser')
         except Exception as e:
             print(f"⚠️ VECO公式サイトへの接続に失敗しました: {e}")
