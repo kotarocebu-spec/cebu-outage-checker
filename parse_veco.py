@@ -267,8 +267,8 @@ def clean_translated_japanese(text):
     return text
 
 def parse_area_summary(affected_en):
-    # パターン1: Portion of Brgy. XXX, City
-    pattern1 = r"Portion[s]? of\s+([^,]+),\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
+    # パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
+    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
     match1 = re.search(pattern1, affected_en, re.IGNORECASE)
     if match1:
         brgys, city = match1.groups()
@@ -538,10 +538,11 @@ def merge_duplicate_outages(outages):
                 en_brgys = [b.strip() for b in en_match.group(1).split(",") if b.strip()]
             else:
                 parentheses_match = re.search(r"\((.*?)\)", it["areaEn"])
-                if parentheses_match:
+                if parentheses_match and "other" not in parentheses_match.group(1).lower():
                     en_brgys = [b.strip() for b in parentheses_match.group(1).split(",") if b.strip()]
                 else:
-                    en_brgys = [b.strip() for b in it["affectedEn"].split(",") if b.strip()]
+                    clean_aff = re.sub(r"^Portion[s]? of\s+", "", it["affectedEn"], flags=re.IGNORECASE).strip()
+                    en_brgys = [clean_aff]
                     
             ja_brgys = []
             ja_match = re.search(r"[^:]+の一部エリア:\s*(.*)", it["affectedJa"], re.IGNORECASE)
@@ -549,10 +550,13 @@ def merge_duplicate_outages(outages):
                 ja_brgys = [b.strip() for b in ja_match.group(1).split(",") if b.strip()]
             else:
                 parentheses_match = re.search(r"\((.*?)\)", it["areaJa"])
-                if parentheses_match:
+                if parentheses_match and "その他" not in parentheses_match.group(1) and "other" not in parentheses_match.group(1).lower():
                     ja_brgys = [b.strip() for b in parentheses_match.group(1).split(",") if b.strip()]
                 else:
-                    ja_brgys = [b.strip() for b in it["affectedJa"].split(",") if b.strip()]
+                    clean_aff_ja = re.sub(r"^[^市町]+の一部エリア:\s*", "", it["affectedJa"]).strip()
+                    if clean_aff_ja == it["affectedJa"]:
+                        clean_aff_ja = re.sub(r"一部のエリア:?\s*", "", it["affectedJa"]).strip()
+                    ja_brgys = [clean_aff_ja]
             
             if len(en_brgys) == len(ja_brgys):
                 pairs = list(zip(en_brgys, ja_brgys))
