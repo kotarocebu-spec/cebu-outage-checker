@@ -790,9 +790,19 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
     if is_weekly_digest:
         return None
 
+    # 防災啓発（洪水、避難、台風、地震など）、オフィス閉鎖や採用情報の投稿を除外
+    ignore_keywords = [
+        "flood", "evacuate", "weather", "safety reminder", "typhoon", "storm", 
+        "earthquake", "christmas", "holiday", "office closed", "advisory on office closure",
+        "career", "job", "hiring"
+    ]
+    if any(k in text_lower for k in ignore_keywords):
+        return None
+
     date_formatted = extract_mcwd_date(text)
     
-    is_urgent_alert = any(k in text_lower for k in ["rotational", "brownout", "blackout", "grid alert", "emergency", "update"])
+    # 緊急アラート判定の厳格化（単なるemergencyやupdateを避け、輪番停電関連キーワードに限定）
+    is_urgent_alert = any(k in text_lower for k in ["rotational brownout", "rotational load", "load shedding", "grid alert", "possible rotational"])
     if is_urgent_alert:
         date_formatted = today_str
         
