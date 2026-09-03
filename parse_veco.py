@@ -33,23 +33,45 @@ APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
 CACHE_FILE = "translation_cache.json"  # ディスクキャッシュファイル
 
 CEBU_AREAS = [
-  { "id": "cebu-itpark", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
-  { "id": "cebu-banilad", "nameEn": "Cebu City (Banilad / AS Fortuna)", "nameJa": "セブ市 (バニラッド / ASフォーチュナ)" },
-  { "id": "cebu-talamban", "nameEn": "Cebu City (Talamban)", "nameJa": "セブ市 (タランバン)" },
-  { "id": "cebu-guadalupe", "nameEn": "Cebu City (Guadalupe)", "nameJa": "セブ市 (グアダルーペ)" },
-  { "id": "cebu-downtown", "nameEn": "Cebu City (Downtown / Colon)", "nameJa": "セブ市 (ダウンタウン / コロン)" },
-  { "id": "cebu-other", "nameEn": "Cebu City (Other Areas)", "nameJa": "セブ市 (その他エリア)" },
-  { "id": "mandaue-basak", "nameEn": "Mandaue City (Basak / Jagobiao)", "nameJa": "マンダウエ市 (バサック / ハゴビヤオ)" },
-  { "id": "mandaue-centro", "nameEn": "Mandaue City (Centro / Looc)", "nameJa": "マンダウエ市 (セントロ / ルック)" },
-  { "id": "mandaue-other", "nameEn": "Mandaue City (Other Areas)", "nameJa": "マンダウエ市 (その他エリア)" },
-  { "id": "lapulapu-mactan", "nameEn": "Lapu-Lapu City (Mactan / Newtown)", "nameJa": "ラプラプ市 (マクタン / ニュータウン)" },
-  { "id": "lapulapu-other", "nameEn": "Lapu-Lapu City (Other Areas)", "nameJa": "ラプラプ市 (その他エリア)" },
-  { "id": "talisay", "nameEn": "Talisay City", "nameJa": "タリサイ市" },
-  { "id": "consolacion", "nameEn": "Consolacion", "nameJa": "コンソラシオン" },
-  { "id": "liloan", "nameEn": "Liloan", "nameJa": "リロアン" },
-  { "id": "minglanilla", "nameEn": "Minglanilla", "nameJa": "ミングラニラ" },
-  { "id": "cordova", "nameEn": "Cordova", "nameJa": "コルドバ" },
-  { "id": "other", "nameEn": "Other (Manual Input)", "nameJa": "その他（手書き入力）" }
+  # --- セブ市 (Cebu City) ---
+  { "id": "cebu-itpark", "city": "cebu", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
+  { "id": "cebu-ayala", "city": "cebu", "nameEn": "Cebu City (Ayala / Business Park / Luz)", "nameJa": "セブ市 (アヤラ / ビジネスパーク / ルズ)" },
+  { "id": "cebu-mabolo", "city": "cebu", "nameEn": "Cebu City (Mabolo / Kasambagan)", "nameJa": "セブ市 (マボロ / カスンバガン)" },
+  { "id": "cebu-banilad", "city": "cebu", "nameEn": "Cebu City (Banilad / AS Fortuna)", "nameJa": "セブ市 (バニラッド / ASフォーチュナ)" },
+  { "id": "cebu-talamban", "city": "cebu", "nameEn": "Cebu City (Talamban / Pit-os / Bacayan)", "nameJa": "セブ市 (タランバン / ピットオス / バカヤン)" },
+  { "id": "cebu-guadalupe", "city": "cebu", "nameEn": "Cebu City (Guadalupe / Capitol / Kalunasan)", "nameJa": "セブ市 (グアダルーペ / キャピトル / カルナサン)" },
+  { "id": "cebu-apas", "city": "cebu", "nameEn": "Cebu City (Apas)", "nameJa": "セブ市 (アパス)" },
+  { "id": "cebu-fuente", "city": "cebu", "nameEn": "Cebu City (Fuente / Ramos / Zapatera / Kamputhaw)", "nameJa": "セブ市 (フエンテ / ラモス / サパテラ / カンプタウ)" },
+  { "id": "cebu-downtown", "city": "cebu", "nameEn": "Cebu City (Downtown / Colon / Pahina / Pari-an)", "nameJa": "セブ市 (ダウンタウン / コロン / パヒナ / パリアン)" },
+  { "id": "cebu-mambaling", "city": "cebu", "nameEn": "Cebu City (Mambaling / Duljo / Basak)", "nameJa": "セブ市 (マンバリン / ドゥルホ / バサック)" },
+  { "id": "cebu-punta", "city": "cebu", "nameEn": "Cebu City (Punta Princesa / Tisa / Labangon)", "nameJa": "セブ市 (プンタ・プリンセサ / ティサ / ラバンゴン)" },
+  { "id": "cebu-pardo", "city": "cebu", "nameEn": "Cebu City (Pardo / Bulacao / Inayawan)", "nameJa": "セブ市 (パルド / ブラカオ / イナヤワン)" },
+  { "id": "cebu-busay", "city": "cebu", "nameEn": "Cebu City (Busay / Mountain Areas)", "nameJa": "セブ市 (ブサイ / 山間部)" },
+  { "id": "cebu-other", "city": "cebu", "nameEn": "Cebu City (Other Areas)", "nameJa": "セブ市 (その他エリア)" },
+
+  # --- マンダウエ市 (Mandaue City) ---
+  { "id": "mandaue-asfortuna", "city": "mandaue", "nameEn": "Mandaue City (AS Fortuna / Banilad)", "nameJa": "マンダウエ市 (ASフォーチュナ / バニラッド)" },
+  { "id": "mandaue-tipolo", "city": "mandaue", "nameEn": "Mandaue City (Tipolo / Subangdaku / Guizo)", "nameJa": "マンダウエ市 (ティポロ / スバングダク / ギゾ)" },
+  { "id": "mandaue-basak", "city": "mandaue", "nameEn": "Mandaue City (Basak / Jagobiao / Canduman)", "nameJa": "マンダウエ市 (バサック / ハゴビヤオ / カンドゥマン)" },
+  { "id": "mandaue-centro", "city": "mandaue", "nameEn": "Mandaue City (Centro / Looc / Reclamation)", "nameJa": "マンダウエ市 (セントロ / ルック / 埋立地)" },
+  { "id": "mandaue-cabancalan", "city": "mandaue", "nameEn": "Mandaue City (Cabancalan / Maguikay / Casuntingan)", "nameJa": "マンダウエ市 (カバンカラン / マグイカイ / カスンティンガン)" },
+  { "id": "mandaue-other", "city": "mandaue", "nameEn": "Mandaue City (Other Areas)", "nameJa": "マンダウエ市 (その他エリア)" },
+
+  # --- ラプラプ市 / マクタン島 (Lapu-Lapu City / Mactan) ---
+  { "id": "lapulapu-mactan", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Mactan / Newtown / Airport / Pusok)", "nameJa": "ラプラプ市 (マクタン / ニュータウン / 空港 / プソック)" },
+  { "id": "lapulapu-maribago", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Maribago / Agus / Resort Area)", "nameJa": "ラプラプ市 (マリバゴ / アグス / リゾートホテル街)" },
+  { "id": "lapulapu-puntaengano", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Punta Engaño)", "nameJa": "ラプラプ市 (プンタ・エンガーニョ)" },
+  { "id": "lapulapu-basak", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Basak / Pajac / Gun-ob)", "nameJa": "ラプラプ市 (バサック / パハック / グンオブ)" },
+  { "id": "lapulapu-other", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Other Areas)", "nameJa": "ラプラプ市 (その他エリア)" },
+
+  # --- 近隣都市・自治体 ---
+  { "id": "talisay", "city": "other_cities", "nameEn": "Talisay City", "nameJa": "タリサイ市" },
+  { "id": "consolacion", "city": "other_cities", "nameEn": "Consolacion", "nameJa": "コンソラシオン" },
+  { "id": "liloan", "city": "other_cities", "nameEn": "Liloan", "nameJa": "リロアン" },
+  { "id": "minglanilla", "city": "other_cities", "nameEn": "Minglanilla", "nameJa": "ミングラニラ" },
+  { "id": "cordova", "city": "other_cities", "nameEn": "Cordova", "nameJa": "コルドバ" },
+  { "id": "naga", "city": "other_cities", "nameEn": "City of Naga", "nameJa": "ナガ市" },
+  { "id": "other", "city": "other_cities", "nameEn": "Other (Manual Input)", "nameJa": "その他（手書き入力）" }
 ]
 
 months_map = {
@@ -65,9 +87,10 @@ days_map = {
     "Sun": "Sun", "Mon": "Mon", "Tue": "Tue", "Wed": "Wed", "Thu": "Thu", "Fri": "Fri", "Sat": "Sat"
 }
 cities_map_ja = {
-    "Cebu City": "セブ市", "Mandaue City": "マンダウエ市", "Talisay City": "タリサイ市",
-    "Liloan": "リロアン", "Minglanilla": "ミングラニラ", "Consolacion": "コンソラシオン", "Cordova": "コルドバ",
-    "City of Naga": "ナガ市", "Naga City": "ナガ市"
+    "Cebu City": "セブ市", "Mandaue City": "マンダウエ市", "Lapu-Lapu City": "ラプラプ市",
+    "Talisay City": "タリサイ市", "Liloan": "リロアン", "Minglanilla": "ミングラニラ",
+    "Consolacion": "コンソラシオン", "Cordova": "コルドバ",
+    "City of Naga": "ナガ市", "Naga City": "ナガ市", "Naga": "ナガ市"
 }
 
 pht_tz = datetime.timezone(datetime.timedelta(hours=8))
@@ -266,9 +289,170 @@ def clean_translated_japanese(text):
         
     return text
 
+# ==========================================
+# 🗺️ エリア・バランガイ判定マッピング辞書
+# ==========================================
+AREA_KEYWORDS = [
+    # --- セブ市 ---
+    {
+        "en": "Cebu City (IT Park / Lahug)", "ja": "セブ市 (ITパーク / ラフグ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["it park", "lahug", "salinas drive", "jy square", "gorordo"]
+    },
+    {
+        "en": "Cebu City (Ayala / Business Park / Luz)", "ja": "セブ市 (アヤラ / ビジネスパーク / ルズ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["ayala", "cebu business park", "cbp", "brgy. luz", "barangay luz", " luz,", "hipodromo", "cardinal rosales"]
+    },
+    {
+        "en": "Cebu City (Mabolo / Kasambagan)", "ja": "セブ市 (マボロ / カスンバガン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["mabolo", "kasambagan", "tres borces", "sykes", "mj cuenco", "m.j. cuenco", "villa aurora", "sarrosa"]
+    },
+    {
+        "en": "Cebu City (Banilad / AS Fortuna)", "ja": "セブ市 (バニラッド / ASフォーチュナ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["banilad", "gov. cuenco", "governor cuenco", "country mall", "montebello", "maria luisa"]
+    },
+    {
+        "en": "Cebu City (Talamban / Pit-os / Bacayan)", "ja": "セブ市 (タランバン / ピットオス / バカヤン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["talamban", "pit-os", "pitos", "bacayan", "binaliw", "pulangbato", "pulang bato", "nasipit", "san jose", "tigbao", "miñoza", "minoza"]
+    },
+    {
+        "en": "Cebu City (Guadalupe / Capitol / Kalunasan)", "ja": "セブ市 (グアダルーペ / キャピトル / カルナサン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["guadalupe", "capitol site", "capitol", "kalunasan", "v. rama", "v rama", "englis", "oppra"]
+    },
+    {
+        "en": "Cebu City (Apas)", "ja": "セブ市 (アパス)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["apas", "camp lapu-lapu", "camp lapulapu", "san antonio village"]
+    },
+    {
+        "en": "Cebu City (Fuente / Ramos / Zapatera / Kamputhaw)", "ja": "セブ市 (フエンテ / ラモス / サパテラ / カンプタウ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["fuente", "osmeña", "osmena", "ramos", "cogon ramos", "zapatera", "kamputhaw", "camputhaw", "santa cruz", "sta. cruz", "sikatuna", "sepulveda", "general maxilom", "mango avenue"]
+    },
+    {
+        "en": "Cebu City (Downtown / Colon / Pahina / Pari-an)", "ja": "セブ市 (ダウンタウン / コロン / パヒナ / パリアン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["downtown", "colon", "pari-an", "parian", "sto. niño", "sto nino", "san roque", "ermita", "pahina central", "pahina san nicolas", "kalubihan", "kamagayan", "t. padilla", "t padilla", "tejero", "tinago", "sanciangko", "borromeo", "carbon"]
+    },
+    {
+        "en": "Cebu City (Mambaling / Duljo / Basak)", "ja": "セブ市 (マンバリン / ドゥルホ / バサック)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["mambaling", "duljo", "duljo fatima", "basak san nicolas", "basak pardo", "kinasang-an", "quiot", "n. bacalso", "natalio b. bacalso"]
+    },
+    {
+        "en": "Cebu City (Punta Princesa / Tisa / Labangon)", "ja": "セブ市 (プンタ・プリンセサ / ティサ / ラバンゴン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["punta princesa", "tisa", "labangon", "buhisan", "calamba", "san nicolas proper", "tres de abril", "katipunan"]
+    },
+    {
+        "en": "Cebu City (Pardo / Bulacao / Inayawan)", "ja": "セブ市 (パルド / ブラカオ / イナヤワン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["pardo", "bulacao", "inayawan", "cogon pardo", "poblacion pardo", "toong", "south road properties", "srp"]
+    },
+    {
+        "en": "Cebu City (Busay / Mountain Areas)", "ja": "セブ市 (ブサイ / 山間部)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["busay", "malubog", "babag", "sirao", "pung-ol", "taptap", "adlaon", "guba", "budlaan", "mabini", "transcentral", "tops"]
+    },
+
+    # --- マンダウエ市 ---
+    {
+        "en": "Mandaue City (AS Fortuna / Banilad)", "ja": "マンダウエ市 (ASフォーチュナ / バニラッド)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["a.s. fortuna", "as fortuna", "banilad", "oakridge", "j centre", "hernan cortes"]
+    },
+    {
+        "en": "Mandaue City (Tipolo / Subangdaku / Guizo)", "ja": "マンダウエ市 (ティポロ / スバングダク / ギゾ)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["tipolo", "subangdaku", "subang daku", "bakilid", "guizo", "mantuyong", "lopez jaena"]
+    },
+    {
+        "en": "Mandaue City (Basak / Jagobiao / Canduman)", "ja": "マンダウエ市 (バサック / ハゴビヤオ / カンドゥマン)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["basak", "jagobiao", "canduman", "tingub", "pagsabungan", "insulares"]
+    },
+    {
+        "en": "Mandaue City (Centro / Looc / Reclamation)", "ja": "マンダウエ市 (セントロ / ルック / 埋立地)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["centro", "looc", "alang-alang", "alang alang", "ibabao", "ibabao-estancia", "opao", "umapad", "reclamation", "cdu", "parkmall"]
+    },
+    {
+        "en": "Mandaue City (Cabancalan / Maguikay / Casuntingan)", "ja": "マンダウエ市 (カバンカラン / マグイカイ / カスンティンガン)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["cabancalan", "maguikay", "casuntingan", "tabok", "paknaan", "m. ceniza", "b.c. albano"]
+    },
+
+    # --- ラプラプ市 / マクタン島 ---
+    {
+        "en": "Lapu-Lapu City (Mactan / Newtown / Airport / Pusok)", "ja": "ラプラプ市 (マクタン / ニュータウン / 空港 / プソック)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["newtown", "mactan", "airport", "pusok", "ibo", "buaya", "bankal", "mactan-cebu"]
+    },
+    {
+        "en": "Lapu-Lapu City (Maribago / Agus / Resort Area)", "ja": "ラプラプ市 (マリバゴ / アグス / リゾートホテル街)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["maribago", "agus", "marigondon", "subabasbas", "jpark", "solea", "plantation bay"]
+    },
+    {
+        "en": "Lapu-Lapu City (Punta Engaño)", "ja": "ラプラプ市 (プンタ・エンガーニョ)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["punta engaño", "punta engano", "shangri-la", "shangrila", "mactan shrine", "mactan reef"]
+    },
+    {
+        "en": "Lapu-Lapu City (Basak / Pajac / Gun-ob)", "ja": "ラプラプ市 (バサック / パハック / グンオブ)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["basak", "pajac", "gun-ob", "gun ob", "canjulao", "calawisan", "babag", "gaisano grand"]
+    },
+
+    # --- 近隣都市・自治体 ---
+    {
+        "en": "Talisay City", "ja": "タリサイ市",
+        "city_match": ["Talisay City", "Talisay"],
+        "keywords": ["talisay", "lagtang", "tabunok", "pooc", "dumlog", "mohon", "lawaan", "jaclupan", "bulacao, talisay"]
+    },
+    {
+        "en": "Consolacion", "ja": "コンソラシオン",
+        "city_match": ["Consolacion"],
+        "keywords": ["consolacion", "casili", "garing", "panas", "panoypoy", "tayud", "jugan", "pitogo", "cansaga", "nangka", "pulpogan", "tolotolo"]
+    },
+    {
+        "en": "Liloan", "ja": "リロアン",
+        "city_match": ["Liloan"],
+        "keywords": ["liloan", "jubay", "san vicente", "yati", "cotcot", "catarman", "calero", "cabadiangan", "lataban"]
+    },
+    {
+        "en": "Minglanilla", "ja": "ミングラニラ",
+        "city_match": ["Minglanilla"],
+        "keywords": ["minglanilla", "tunghaan", "calajo-an", "pakigne", "tubod", "vito", "tulay", "linao"]
+    },
+    {
+        "en": "Cordova", "ja": "コルドバ",
+        "city_match": ["Cordova"],
+        "keywords": ["cordova", "alegria", "bangbang", "buagsong", "gabi", "pilipog", "cclex"]
+    },
+    {
+        "en": "City of Naga", "ja": "ナガ市",
+        "city_match": ["City of Naga", "Naga City", "Naga"],
+        "keywords": ["naga", "tuyan", "west poblacion", "east poblacion", "inoburan", "langtad", "tinaan", "colon, naga"]
+    }
+]
+
 def parse_area_summary(affected_en):
-    # パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
-    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
+    affected_lower = affected_en.lower()
+
+    # 1. 登録キーワードによる高精度マッチング
+    for area in AREA_KEYWORDS:
+        for kw in area["keywords"]:
+            if kw in affected_lower:
+                return area["en"], area["ja"]
+
+    # 2. パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
+    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)"
     match1 = re.search(pattern1, affected_en, re.IGNORECASE)
     if match1:
         brgys, city = match1.groups()
@@ -277,8 +461,8 @@ def parse_area_summary(affected_en):
         brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
         return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
         
-    # パターン2: Portion of City (Brgy. XXX)
-    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)\s*\((.*?)\)"
+    # 3. パターン2: Portion of City (Brgy. XXX)
+    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*\((.*?)\)"
     match2 = re.search(pattern2, affected_en, re.IGNORECASE)
     if match2:
         city, brgys = match2.groups()
@@ -287,9 +471,11 @@ def parse_area_summary(affected_en):
         brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
         return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
     
+    # 4. 都市名のみマッチした場合
     for city, city_ja in cities_map_ja.items():
-        if city in affected_en:
+        if city.lower() in affected_lower:
             return f"{city} (Other Areas)", f"{city_ja} (その他エリア)"
+            
     return "Other (Manual Input)", "その他（手書き入力）"
 
 def parse_time_for_sorting(time_str):
