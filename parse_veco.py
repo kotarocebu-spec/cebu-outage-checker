@@ -33,23 +33,45 @@ APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
 CACHE_FILE = "translation_cache.json"  # ディスクキャッシュファイル
 
 CEBU_AREAS = [
-  { "id": "cebu-itpark", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
-  { "id": "cebu-banilad", "nameEn": "Cebu City (Banilad / AS Fortuna)", "nameJa": "セブ市 (バニラッド / ASフォーチュナ)" },
-  { "id": "cebu-talamban", "nameEn": "Cebu City (Talamban)", "nameJa": "セブ市 (タランバン)" },
-  { "id": "cebu-guadalupe", "nameEn": "Cebu City (Guadalupe)", "nameJa": "セブ市 (グアダルーペ)" },
-  { "id": "cebu-downtown", "nameEn": "Cebu City (Downtown / Colon)", "nameJa": "セブ市 (ダウンタウン / コロン)" },
-  { "id": "cebu-other", "nameEn": "Cebu City (Other Areas)", "nameJa": "セブ市 (その他エリア)" },
-  { "id": "mandaue-basak", "nameEn": "Mandaue City (Basak / Jagobiao)", "nameJa": "マンダウエ市 (バサック / ハゴビヤオ)" },
-  { "id": "mandaue-centro", "nameEn": "Mandaue City (Centro / Looc)", "nameJa": "マンダウエ市 (セントロ / ルック)" },
-  { "id": "mandaue-other", "nameEn": "Mandaue City (Other Areas)", "nameJa": "マンダウエ市 (その他エリア)" },
-  { "id": "lapulapu-mactan", "nameEn": "Lapu-Lapu City (Mactan / Newtown)", "nameJa": "ラプラプ市 (マクタン / ニュータウン)" },
-  { "id": "lapulapu-other", "nameEn": "Lapu-Lapu City (Other Areas)", "nameJa": "ラプラプ市 (その他エリア)" },
-  { "id": "talisay", "nameEn": "Talisay City", "nameJa": "タリサイ市" },
-  { "id": "consolacion", "nameEn": "Consolacion", "nameJa": "コンソラシオン" },
-  { "id": "liloan", "nameEn": "Liloan", "nameJa": "リロアン" },
-  { "id": "minglanilla", "nameEn": "Minglanilla", "nameJa": "ミングラニラ" },
-  { "id": "cordova", "nameEn": "Cordova", "nameJa": "コルドバ" },
-  { "id": "other", "nameEn": "Other (Manual Input)", "nameJa": "その他（手書き入力）" }
+  # --- セブ市 (Cebu City) ---
+  { "id": "cebu-itpark", "city": "cebu", "nameEn": "Cebu City (IT Park / Lahug)", "nameJa": "セブ市 (ITパーク / ラフグ)" },
+  { "id": "cebu-ayala", "city": "cebu", "nameEn": "Cebu City (Ayala / Business Park / Luz)", "nameJa": "セブ市 (アヤラ / ビジネスパーク / ルズ)" },
+  { "id": "cebu-mabolo", "city": "cebu", "nameEn": "Cebu City (Mabolo / Kasambagan)", "nameJa": "セブ市 (マボロ / カスンバガン)" },
+  { "id": "cebu-banilad", "city": "cebu", "nameEn": "Cebu City (Banilad / AS Fortuna)", "nameJa": "セブ市 (バニラッド / ASフォーチュナ)" },
+  { "id": "cebu-talamban", "city": "cebu", "nameEn": "Cebu City (Talamban / Pit-os / Bacayan)", "nameJa": "セブ市 (タランバン / ピットオス / バカヤン)" },
+  { "id": "cebu-guadalupe", "city": "cebu", "nameEn": "Cebu City (Guadalupe / Capitol / Kalunasan)", "nameJa": "セブ市 (グアダルーペ / キャピトル / カルナサン)" },
+  { "id": "cebu-apas", "city": "cebu", "nameEn": "Cebu City (Apas)", "nameJa": "セブ市 (アパス)" },
+  { "id": "cebu-fuente", "city": "cebu", "nameEn": "Cebu City (Fuente / Ramos / Zapatera / Kamputhaw)", "nameJa": "セブ市 (フエンテ / ラモス / サパテラ / カンプタウ)" },
+  { "id": "cebu-downtown", "city": "cebu", "nameEn": "Cebu City (Downtown / Colon / Pahina / Pari-an)", "nameJa": "セブ市 (ダウンタウン / コロン / パヒナ / パリアン)" },
+  { "id": "cebu-mambaling", "city": "cebu", "nameEn": "Cebu City (Mambaling / Duljo / Basak)", "nameJa": "セブ市 (マンバリン / ドゥルホ / バサック)" },
+  { "id": "cebu-punta", "city": "cebu", "nameEn": "Cebu City (Punta Princesa / Tisa / Labangon)", "nameJa": "セブ市 (プンタ・プリンセサ / ティサ / ラバンゴン)" },
+  { "id": "cebu-pardo", "city": "cebu", "nameEn": "Cebu City (Pardo / Bulacao / Inayawan)", "nameJa": "セブ市 (パルド / ブラカオ / イナヤワン)" },
+  { "id": "cebu-busay", "city": "cebu", "nameEn": "Cebu City (Busay / Mountain Areas)", "nameJa": "セブ市 (ブサイ / 山間部)" },
+  { "id": "cebu-other", "city": "cebu", "nameEn": "Cebu City (Other Areas)", "nameJa": "セブ市 (その他エリア)" },
+
+  # --- マンダウエ市 (Mandaue City) ---
+  { "id": "mandaue-asfortuna", "city": "mandaue", "nameEn": "Mandaue City (AS Fortuna / Banilad)", "nameJa": "マンダウエ市 (ASフォーチュナ / バニラッド)" },
+  { "id": "mandaue-tipolo", "city": "mandaue", "nameEn": "Mandaue City (Tipolo / Subangdaku / Guizo)", "nameJa": "マンダウエ市 (ティポロ / スバングダク / ギゾ)" },
+  { "id": "mandaue-basak", "city": "mandaue", "nameEn": "Mandaue City (Basak / Jagobiao / Canduman)", "nameJa": "マンダウエ市 (バサック / ハゴビヤオ / カンドゥマン)" },
+  { "id": "mandaue-centro", "city": "mandaue", "nameEn": "Mandaue City (Centro / Looc / Reclamation)", "nameJa": "マンダウエ市 (セントロ / ルック / 埋立地)" },
+  { "id": "mandaue-cabancalan", "city": "mandaue", "nameEn": "Mandaue City (Cabancalan / Maguikay / Casuntingan)", "nameJa": "マンダウエ市 (カバンカラン / マグイカイ / カスンティンガン)" },
+  { "id": "mandaue-other", "city": "mandaue", "nameEn": "Mandaue City (Other Areas)", "nameJa": "マンダウエ市 (その他エリア)" },
+
+  # --- ラプラプ市 / マクタン島 (Lapu-Lapu City / Mactan) ---
+  { "id": "lapulapu-mactan", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Mactan / Newtown / Airport / Pusok)", "nameJa": "ラプラプ市 (マクタン / ニュータウン / 空港 / プソック)" },
+  { "id": "lapulapu-maribago", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Maribago / Agus / Resort Area)", "nameJa": "ラプラプ市 (マリバゴ / アグス / リゾートホテル街)" },
+  { "id": "lapulapu-puntaengano", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Punta Engaño)", "nameJa": "ラプラプ市 (プンタ・エンガーニョ)" },
+  { "id": "lapulapu-basak", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Basak / Pajac / Gun-ob)", "nameJa": "ラプラプ市 (バサック / パハック / グンオブ)" },
+  { "id": "lapulapu-other", "city": "lapulapu", "nameEn": "Lapu-Lapu City (Other Areas)", "nameJa": "ラプラプ市 (その他エリア)" },
+
+  # --- 近隣都市・自治体 ---
+  { "id": "talisay", "city": "other_cities", "nameEn": "Talisay City", "nameJa": "タリサイ市" },
+  { "id": "consolacion", "city": "other_cities", "nameEn": "Consolacion", "nameJa": "コンソラシオン" },
+  { "id": "liloan", "city": "other_cities", "nameEn": "Liloan", "nameJa": "リロアン" },
+  { "id": "minglanilla", "city": "other_cities", "nameEn": "Minglanilla", "nameJa": "ミングラニラ" },
+  { "id": "cordova", "city": "other_cities", "nameEn": "Cordova", "nameJa": "コルドバ" },
+  { "id": "naga", "city": "other_cities", "nameEn": "City of Naga", "nameJa": "ナガ市" },
+  { "id": "other", "city": "other_cities", "nameEn": "Other (Manual Input)", "nameJa": "その他（手書き入力）" }
 ]
 
 months_map = {
@@ -65,9 +87,10 @@ days_map = {
     "Sun": "Sun", "Mon": "Mon", "Tue": "Tue", "Wed": "Wed", "Thu": "Thu", "Fri": "Fri", "Sat": "Sat"
 }
 cities_map_ja = {
-    "Cebu City": "セブ市", "Mandaue City": "マンダウエ市", "Talisay City": "タリサイ市",
-    "Liloan": "リロアン", "Minglanilla": "ミングラニラ", "Consolacion": "コンソラシオン", "Cordova": "コルドバ",
-    "City of Naga": "ナガ市", "Naga City": "ナガ市"
+    "Cebu City": "セブ市", "Mandaue City": "マンダウエ市", "Lapu-Lapu City": "ラプラプ市",
+    "Talisay City": "タリサイ市", "Liloan": "リロアン", "Minglanilla": "ミングラニラ",
+    "Consolacion": "コンソラシオン", "Cordova": "コルドバ",
+    "City of Naga": "ナガ市", "Naga City": "ナガ市", "Naga": "ナガ市"
 }
 
 pht_tz = datetime.timezone(datetime.timedelta(hours=8))
@@ -272,9 +295,170 @@ def clean_translated_japanese(text):
         
     return text
 
+# ==========================================
+# 🗺️ エリア・バランガイ判定マッピング辞書
+# ==========================================
+AREA_KEYWORDS = [
+    # --- セブ市 ---
+    {
+        "en": "Cebu City (IT Park / Lahug)", "ja": "セブ市 (ITパーク / ラフグ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["it park", "lahug", "salinas drive", "jy square", "gorordo"]
+    },
+    {
+        "en": "Cebu City (Ayala / Business Park / Luz)", "ja": "セブ市 (アヤラ / ビジネスパーク / ルズ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["ayala", "cebu business park", "cbp", "brgy. luz", "barangay luz", " luz,", "hipodromo", "cardinal rosales"]
+    },
+    {
+        "en": "Cebu City (Mabolo / Kasambagan)", "ja": "セブ市 (マボロ / カスンバガン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["mabolo", "kasambagan", "tres borces", "sykes", "mj cuenco", "m.j. cuenco", "villa aurora", "sarrosa"]
+    },
+    {
+        "en": "Cebu City (Banilad / AS Fortuna)", "ja": "セブ市 (バニラッド / ASフォーチュナ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["banilad", "gov. cuenco", "governor cuenco", "country mall", "montebello", "maria luisa"]
+    },
+    {
+        "en": "Cebu City (Talamban / Pit-os / Bacayan)", "ja": "セブ市 (タランバン / ピットオス / バカヤン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["talamban", "pit-os", "pitos", "bacayan", "binaliw", "pulangbato", "pulang bato", "nasipit", "san jose", "tigbao", "miñoza", "minoza"]
+    },
+    {
+        "en": "Cebu City (Guadalupe / Capitol / Kalunasan)", "ja": "セブ市 (グアダルーペ / キャピトル / カルナサン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["guadalupe", "capitol site", "capitol", "kalunasan", "v. rama", "v rama", "englis", "oppra"]
+    },
+    {
+        "en": "Cebu City (Apas)", "ja": "セブ市 (アパス)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["apas", "camp lapu-lapu", "camp lapulapu", "san antonio village"]
+    },
+    {
+        "en": "Cebu City (Fuente / Ramos / Zapatera / Kamputhaw)", "ja": "セブ市 (フエンテ / ラモス / サパテラ / カンプタウ)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["fuente", "osmeña", "osmena", "ramos", "cogon ramos", "zapatera", "kamputhaw", "camputhaw", "santa cruz", "sta. cruz", "sikatuna", "sepulveda", "general maxilom", "mango avenue"]
+    },
+    {
+        "en": "Cebu City (Downtown / Colon / Pahina / Pari-an)", "ja": "セブ市 (ダウンタウン / コロン / パヒナ / パリアン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["downtown", "colon", "pari-an", "parian", "sto. niño", "sto nino", "san roque", "ermita", "pahina central", "pahina san nicolas", "kalubihan", "kamagayan", "t. padilla", "t padilla", "tejero", "tinago", "sanciangko", "borromeo", "carbon"]
+    },
+    {
+        "en": "Cebu City (Mambaling / Duljo / Basak)", "ja": "セブ市 (マンバリン / ドゥルホ / バサック)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["mambaling", "duljo", "duljo fatima", "basak san nicolas", "basak pardo", "kinasang-an", "quiot", "n. bacalso", "natalio b. bacalso"]
+    },
+    {
+        "en": "Cebu City (Punta Princesa / Tisa / Labangon)", "ja": "セブ市 (プンタ・プリンセサ / ティサ / ラバンゴン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["punta princesa", "tisa", "labangon", "buhisan", "calamba", "san nicolas proper", "tres de abril", "katipunan"]
+    },
+    {
+        "en": "Cebu City (Pardo / Bulacao / Inayawan)", "ja": "セブ市 (パルド / ブラカオ / イナヤワン)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["pardo", "bulacao", "inayawan", "cogon pardo", "poblacion pardo", "toong", "south road properties", "srp"]
+    },
+    {
+        "en": "Cebu City (Busay / Mountain Areas)", "ja": "セブ市 (ブサイ / 山間部)",
+        "city_match": ["Cebu City", "Cebu"],
+        "keywords": ["busay", "malubog", "babag", "sirao", "pung-ol", "taptap", "adlaon", "guba", "budlaan", "mabini", "transcentral", "tops"]
+    },
+
+    # --- マンダウエ市 ---
+    {
+        "en": "Mandaue City (AS Fortuna / Banilad)", "ja": "マンダウエ市 (ASフォーチュナ / バニラッド)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["a.s. fortuna", "as fortuna", "banilad", "oakridge", "j centre", "hernan cortes"]
+    },
+    {
+        "en": "Mandaue City (Tipolo / Subangdaku / Guizo)", "ja": "マンダウエ市 (ティポロ / スバングダク / ギゾ)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["tipolo", "subangdaku", "subang daku", "bakilid", "guizo", "mantuyong", "lopez jaena"]
+    },
+    {
+        "en": "Mandaue City (Basak / Jagobiao / Canduman)", "ja": "マンダウエ市 (バサック / ハゴビヤオ / カンドゥマン)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["basak", "jagobiao", "canduman", "tingub", "pagsabungan", "insulares"]
+    },
+    {
+        "en": "Mandaue City (Centro / Looc / Reclamation)", "ja": "マンダウエ市 (セントロ / ルック / 埋立地)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["centro", "looc", "alang-alang", "alang alang", "ibabao", "ibabao-estancia", "opao", "umapad", "reclamation", "cdu", "parkmall"]
+    },
+    {
+        "en": "Mandaue City (Cabancalan / Maguikay / Casuntingan)", "ja": "マンダウエ市 (カバンカラン / マグイカイ / カスンティンガン)",
+        "city_match": ["Mandaue City", "Mandaue"],
+        "keywords": ["cabancalan", "maguikay", "casuntingan", "tabok", "paknaan", "m. ceniza", "b.c. albano"]
+    },
+
+    # --- ラプラプ市 / マクタン島 ---
+    {
+        "en": "Lapu-Lapu City (Mactan / Newtown / Airport / Pusok)", "ja": "ラプラプ市 (マクタン / ニュータウン / 空港 / プソック)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["newtown", "mactan", "airport", "pusok", "ibo", "buaya", "bankal", "mactan-cebu"]
+    },
+    {
+        "en": "Lapu-Lapu City (Maribago / Agus / Resort Area)", "ja": "ラプラプ市 (マリバゴ / アグス / リゾートホテル街)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["maribago", "agus", "marigondon", "subabasbas", "jpark", "solea", "plantation bay"]
+    },
+    {
+        "en": "Lapu-Lapu City (Punta Engaño)", "ja": "ラプラプ市 (プンタ・エンガーニョ)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["punta engaño", "punta engano", "shangri-la", "shangrila", "mactan shrine", "mactan reef"]
+    },
+    {
+        "en": "Lapu-Lapu City (Basak / Pajac / Gun-ob)", "ja": "ラプラプ市 (バサック / パハック / グンオブ)",
+        "city_match": ["Lapu-Lapu City", "Lapu-Lapu", "Lapulapu", "Mactan"],
+        "keywords": ["basak", "pajac", "gun-ob", "gun ob", "canjulao", "calawisan", "babag", "gaisano grand"]
+    },
+
+    # --- 近隣都市・自治体 ---
+    {
+        "en": "Talisay City", "ja": "タリサイ市",
+        "city_match": ["Talisay City", "Talisay"],
+        "keywords": ["talisay", "lagtang", "tabunok", "pooc", "dumlog", "mohon", "lawaan", "jaclupan", "bulacao, talisay"]
+    },
+    {
+        "en": "Consolacion", "ja": "コンソラシオン",
+        "city_match": ["Consolacion"],
+        "keywords": ["consolacion", "casili", "garing", "panas", "panoypoy", "tayud", "jugan", "pitogo", "cansaga", "nangka", "pulpogan", "tolotolo"]
+    },
+    {
+        "en": "Liloan", "ja": "リロアン",
+        "city_match": ["Liloan"],
+        "keywords": ["liloan", "jubay", "san vicente", "yati", "cotcot", "catarman", "calero", "cabadiangan", "lataban"]
+    },
+    {
+        "en": "Minglanilla", "ja": "ミングラニラ",
+        "city_match": ["Minglanilla"],
+        "keywords": ["minglanilla", "tunghaan", "calajo-an", "pakigne", "tubod", "vito", "tulay", "linao"]
+    },
+    {
+        "en": "Cordova", "ja": "コルドバ",
+        "city_match": ["Cordova"],
+        "keywords": ["cordova", "alegria", "bangbang", "buagsong", "gabi", "pilipog", "cclex"]
+    },
+    {
+        "en": "City of Naga", "ja": "ナガ市",
+        "city_match": ["City of Naga", "Naga City", "Naga"],
+        "keywords": ["naga", "tuyan", "west poblacion", "east poblacion", "inoburan", "langtad", "tinaan", "colon, naga"]
+    }
+]
+
 def parse_area_summary(affected_en):
-    # パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
-    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)"
+    affected_lower = affected_en.lower()
+
+    # 1. 登録キーワードによる高精度マッチング
+    for area in AREA_KEYWORDS:
+        for kw in area["keywords"]:
+            if kw in affected_lower:
+                return area["en"], area["ja"]
+
+    # 2. パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
+    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)"
     match1 = re.search(pattern1, affected_en, re.IGNORECASE)
     if match1:
         brgys, city = match1.groups()
@@ -283,8 +467,8 @@ def parse_area_summary(affected_en):
         brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
         return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
         
-    # パターン2: Portion of City (Brgy. XXX)
-    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova)\s*\((.*?)\)"
+    # 3. パターン2: Portion of City (Brgy. XXX)
+    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*\((.*?)\)"
     match2 = re.search(pattern2, affected_en, re.IGNORECASE)
     if match2:
         city, brgys = match2.groups()
@@ -293,9 +477,11 @@ def parse_area_summary(affected_en):
         brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
         return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
     
+    # 4. 都市名のみマッチした場合
     for city, city_ja in cities_map_ja.items():
-        if city in affected_en:
+        if city.lower() in affected_lower:
             return f"{city} (Other Areas)", f"{city_ja} (その他エリア)"
+            
     return "Other (Manual Input)", "その他（手書き入力）"
 
 def parse_time_for_sorting(time_str):
@@ -388,7 +574,7 @@ def is_event_finished(item_date, item_time, current_dt_pht):
     return False
 
 # ==========================================
-# 🧩 輪番停電(Rotational Brownouts)専用 高度分解パーサー
+# 輪番停電(Rotational Brownouts)専用 高度分解パーサー
 # ==========================================
 def parse_rotational_brownout_complex(text, date_formatted, today_str):
     text = unicodedata.normalize('NFKC', text)
@@ -398,20 +584,27 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
         
     entries = []
     
-    # 毎時速報形式 (ONGOING ROTATIONAL BROWNOUT) の判定
+    # セクション分割（Ongoing速報またはRestored区分）
     if "ongoing rotational brownout" in text_lower:
         m = re.search(r"(?:ongoing\s+rotational\s+brownout)(.*?)(?:restored\s+areas|\Z)", text, re.DOTALL | re.IGNORECASE)
         target_section = m.group(1) if m else text
     else:
         target_section = re.split(r"restored\s+areas", text, flags=re.IGNORECASE)[0]
-        
-    slots = target_section.split("⏰")
+
+    # スロット分割（時計アイコンまたは時間パターンで分割）
+    # 時計アイコンがある場合はそれで分割、なければ時間パターンで分割
+    if "⏰" in target_section:
+        slots = target_section.split("⏰")
+    else:
+        # 改定スケジュール形式などの時間分割
+        slots = re.split(r"(?=\b\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:-|to|–|—)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", target_section, flags=re.IGNORECASE)
+
     for slot in slots:
         slot = slot.strip()
         if not slot:
             continue
             
-        tm = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)\s*(?:-|to|–|—)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", slot, re.IGNORECASE)
+        tm = re.search(r"(\d{1,2}:\d{2}\s*(?:AM|PM)?\s*(?:-|to|–|—)\s*\d{1,2}:\d{2}\s*(?:AM|PM))", slot, re.IGNORECASE)
         if not tm:
             tm = re.search(r"(\d{1,2}:\d{2}[AP]M\s*-\s*\d{1,2}:\d{2}[AP]M)", slot, re.IGNORECASE)
         if not tm:
@@ -420,12 +613,11 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
         raw_time = tm.group(1)
         time_formatted = parse_time(raw_time)
         
-        # スロット内に日付（例: | SEPTEMBER 5, 2026）があれば優先
+        # スロット内に日付（例: SEPTEMBER 6, 2026）があれば優先抽出
         slot_date = extract_mcwd_date(slot)
         item_date = slot_date if slot_date else date_formatted
         
         areas_part = slot[tm.end():]
-        # パイプと日付を除去
         areas_part = re.sub(r"^\s*\|\s*[A-Za-z]+\s+\d{1,2}(?:-\s*\d{1,2})?,\s*\d{4}\s*", "", areas_part)
         
         # エリアブロックごとに分割 (各ブロックが都市・バランガイとマップURLを持つ)
@@ -438,11 +630,16 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
             # マップURLの抽出
             map_match = re.search(r"(https?://(?:tinyurl\.com|maps\.google\.com|goo\.gl)/[^\s]+)", block)
             map_url = map_match.group(1) if map_match else ""
-            
+            if map_url:
+                map_url = map_url.rstrip(").,;")
+                
             # エリア名部分の抽出
             block_clean = re.sub(r"View the map.*", "", block, flags=re.IGNORECASE).strip()
             block_clean = re.sub(r"^[📍•\s]+", "", block_clean).strip()
-            
+            block_clean = clean_text_pipeline(block_clean)
+            if not block_clean:
+                continue
+                
             city = ""
             brgys = []
             m = re.match(r"Portion[s]? of\s+([^,:]+)[:,]\s*(.*)", block_clean, re.IGNORECASE)
@@ -462,13 +659,10 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
                 continue
                 
             city_ja = cities_map_ja.get(city, city)
-            translated_brgys = [cached_translate(b) for b in brgys]
+            translated_brgys = [clean_translated_japanese(cached_translate(b)) for b in brgys]
             
             affected_en = f"Portion of {city}: {', '.join(brgys)}"
             affected_ja = f"{city_ja}の一部エリア: {', '.join(translated_brgys)}"
-            
-            status_tag_en = "[ROTATIONAL BROWNOUT]"
-            status_tag_ja = "【計画輪番停電】"
             
             try:
                 dt_obj = datetime.datetime.strptime(item_date, "%Y/%m/%d")
@@ -476,7 +670,10 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
             except:
                 day_abbrev = "Sun"
                 
-            entry = {
+            status_tag_en = "[ROTATIONAL BROWNOUT]"
+            status_tag_ja = "【計画輪番停電】"
+            
+            entries.append({
                 "id": 0,
                 "type": "electricity",
                 "date": item_date,
@@ -487,34 +684,32 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
                 "affectedEn": affected_en,
                 "affectedJa": affected_ja,
                 "detailsEn": f"{status_tag_en} Rotational brownout implemented due to power grid demand management.",
-                "detailsJa": f"{status_tag_ja} 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
-            }
-            if map_url:
-                entry["mapUrl"] = map_url
-                
-            entries.append(entry)
+                "detailsJa": f"{status_tag_ja} 送電容量不足に伴う計画的な供給制限（輪番停電）です。",
+                "mapUrl": map_url
+            })
             
     return entries
 
 # ==========================================
-# ⚡ 統合マージプロセッサ (異なる工事の誤マージを防止)
+# 統合マージプロセッサ (異なる工事の誤マージを防止 & MAPリンク重複統合)
 # ==========================================
 def merge_duplicate_outages(outages):
-    # ステップ1: mapUrl を持つアイテムのスマートマージ (同一mapUrlなら最新で上書き統合)
-    map_url_items = {}
-    non_map_items = []
-    
-    for item in outages:
-        if item.get("mapUrl"):
-            map_key = (item["date"], item["mapUrl"])
-            map_url_items[map_key] = item # 新しいデータで上書き
-        else:
-            non_map_items.append(item)
-            
-    items_to_group = list(map_url_items.values()) + non_map_items
+    # 1. mapUrl を持つアイテムのスマート重複排除（同じGoogleマイマップリンクの更新版を上書き統合）
+    url_deduped = []
+    seen_map_keys = {}
+    for item in reversed(outages):
+        map_url = item.get("mapUrl", "").strip()
+        if map_url:
+            k = (item["date"], map_url)
+            if k in seen_map_keys:
+                continue
+            seen_map_keys[k] = True
+        url_deduped.append(item)
+    url_deduped.reverse()
+    outages = url_deduped
 
     grouped = {}
-    for item in items_to_group:
+    for item in outages:
         is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
         is_cancelled = "CANCELLED" in item["detailsEn"]
         
@@ -784,7 +979,7 @@ def scrape_facebook_posts_via_apify(page_url):
         
         run_input = {
             "startUrls": [{"url": page_url}],
-            "resultsLimit": 5,
+            "resultsLimit": 3,
         }
         
         response = requests.post(api_url, json=run_input, timeout=60)
@@ -887,6 +1082,28 @@ def parse_facebook_post_prose(text, is_water=False, today_str=""):
         "detailsEn": purpose_clean,
         "detailsJa": purpose_ja
     }
+
+# ==========================================
+# 既存 data.js の未来スケジュール読み込み
+# ==========================================
+def load_existing_veco_outages(today_str):
+    existing_outages = []
+    if not os.path.exists("data.js"):
+        return existing_outages
+    try:
+        with open("data.js", "r", encoding="utf-8") as f:
+            content = f.read()
+        m = re.search(r"export\s+const\s+VECO_OUTAGES\s*=\s*(\[.*?\]);", content, re.DOTALL)
+        if m:
+            raw_list = json.loads(m.group(1))
+            for item in raw_list:
+                # 電気かつ、日付が今日以降のデータのみ保持
+                if item.get("type") == "electricity" and item.get("date", "") >= today_str:
+                    existing_outages.append(item)
+            print(f"📁 既存の data.js から未終了の未来スケジュール {len(existing_outages)} 件をロードしました。")
+    except Exception as e:
+        print(f"⚠️ 既存 data.js のロード中にエラーが発生しました: {e}")
+    return existing_outages
 
 # ==========================================
 # ⚙️ メインパイプライン処理
@@ -1070,14 +1287,12 @@ def main():
                 continue
 
             if "rotational brownout" in post_lower or "possible rotational" in post_lower:
-                if "ongoing rotational brownout" in post_lower or "hourly update" in post_lower:
+                date_formatted = extract_mcwd_date(post)
+                if not date_formatted:
                     date_formatted = today_str
-                else:
-                    date_formatted = extract_mcwd_date(post)
-                    if not date_formatted:
-                        date_formatted = today_str
-                    if date_formatted < today_str:
-                        continue
+                
+                if date_formatted < today_str:
+                    continue
                     
                 parsed_entries = parse_rotational_brownout_complex(post, date_formatted, today_str)
                 final_veco_outages.extend(parsed_entries)
@@ -1086,8 +1301,12 @@ def main():
                 if parsed_post:
                     final_veco_outages.append(parsed_post)
 
+    # 既存 data.js の未終了未来スケジュールを読み込んで合体
+    existing_future_outages = load_existing_veco_outages(today_str)
+    all_veco = existing_future_outages + final_veco_outages
+
     print("\n⚡ 3-C. 重複する停電スケジュールの統合マージ処理を実行中...")
-    final_veco_outages = merge_duplicate_outages(final_veco_outages)
+    final_veco_outages = merge_duplicate_outages(all_veco)
     final_veco_outages = remove_tbd_duplicates(final_veco_outages)
 
     # ------------------------------------------
@@ -1168,20 +1387,7 @@ def main():
     # ------------------------------------------
     # 🏁 データの結合、ソート、書き出し
     # ------------------------------------------
-    existing_outages = []
-    if os.path.exists('data.js'):
-        try:
-            with open('data.js', 'r', encoding='utf-8') as f:
-                content = f.read()
-            m = re.search(r'export\s+const\s+VECO_OUTAGES\s*=\s*(\[.*?\]);', content, re.DOTALL)
-            if m:
-                existing_outages = json.loads(m.group(1))
-                print(f"📦 既存のdata.jsから {len(existing_outages)} 件のスケジュールを読み込みました。")
-        except Exception as e:
-            print(f"⚠️ 既存data.jsの読み込みに失敗しました: {e}")
-
-    merged_outages = existing_outages + final_veco_outages + final_mcwd_outages
-    merged_outages = merge_duplicate_outages(merged_outages)
+    merged_outages = final_veco_outages + final_mcwd_outages
     
     now_pht = datetime.datetime.now(pht_tz)
     
