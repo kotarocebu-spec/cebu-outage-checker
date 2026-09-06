@@ -111,30 +111,142 @@ if os.path.exists(CACHE_FILE):
     except Exception as e:
         print(f"⚠️ キャッシュの読み込みに失敗しました: {e}")
 
+def has_japanese(text):
+    if not text:
+        return False
+    return bool(re.search(r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]", text))
+
+def rule_based_translate_veco(text):
+    res = text
+    actions = [
+        (r"Hotspot Correction", "異常発熱箇所（ホットスポット）の補修点検"),
+        (r"installation of automatic reclosing device \(recloser\)", "自動再閉鎖装置（リクローザー）の設置"),
+        (r"automatic reclosing device \(recloser\)", "自動再閉鎖装置（リクローザー）"),
+        (r"secondary line maintenance", "低圧配電線（二次側）の保守点検"),
+        (r"primary line maintenance", "高圧配電線（一次側）の保守点検"),
+        (r"primary line upgrading", "高圧配電線の増容量・改修"),
+        (r"reconstruction of primary lines?", "高圧配電幹線（一次回線）の改修・建て替え"),
+        (r"replacement of primary pole", "高圧電柱の交換"),
+        (r"replacement of rotten pole", "老朽電柱の交換"),
+        (r"installation of distribution transformer", "配電変圧器（トランス）の設置"),
+        (r"upgrading of distribution transformer", "配電変圧器（トランス）の増容量・更新"),
+        (r"tapping of service entrance wire", "引き込み線の分岐接続（タップ）"),
+        (r"tapping of primary line", "高圧配電線の分岐接続（タップ）"),
+        (r"shutdown request from a customer", "顧客の要請に基づく送電停止（シャットダウン）"),
+        (r"installation of line device hardware \(DS/FCO/LBS\)", "線路機器ハードウェア（DS/FCO/LBS）の設置"),
+        (r"guying correction", "支線（ガイワイヤー）の補強"),
+        (r"extension of primary lines \(line stringing\)", "高圧配電線の延伸・架線"),
+        (r"line stringing", "配電線の架線・張り替え"),
+        (r"installation of secondary lines?", "低圧配電線（二次回線）の設置"),
+        (r"installation of primary pole", "高圧電柱の設置"),
+    ]
+
+    # 定型構文1: To prevent unnecessary s...
+    m1 = re.search(r"To prevent unnecessary\s*[sｓ]?\s*due to anticipated system fault/damage\s*(?:Brgy\.\s*)?([^\s]+(?:\s+[^\s]+)?)\s*by facilitating\s*(.+)", res, re.IGNORECASE)
+    if m1:
+        area, act = m1.groups()
+        act_ja = act.strip().rstrip(".")
+        for pat, rep in actions:
+            act_ja = re.sub(pat, rep, act_ja, flags=re.IGNORECASE)
+        return f"突発的な停電事故を防止するため、{area.strip()}地区にて{act_ja}工事を実施するためです。"
+
+    # 定型構文2: To improve the reliability...
+    m2 = re.search(r"To improve the reliability of the distribution system serving\s*(?:Brgy\.\s*)?([^b]+?)\s*by facilitating\s*(.+)", res, re.IGNORECASE)
+    if m2:
+        area, act = m2.groups()
+        act_ja = act.strip().rstrip(".")
+        for pat, rep in actions:
+            act_ja = re.sub(pat, rep, act_ja, flags=re.IGNORECASE)
+        return f"周辺地域（{area.strip()}）へ電力を供給する配電システムの信頼性向上のため、{act_ja}工事を実施するためです。"
+
+    # 定型構文3: To increase the capacity...
+    m3 = re.search(r"To increase the capacity of the distribution system serving\s*(?:Brgy\.\s*)?([^b]+?)\s*by facilitating\s*(.+)", res, re.IGNORECASE)
+    if m3:
+        area, act = m3.groups()
+        act_ja = act.strip().rstrip(".")
+        for pat, rep in actions:
+            act_ja = re.sub(pat, rep, act_ja, flags=re.IGNORECASE)
+        return f"周辺地域（{area.strip()}）へ電力を供給する配電システムの容量増設のため、{act_ja}工事を実施するためです。"
+
+    # エリア表現: Portion of X, along portion of Y
+    m_aff = re.search(r"Portion of\s+([^,]+),\s*([^,]+),\s*along portion of\s+(.+)", res, re.IGNORECASE)
+    if m_aff:
+        brgy, city, st = m_aff.groups()
+        st_clean = re.sub(r"Street", "通り", st, flags=re.IGNORECASE)
+        st_clean = re.sub(r"Avenue|Ave", "通り", st_clean, flags=re.IGNORECASE)
+        city_ja = cities_map_ja.get(city.strip(), city.strip())
+        return f"{city_ja} {brgy.strip()}の一部、{st_clean.strip()}沿いの一部"
+
+    m_aff2 = re.search(r"Portion of\s+([^,:]+)[:,]\s*(.+)", res, re.IGNORECASE)
+    if m_aff2:
+        c, b = m_aff2.groups()
+        c_ja = cities_map_ja.get(c.strip(), c.strip())
+        return f"{c_ja}の一部エリア: {b.strip()}"
+
+    # 定型構文にマッチしなかった場合の単語置換
+    for pat, rep in actions:
+        res = re.sub(pat, rep, res, flags=re.IGNORECASE)
+    return res
+
 def cached_translate(text):
     if not text:
         return ""
     text_clean = text.strip()
     if text_clean in translation_cache:
-        return translation_cache[text_clean]
+        cached_val = translation_cache[text_clean]
+        if has_japanese(cached_val):
+            return cached_val
     
     if len(text_clean) > 1000:
         return text_clean
         
+    # 1. 通常の GoogleTranslator
     try:
         translated = translator.translate(text_clean)
-        translation_cache[text_clean] = translated
-        return translated
+        if has_japanese(translated):
+            translation_cache[text_clean] = translated
+            return translated
     except Exception as e:
-        print(f"⚠️ 翻訳エラーが発生しました（英語表記のまま処理を継続します）")
-        return text_clean
+        pass
+
+    # 2. 予備エンドポイント (ブラウザ偽装User-Agent付き Google Translate API)
+    try:
+        url = "https://translate.googleapis.com/translate_a/single"
+        params = {
+            "client": "gtx",
+            "sl": "en",
+            "tl": "ja",
+            "dt": "t",
+            "q": text_clean
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        resp = requests.get(url, params=params, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data and isinstance(data, list) and len(data) > 0 and isinstance(data[0], list):
+                translated = "".join([part[0] for part in data[0] if part and len(part) > 0 and part[0]])
+                if has_japanese(translated):
+                    translation_cache[text_clean] = translated
+                    return translated
+    except Exception as e:
+        pass
+
+    # 3. 緊急セーフティネット（ルールベース変換）
+    rule_translated = rule_based_translate_veco(text_clean)
+    if has_japanese(rule_translated):
+        translation_cache[text_clean] = rule_translated
+        return rule_translated
+
+    return text_clean
 
 # ==========================================
 # 🛠️ 変換用ヘルパー関数群
 # ==========================================
 def parse_date(date_str):
-    # "July 17-18, 2026 (Friday-Saturday)" のような複数日ハイフン表記に対応
-    # ハイフン以降の終了日を削って、"July 17, 2026 (Friday-Saturday)" に変形
+    if not date_str:
+        return None, None
     date_str_clean = re.sub(r"(\d+)-\d+", r"\1", date_str)
     
     match = re.search(r"(\w+)\s+(\d+),\s+(\d{4})\s*\((.*?)\)", date_str_clean)
@@ -148,7 +260,7 @@ def parse_date(date_str):
         day_abbrev = days_map.get(day_first, "Sun")
         
         return f"{y_str}/{m_num}/{d_num}", day_abbrev
-    return f"{CURRENT_YEAR}/06/01", "Sun"
+    return None, None
 
 def extract_mcwd_date(line):
     months_pattern = "|".join(list(months_map.keys()) + list(months_abbrev.keys()))
@@ -213,6 +325,15 @@ def parse_time(time_str):
     # 終了時間の分が省略されている場合（例: 9:55 AM - 10 AM）は自動補正
     time_str_clean = re.sub(r"-\s*(\d{1,2})\s*(AM|PM)\b", r"- \1:00 \2", time_str_clean, flags=re.IGNORECASE)
     
+    # Overnightパターン (toまたはハイフンの両方に対応)
+    pattern_overnight = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)\s*(?:to|-)\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)"
+    match_overnight = re.search(pattern_overnight, time_str_clean, re.IGNORECASE)
+    if match_overnight:
+        sh, sm, sampm, smonth, sday, eh, em, eampm, emonth, eday = match_overnight.groups()
+        start_24 = to_24h(sh, sm, sampm)
+        end_24 = to_24h(eh, em, eampm)
+        return f"{start_24} - {end_24} (+1d)"
+
     # 形式: 10:00 AM - 5:00 PM / 10:00 - 11:00 PM / 22:00 - 23:00 などに対応
     pattern_std = r"(\d{1,2}):(\d{2})\s*(AM|PM)?\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)?"
     match_std = re.search(pattern_std, time_str_clean, re.IGNORECASE)
@@ -225,20 +346,22 @@ def parse_time(time_str):
         elif not eampm and sampm:
             eampm = sampm
             
-        # 両方とも AM/PM がない場合はそのまま返す
+        # 両方とも AM/PM がない場合（22:00 - 06:00 など）
         if not sampm and not eampm:
-            return f"{int(sh):02d}:{int(sm):02d} - {int(eh):02d}:{int(em):02d}"
+            s_min = int(sh) * 60 + int(sm)
+            e_min = int(eh) * 60 + int(em)
+            plus_1d = " (+1d)" if e_min < s_min else ""
+            return f"{int(sh):02d}:{int(sm):02d} - {int(eh):02d}:{int(em):02d}{plus_1d}"
             
-        return f"{to_24h(sh, sm, sampm)} - {to_24h(eh, em, eampm)}"
-        
-    # Overnightパターン (toまたはハイフンの両方に対応)
-    pattern_overnight = r"(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)\s*(?:to|-)\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*of\s*(\w+)\s*(\d+)"
-    match_overnight = re.search(pattern_overnight, time_str_clean, re.IGNORECASE)
-    if match_overnight:
-        sh, sm, sampm, smonth, sday, eh, em, eampm, emonth, eday = match_overnight.groups()
         start_24 = to_24h(sh, sm, sampm)
         end_24 = to_24h(eh, em, eampm)
-        return f"{start_24} - {end_24} (+1d)"
+        s_h, s_m = map(int, start_24.split(":"))
+        e_h, e_m = map(int, end_24.split(":"))
+        s_min = s_h * 60 + s_m
+        e_min = e_h * 60 + e_m
+        plus_1d = " (+1d)" if e_min < s_min else ""
+        return f"{start_24} - {end_24}{plus_1d}"
+        
     return time_str_clean
 
 def clean_translated_japanese(text):
@@ -582,19 +705,40 @@ def is_event_finished(item_date, item_time, current_dt_pht):
     except:
         return False
         
+    if "flexible" in item_time.lower() or "tbd" in item_time.lower() or "as of" in item_time.lower():
+        return False
+
+    is_overnight = "(+1d)" in item_time or "overnight" in item_time.lower()
+
+    # 終了時刻の抽出
+    match = re.search(r'-\s*(\d{2}):(\d{2})', item_time)
+    end_h, end_m = (int(match.group(1)), int(match.group(2))) if match else (None, None)
+
+    # 1. 翌日またぎ（+1d）の場合の厳密な判定
+    if is_overnight and end_h is not None:
+        # 開始日が今日の場合: 終了は明日朝なので、今日中は絶対に未終了
+        if item_dt_obj == today_pht:
+            return False
+        # 開始日が昨日（今日が終了日）の場合: 翌朝の終了時刻と現在時刻を比較
+        elif item_dt_obj == today_pht - datetime.timedelta(days=1):
+            current_h, current_m = current_dt_pht.hour, current_dt_pht.minute
+            return (current_h > end_h) or (current_h == end_h and current_m >= end_m)
+        # 開始日がそれより過去の場合: 終了済み
+        elif item_dt_obj < today_pht - datetime.timedelta(days=1):
+            return True
+        # 開始日が未来の場合: 未終了
+        else:
+            return False
+
+    # 2. 通常イベント（同日終了）の判定
     if item_dt_obj < today_pht:
         return True
     if item_dt_obj > today_pht:
         return False
         
-    if "flexible" in item_time.lower() or "tbd" in item_time.lower() or "as of" in item_time.lower():
-        return False
-        
-    match = re.search(r'-\s*(\d{2}):(\d{2})', item_time)
-    if match:
-        end_h, end_m = int(match.group(1)), int(match.group(2))
+    # 当日の場合: 終了時刻と比較
+    if end_h is not None:
         current_h, current_m = current_dt_pht.hour, current_dt_pht.minute
-        
         if (current_h > end_h) or (current_h == end_h and current_m >= end_m):
             return True
             
@@ -1152,6 +1296,20 @@ def main():
     if veco_raw_articles:
         print("\n⚡ 3. VECO停電スケジュールデータの解析処理中...")
         for veco_raw in veco_raw_articles:
+            article_text = "\n".join(veco_raw)
+            article_text_lower = article_text.lower()
+            
+            # 記事全体に輪番停電キーワードが含まれる場合は、輪番停電パーサー専用で一括処理
+            if "rotational brownout" in article_text_lower or "possible rotational" in article_text_lower:
+                print("📝 輪番停電の大規模情報を検出しました。専用分解パーサーを実行します...")
+                date_formatted = extract_mcwd_date(article_text)
+                if not date_formatted:
+                    date_formatted = today_str
+                
+                parsed_entries = parse_rotational_brownout_complex(article_text, date_formatted, today_str)
+                final_veco_outages.extend(parsed_entries)
+                continue  # 通常の状態マシン（行ループ）へは流さず除外！
+
             current_date = None
             current_time = None
             month_names = list(months_map.keys())
@@ -1161,15 +1319,6 @@ def main():
             veco_outages = [] # この記事内でパースされた一時レコードを格納
 
             for line in veco_raw:
-                if "rotational brownout" in line.lower() or "possible rotational" in line.lower():
-                    print("📝 輪番停電の大規模情報を検出しました。専用分解パーサーを実行します...")
-                    date_formatted = extract_mcwd_date(line)
-                    if not date_formatted:
-                        date_formatted = today_str
-                    
-                    parsed_entries = parse_rotational_brownout_complex(line, date_formatted, today_str)
-                    final_veco_outages.extend(parsed_entries)
-                    continue
 
                 # 1. 日付行の判定
                 is_date_line = any(line.startswith(m) for m in month_names) and any(c.isdigit() for c in line) and ("AM" not in line.upper() and "PM" not in line.upper())
@@ -1270,7 +1419,9 @@ def main():
             # 解析した各アイテムを最終出力形式にマッピング
             for raw in veco_outages:
                 date_formatted, day_abbrev = parse_date(raw["date_raw"])
-                if date_formatted < today_str:
+                if not date_formatted or date_formatted < today_str:
+                    if not date_formatted:
+                        print(f"⚠️ 日付の解析に失敗したためスキップしました: {raw.get('date_raw')}")
                     continue
 
                 affected_en = clean_text_pipeline(raw["area"])
