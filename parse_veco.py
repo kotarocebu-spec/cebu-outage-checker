@@ -308,6 +308,26 @@ def extract_mcwd_date(line):
         
     return None
 
+def extract_date_range(text):
+    months_pattern = "|".join(list(months_map.keys()) + list(months_abbrev.keys()))
+    m_range = re.search(
+        rf"\b({months_pattern})\s*(\d{{1,2}})\s*(?:-|to|–|—)\s*(\d{{1,2}})(?:,\s*(\d{{4}}))?\b",
+        text,
+        re.IGNORECASE
+    )
+    if m_range:
+        m_en, start_d, end_d, y_str = m_range.groups()
+        year = y_str if y_str else str(CURRENT_YEAR)
+        m_num = months_abbrev.get(m_en.capitalize()[:3], "01")
+        start_day = int(start_d)
+        end_day = int(end_d)
+        if start_day <= end_day and (end_day - start_day) <= 14:
+            dates = []
+            for d in range(start_day, end_day + 1):
+                dates.append(f"{year}/{m_num}/{d:02d}")
+            return dates
+    return None
+
 def to_24h(hour, minute, ampm):
     h = int(hour)
     m = int(minute)
@@ -1302,6 +1322,14 @@ def main():
             # 記事全体に輪番停電キーワードが含まれる場合は、輪番停電パーサー専用で一括処理
             if "rotational brownout" in article_text_lower or "possible rotational" in article_text_lower:
                 print("📝 輪番停電の大規模情報を検出しました。専用分解パーサーを実行します...")
+                date_range = extract_date_range(article_text)
+                if date_range:
+                    valid_dates = [d for d in date_range if d >= today_str]
+                    for target_date in valid_dates:
+                        parsed_entries = parse_rotational_brownout_complex(article_text, target_date, today_str)
+                        final_veco_outages.extend(parsed_entries)
+                    continue
+
                 date_formatted = extract_mcwd_date(article_text)
                 if not date_formatted:
                     date_formatted = today_str
@@ -1464,7 +1492,30 @@ def main():
                 print("⏭️ 計画外の自動遮断（突発停電）アナウンスをスキップしました。")
                 continue
 
+            # 2. 公式WEBサイト誘導ポータル案内のスキップ（具体的な時間表記がない広報文）
+            portal_advisory_keywords = [
+                "stay updated on service",
+                "available on our official website",
+                "access the service portal",
+                "scan our qr code"
+            ]
+            if any(k in post_lower for k in portal_advisory_keywords) and not re.search(r"\d{1,2}:\d{2}\s*(?:AM|PM)", post, re.IGNORECASE):
+                print("⏭️ 公式ウェブサイト誘導ポータル案内をスキップしました。")
+                continue
+
             if "rotational brownout" in post_lower or "possible rotational" in post_lower:
+                # 期間・日付範囲（例: DAILY | SEPTEMBER 9-13, 2026）の検出
+                date_range = extract_date_range(post)
+                if date_range:
+                    valid_dates = [d for d in date_range if d >= today_str]
+                    if not valid_dates:
+                        print(f"⏭️ 過去の輪番停電期間（{date_range[0]}〜{date_range[-1]}）をスキップしました。")
+                        continue
+                    for target_date in valid_dates:
+                        parsed_entries = parse_rotational_brownout_complex(post, target_date, today_str)
+                        final_veco_outages.extend(parsed_entries)
+                    continue
+
                 date_formatted = extract_mcwd_date(post)
                 if not date_formatted:
                     date_formatted = today_str
