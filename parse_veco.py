@@ -621,11 +621,31 @@ AREA_KEYWORDS = [
 def parse_area_summary(affected_en):
     affected_lower = affected_en.lower()
 
-    # 1. 登録キーワードによる高精度マッチング
+    # 0. テキストに含まれる都市名を検出
+    detected_cities = []
+    for city_name in ["liloan", "consolacion", "minglanilla", "talisay", "cordova", "naga", "lapu-lapu", "lapulapu", "mandaue", "cebu"]:
+        if city_name in affected_lower:
+            detected_cities.append(city_name)
+
+    # 1. 登録キーワードによる高精度マッチング（都市名が一致するものを最優先）
+    for area in AREA_KEYWORDS:
+        # 都市制限がある場合
+        if "city_match" in area and detected_cities:
+            area_cities = [c.lower() for c in area["city_match"]]
+            # 検出された都市がこのエリアの対象都市に含まれていない場合はスキップ
+            if not any(dc in " ".join(area_cities) for dc in detected_cities):
+                continue
+
+        for kw in area["keywords"]:
+            if kw in affected_lower:
+                return area["en"], area["ja"]
+
+    # 都市名不問で再度キーワードマッチング（フォールバック）
     for area in AREA_KEYWORDS:
         for kw in area["keywords"]:
             if kw in affected_lower:
                 return area["en"], area["ja"]
+
 
     # 2. パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
     pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)"
@@ -1296,29 +1316,284 @@ def load_existing_veco_outages(today_str):
         print(f"⚠️ 既存 data.js のロード中にエラーが発生しました: {e}")
     return existing_outages
 
+def parse_gviz_date(val):
+    if not val:
+        return ""
+    m = re.search(r'Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)', str(val))
+    if m:
+        y = int(m.group(1))
+        month = int(m.group(2)) + 1
+        d = int(m.group(3))
+        return f"{y:04d}/{month:02d}/{d:02d}"
+    return str(val)
+
+def fetch_veco_from_spreadsheet(today_str):
+    sheet_id = "1rRq3A_2gFf0n68THzBVf6IYkHiSrhl1ZA6yOe50bp8o"
+    main_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:json"
+    updates_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?sheet=Updates&tqx=out:json"
+    
+    # 1. Updates シートの取得（スケジュール改定情報のマッピング作成）
+    updates_map = {}
+    try:
+        r_up = requests.get(updates_url, timeout=15)
+        if r_up.status_code == 200:
+            m_up = re.search(r'setResponse\((.*)\);', r_up.text, re.DOTALL)
+            if m_up:
+                up_data = json.loads(m_up.group(1))
+                up_table = up_data.get('table', {})
+                for r in up_table.get('rows', []):
+                    c = r.get('c', [])
+                    def get_up_val(i):
+                        if i < len(c) and c[i] and 'v' in c[i]:
+                            return str(c[i]['v']).strip()
+                        return ""
+                    up_date = parse_gviz_date(get_up_val(0))
+                    up_tag = get_up_val(2)
+                    up_loc = get_up_val(3)
+                    up_old = get_up_val(4)
+                    up_new = get_up_val(5)
+                    up_reason = get_up_val(6)
+                    if up_date and up_loc and up_new:
+                        key = (up_date, up_loc[:30].lower())
+                        updates_map[key] = {
+                            "tag": up_tag,
+                            "old": up_old,
+                            "new": up_new,
+                            "reason": up_reason
+                        }
+    except Exception as e:
+        print(f"⚠️ Updatesシートの取得警告: {e}")
+
+    # 2. MainData シートの取得
+    outages = []
+    try:
+        r_main = requests.get(main_url, timeout=15)
+        if r_main.status_code != 200:
+            print(f"⚠️ GoogleスプレッドシートAPIエラー: HTTP {r_main.status_code}")
+            return []
+        m_main = re.search(r'setResponse\((.*)\);', r_main.text, re.DOTALL)
+        if not m_main:
+            return []
+        main_data = json.loads(m_main.group(1))
+        main_table = main_data.get('table', {})
+        rows = main_table.get('rows', [])
+        
+        for idx, r in enumerate(rows):
+            c = r.get('c', [])
+            def get_val(i):
+                if i < len(c) and c[i] and 'v' in c[i]:
+                    return str(c[i]['v']).strip()
+                return ""
+                
+            exact_date = parse_gviz_date(get_val(1))
+            category = get_val(2).lower()
+            title = get_val(3)
+            time_info = get_val(4)
+            locations = get_val(5)
+            status = get_val(6)
+            map_url = get_val(7)
+            
+            if not exact_date or not time_info or not locations:
+                continue
+                
+            if exact_date < today_str:
+                continue
+                
+            # スケジュール改定（Updates）の適用
+            loc_key = (exact_date, locations[:30].lower())
+            if loc_key in updates_map:
+                up_info = updates_map[loc_key]
+                time_info = up_info["new"]
+                title = f"{title} (改定: 旧{up_info['old']}から変更 - {up_info['reason']})"
+
+            formatted_time = parse_time(time_info)
+            area_en, area_ja = parse_area_summary(locations)
+            
+            try:
+                dt_obj = datetime.datetime.strptime(exact_date, "%Y/%m/%d")
+                day_abbrev = dt_obj.strftime("%a")
+            except:
+                day_abbrev = "Sun"
+                
+            is_rotational = "rotational" in category
+            is_emergency = "emergency" in category
+            
+            if is_rotational:
+                details_en = f"[ROTATIONAL BROWNOUT] {title}" if title else "[ROTATIONAL BROWNOUT] Rotational brownout implemented due to power grid demand management."
+                details_ja = f"【計画輪番停電】 {cached_translate(title)}" if title else "【計画輪番停電】 送電容量不足に伴う計画的な供給制限（輪番停電）です。"
+            elif is_emergency:
+                details_en = f"[EMERGENCY OUTAGE] {title}" if title else "[EMERGENCY OUTAGE] Emergency power interruption."
+                details_ja = f"【緊急停電】 {cached_translate(title)}" if title else "【緊急停電】 突発的な緊急停電情報です。"
+            else:
+                details_en = title if title else "Scheduled maintenance outage."
+                details_ja = clean_translated_japanese(cached_translate(details_en))
+
+            if status and status.upper() == "RESTORED":
+                details_ja += "（復旧済み / 送電再開）"
+                details_en += " (Restored)"
+
+            affected_ja = clean_translated_japanese(cached_translate(locations))
+            
+            outages.append({
+                "id": 0,
+                "type": "electricity",
+                "date": exact_date,
+                "day": day_abbrev,
+                "time": formatted_time,
+                "areaEn": area_en,
+                "areaJa": area_ja,
+                "affectedEn": locations,
+                "affectedJa": affected_ja,
+                "detailsEn": details_en,
+                "detailsJa": details_ja,
+                "mapUrl": map_url
+            })
+            
+        print(f"📊 Googleスプレッドシートから {len(outages)} 件の有効な停電データを取得しました。")
+    except Exception as e:
+        print(f"⚠️ Googleスプレッドシートからの取得処理でエラー: {e}")
+        
+    return outages
+
+def fetch_veco_facebook_advisories(today_str):
+    """
+    Apify経由でVECO公式Facebookの最新投稿（直近3件）を取得し、
+    緊急停電や輪番停電、中止告知などの速報をパースして返す。
+    Apifyトークン未設定やエラー時は安全に空リストを返すフェイルセーフ仕様。
+    """
+    if not APIFY_TOKEN:
+        print("ℹ️ APIFY_TOKEN が未設定のため、Facebook速報チェックをスキップします。")
+        return []
+    
+    print("\n👥 2. VECO公式Facebook（Apify）から最新速報をチェック中...")
+    fb_outages = []
+    try:
+        veco_fb_raw = scrape_facebook_posts_via_apify("https://www.facebook.com/visayanelectriccompany/")
+        if not veco_fb_raw:
+            print("ℹ️ 新しいFacebook速報投稿はありませんでした。")
+            return []
+            
+        for post in veco_fb_raw:
+            post_lower = post.lower()
+            
+            unplanned_keywords = ["safety device to help protect", "automatically switched off", "unplanned power outage"]
+            if any(k in post_lower for k in unplanned_keywords):
+                print("⏭️ 計画外の自動遮断アナウンスをスキップしました。")
+                continue
+                
+            portal_advisory_keywords = [
+                "stay updated on service",
+                "available on our official website",
+                "access the service portal",
+                "scan our qr code"
+            ]
+            if any(k in post_lower for k in portal_advisory_keywords) and not re.search(r"\d{1,2}:\d{2}\s*(?:AM|PM)", post, re.IGNORECASE):
+                print("⏭️ 公式ウェブサイト誘導ポータル案内をスキップしました。")
+                continue
+                
+            if "rotational brownout" in post_lower or "possible rotational" in post_lower:
+                date_range = extract_date_range(post)
+                if date_range:
+                    valid_dates = [d for d in date_range if d >= today_str]
+                    if not valid_dates:
+                        continue
+                    for target_date in valid_dates:
+                        parsed_entries = parse_rotational_brownout_complex(post, target_date, today_str)
+                        fb_outages.extend(parsed_entries)
+                    continue
+                    
+                date_formatted = extract_mcwd_date(post)
+                if not date_formatted:
+                    date_formatted = today_str
+                if date_formatted >= today_str:
+                    parsed_entries = parse_rotational_brownout_complex(post, date_formatted, today_str)
+                    fb_outages.extend(parsed_entries)
+            else:
+                parsed_post = parse_facebook_post_prose(post, is_water=False, today_str=today_str)
+                if parsed_post:
+                    fb_outages.append(parsed_post)
+                    
+        print(f"👥 Facebookから {len(fb_outages)} 件の速報情報を抽出しました。")
+    except Exception as e:
+        print(f"⚠️ Facebook速報の取得・解析中にエラーが発生しました（スプレッドシートデータで継続します）: {e}")
+        
+    return fb_outages
+
+def merge_spreadsheet_and_facebook(spreadsheet_outages, fb_outages):
+    """
+    スプレッドシートの停電データとFacebook速報を安全に統合する。
+    ・既にスプレッドシートにある計画停電は二重登録せずスキップ
+    ・Facebook側で中止告知（CANCELLED）が出ている場合は反映
+    ・スプレッドシートにない突発的な緊急停電・速報は新規追加
+    """
+    if not fb_outages:
+        return spreadsheet_outages
+        
+    merged = list(spreadsheet_outages)
+    
+    for fb_item in fb_outages:
+        fb_date = fb_item.get("date", "")
+        fb_time = fb_item.get("time", "").strip()
+        fb_area_en = fb_item.get("areaEn", "").strip().lower()
+        fb_aff_en = fb_item.get("affectedEn", "").strip().lower()
+        is_cancelled = "cancelled" in fb_item.get("detailsEn", "").lower() or "中止" in fb_item.get("detailsJa", "")
+        
+        matched_idx = -1
+        for idx, sp_item in enumerate(merged):
+            if sp_item.get("date") != fb_date:
+                continue
+            
+            sp_area_en = sp_item.get("areaEn", "").strip().lower()
+            sp_aff_en = sp_item.get("affectedEn", "").strip().lower()
+            
+            same_city = False
+            for city in ["cebu city", "mandaue", "talisay", "liloan", "minglanilla", "consolacion", "cordova", "naga"]:
+                if city in fb_area_en and city in sp_area_en:
+                    same_city = True
+                    break
+            
+            time_match = (fb_time != "TBD / Flexible" and sp_item.get("time") == fb_time)
+            aff_words = [w for w in fb_aff_en.replace(",", " ").split() if len(w) > 4]
+            aff_overlap = any(w in sp_aff_en for w in aff_words) if aff_words else False
+            
+            if (same_city and time_match) or (time_match and aff_overlap):
+                matched_idx = idx
+                break
+                
+        if matched_idx >= 0:
+            if is_cancelled:
+                print(f"📢 Facebookからの中止告知をスプレッドシートデータに反映しました: {fb_date} {merged[matched_idx]['areaJa']}")
+                if "【中止】" not in merged[matched_idx]["detailsJa"]:
+                    merged[matched_idx]["detailsJa"] = f"【中止】{merged[matched_idx]['detailsJa']}"
+                    merged[matched_idx]["detailsEn"] = f"【CANCELLED】{merged[matched_idx]['detailsEn']}"
+            else:
+                print(f"ℹ️ Facebook投稿（{fb_date} {fb_item['areaJa']}）は既にスプレッドシートに含まれているため統合しました。")
+        else:
+            print(f"🔥 Facebook限定の速報・緊急停電を追加します: {fb_date} {fb_item['areaJa']}")
+            if "【速報" not in fb_item["detailsJa"]:
+                fb_item["detailsJa"] = f"【速報・FB公式】{fb_item['detailsJa']}"
+                fb_item["detailsEn"] = f"[FB Advisory] {fb_item['detailsEn']}"
+            merged.append(fb_item)
+            
+    return merged
+
 # ==========================================
 # ⚙️ メインパイプライン処理
 # ==========================================
-def main():
-    today_str = datetime.datetime.now(pht_tz).strftime("%Y/%m/%d")
-    print(f"=== Cebu Outage Auto Update Pipeline (セブ現地時間: {today_str}) ===")
-
+def fetch_veco_legacy_scraping(today_str):
+    final_veco_outages = []
     veco_raw_articles = scrape_veco_raw_content()
-    
     if APIFY_TOKEN:
         veco_fb_raw = scrape_facebook_posts_via_apify("https://www.facebook.com/visayanelectriccompany/")
     else:
         veco_fb_raw = []
-
-    final_veco_outages = []
-
-    # A. 通常のウェブサイトデータを処理
     if veco_raw_articles:
         print("\n⚡ 3. VECO停電スケジュールデータの解析処理中...")
         for veco_raw in veco_raw_articles:
             article_text = "\n".join(veco_raw)
             article_text_lower = article_text.lower()
-            
+
+        
             # 記事全体に輪番停電キーワードが含まれる場合は、輪番停電パーサー専用で一括処理
             if "rotational brownout" in article_text_lower or "possible rotational" in article_text_lower:
                 print("📝 輪番停電の大規模情報を検出しました。専用分解パーサーを実行します...")
@@ -1333,7 +1608,7 @@ def main():
                 date_formatted = extract_mcwd_date(article_text)
                 if not date_formatted:
                     date_formatted = today_str
-                
+            
                 parsed_entries = parse_rotational_brownout_complex(article_text, date_formatted, today_str)
                 final_veco_outages.extend(parsed_entries)
                 continue  # 通常の状態マシン（行ループ）へは流さず除外！
@@ -1341,7 +1616,7 @@ def main():
             current_date = None
             current_time = None
             month_names = list(months_map.keys())
-            
+        
             # --- [改善②: 状態マシン（State Machine）によるパース処理] ---
             active_item = None
             veco_outages = [] # この記事内でパースされた一時レコードを格納
@@ -1355,7 +1630,7 @@ def main():
                     # 日付が変わったら仕掛かり中データを保存してリセット
                     if active_item and active_item.get("area"):
                         veco_outages.append(active_item)
-                        
+                    
                     # 日付が出現した時点で、新しいアイテムをデフォルト時間 "TBD / Flexible" で仮初期化する
                     current_time = "TBD / Flexible"
                     active_item = {
@@ -1366,17 +1641,17 @@ def main():
                         "cancelled": False
                     }
                     continue
-                
+            
                 if not current_date:
                     continue
-                
+            
                 # 2. 時間行の判定
                 is_time_line = bool(re.search(r"\d{1,2}:\d{2}\s*(?:AM|PM)", line, re.IGNORECASE))
                 if is_time_line:
                     is_cancelled = "CANCELLED" in line.upper()
                     clean_time = re.sub(r"CANCELLED", "", line, flags=re.IGNORECASE).strip()
                     current_time = clean_time
-                    
+                
                     # まだ目的もエリアも入っていない初期状態なら、時間の値を上書きする
                     if active_item and not active_item["purpose"] and not active_item["area"]:
                         active_item["time_raw"] = clean_time
@@ -1393,16 +1668,16 @@ def main():
                             "cancelled": is_cancelled
                         }
                     continue
-                    
+                
                 # 3. 目的および地域データの蓄積
                 if active_item:
                     clean_line = re.sub(r"^(Purpose|Areas Affected)\s*:\s*", "", line, flags=re.IGNORECASE).strip()
-                    
+                
                     # 不要行のスキップ
                     if line.strip() in ["Purpose:", "Areas Affected:", "Time:", "Map:", ""] or \
                        clean_line in active_item["purpose"] or clean_line in active_item["area"]:
                         continue
-                        
+                    
                     if line.upper() == "CANCELLED":
                         active_item["cancelled"] = True
                         continue
@@ -1411,7 +1686,7 @@ def main():
                     is_purpose = line.lower().startswith("purpose:") or line.lower().startswith("to ")
                     is_area = line.lower().startswith("areas affected:") or line.lower().startswith("portion") or \
                               any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"])
-                    
+                
                     # すでにデータが埋まっている状態で、次の項目（To.. や Portion..）が来たら
                     # 同じ時間帯を引き継いだまま、新しい別の工事としてレコードを切り分ける
                     if (is_purpose and active_item["purpose"]) or (is_area and active_item["area"]):
@@ -1424,7 +1699,7 @@ def main():
                             "area": "",
                             "cancelled": active_item["cancelled"]
                         }
-                    
+                
                     if is_purpose:
                         if not active_item["purpose"]: active_item["purpose"] = clean_line
                         else: active_item["purpose"] += " " + clean_line
@@ -1456,17 +1731,17 @@ def main():
                 details_en = clean_text_pipeline(raw["purpose"])
                 if not affected_en: 
                     continue
-                    
+                
                 affected_ja = clean_translated_japanese(cached_translate(affected_en))
                 details_ja = clean_translated_japanese(cached_translate(details_en))
-                
+            
                 if raw["cancelled"]:
                     details_en = f"【CANCELLED】{details_en}"
                     details_ja = f"【中止】{details_ja}"
 
                 time_formatted = parse_time(raw["time_raw"])
                 area_en, area_ja = parse_area_summary(affected_en)
-                
+            
                 final_veco_outages.append({
                     "id": 0,
                     "type": "electricity",
@@ -1481,12 +1756,14 @@ def main():
                     "detailsJa": details_ja
                 })
 
+
     # B. Facebookからの投稿をマージ
     if veco_fb_raw:
         print("\n⚡ 3-B. VECO公式Facebookのアドバイザリー解析処理中...")
         for post in veco_fb_raw:
             post_lower = post.lower()
-            
+
+        
             unplanned_keywords = ["safety device to help protect", "automatically switched off", "unplanned power outage"]
             if any(k in post_lower for k in unplanned_keywords):
                 print("⏭️ 計画外の自動遮断（突発停電）アナウンスをスキップしました。")
@@ -1530,6 +1807,7 @@ def main():
                 if parsed_post:
                     final_veco_outages.append(parsed_post)
 
+
     # 既存 data.js の未終了未来スケジュールを読み込んで合体
     existing_future_outages = load_existing_veco_outages(today_str)
     all_veco = existing_future_outages + final_veco_outages
@@ -1539,6 +1817,40 @@ def main():
     final_veco_outages = remove_tbd_duplicates(final_veco_outages)
 
     # ------------------------------------------
+    return final_veco_outages
+
+def main():
+    today_str = datetime.datetime.now(pht_tz).strftime("%Y/%m/%d")
+    print(f"=== Cebu Outage Auto Update Pipeline (セブ現地時間: {today_str}) ===")
+
+    final_veco_outages = []
+
+    # ------------------------------------------
+    # ⚡ 1. VECO公式カレンダー（Googleスプレッドシート）直接取得
+    # ------------------------------------------
+    print("\n⚡ 1. VECO公式サービス停止カレンダー（Googleスプレッドシート）からデータ取得中...")
+    veco_spreadsheet_outages = fetch_veco_from_spreadsheet(today_str)
+    
+    if veco_spreadsheet_outages:
+        final_veco_outages.extend(veco_spreadsheet_outages)
+    else:
+        print("⚠️ スプレッドシートからデータが取得できなかったため、従来のWEB/Facebookスクレイピングを試みます...")
+        final_veco_outages = fetch_veco_legacy_scraping(today_str)
+
+    # ------------------------------------------
+    # 👥 2. VECO公式Facebook速報（Apify）並行チェック & マージ
+    # ------------------------------------------
+    if APIFY_TOKEN:
+        fb_advisories = fetch_veco_facebook_advisories(today_str)
+        if fb_advisories:
+            final_veco_outages = merge_spreadsheet_and_facebook(final_veco_outages, fb_advisories)
+    else:
+        print("ℹ️ APIFY_TOKEN が未設定のため、Facebook速報チェックをスキップします。")
+
+    # 停電データの重複整理
+    final_veco_outages = merge_duplicate_outages(final_veco_outages)
+    final_veco_outages = remove_tbd_duplicates(final_veco_outages)
+
     # 💧 MCWD（水道）処理
     # ------------------------------------------
     mcwd_raw = scrape_mcwd_raw_content()
