@@ -1852,41 +1852,110 @@ def main():
     
     filtered_outages.sort(key=lambda x: (x['date'], parse_time_for_sorting(x['time'])))
     
-    # MAPリンクをGoogleアカウント不要の直接画像URLに自動変換
-    map_cache_file = "map_url_cache.json"
-    map_cache = {}
-    if os.path.exists(map_cache_file):
-        try:
-            with open(map_cache_file, "r", encoding="utf-8") as f:
-                map_cache = json.load(f)
-        except Exception:
-            pass
+    # MAPリンクをGoogleアカウント不要の直接画像URLに自動変換（内蔵辞書＋自動解決）
+    builtin_map_cache = {
+    "https://tinyurl.com/2h9zdv3n": "https://lh3.googleusercontent.com/d/1hT5Tf0SAx1lR9fGAziRkAmJsIzyV3Hi_",
+    "https://tinyurl.com/6hr4wtma": "https://lh3.googleusercontent.com/d/1SgYrQVF8sEnUWGUXjnUdUWF-mKikEqT2",
+    "https://tinyurl.com/3833mbj5": "https://lh3.googleusercontent.com/d/1BFD_JP33E470Fgeqi0dm0r-Nl8ZLWSSK",
+    "https://tinyurl.com/a9j5pdjv": "https://lh3.googleusercontent.com/d/1FoX9tiprhfBDfHTbb5I7I_Hu1jldtIrD",
+    "https://tinyurl.com/5arys842": "https://lh3.googleusercontent.com/d/1drKLIRxdXoL5t-9aufdjw9ZPXat2d5Y2",
+    "https://tinyurl.com/mu59y6ys": "https://lh3.googleusercontent.com/d/1zattr9cxcXBe4F-PKPXXIxuwOxfEgP8c",
+    "https://tinyurl.com/2r47cvf4": "https://lh3.googleusercontent.com/d/1yKF8O44B9YROdtGZa_QcKbIR0PcPPbRD",
+    "https://tinyurl.com/ysn397nj": "https://lh3.googleusercontent.com/d/1FBEouKi0fHoH2uZKTggpzGKsPtlMpNFS",
+    "https://tinyurl.com/mpw5kmxe": "https://lh3.googleusercontent.com/d/1_6wbx584Jj6GxHyPeh8a9JoZgV-pqVtH",
+    "https://tinyurl.com/3x6jcs62": "https://lh3.googleusercontent.com/d/1bKnP1cWQqd9khoUnkQA-gU0R4XmHsdqp",
+    "https://tinyurl.com/457wkkt6": "https://lh3.googleusercontent.com/d/1hghnWP3dXlgslR6Up-w7P6xWVOhCfORs",
+    "https://tinyurl.com/2tp8fm8u": "https://lh3.googleusercontent.com/d/1TEQtLaAwL4_5fHxG9JgrjAIJOb__yQf6",
+    "https://tinyurl.com/4t5zrpan": "https://lh3.googleusercontent.com/d/1fmlWU3Dd5x8Xz6PCixYGx0SpNJq05bz9",
+    "https://tinyurl.com/y3xj8z4r": "https://lh3.googleusercontent.com/d/1q2UG_Y-9oBQW57bEZN9_1-_4tTSWD-f8",
+    "https://tinyurl.com/mr275pb4": "https://lh3.googleusercontent.com/d/1ede4D2oKiveec5ig-dqnm6zj5nSUkZos",
+    "https://tinyurl.com/yhhuwjj7": "https://lh3.googleusercontent.com/d/1-a9ANwYKu3VZkU6fJ2MPtwQdgwaw6UKo",
+    "https://tinyurl.com/hm74tnrp": "https://lh3.googleusercontent.com/d/1YpzmIx7_EzriXBI5zLtXiUSuD1ldbfcw",
+    "https://tinyurl.com/54jf6auy": "https://lh3.googleusercontent.com/d/1xplSAwqgJGBIiG_WKHMHIQPEBxHU2d-S",
+    "https://tinyurl.com/yms77n8b": "https://lh3.googleusercontent.com/d/1HLSvs5uVLSx6uuOGCcxR8d_RNe4DzktU",
+    "https://tinyurl.com/35ny3vde": "https://lh3.googleusercontent.com/d/1BEOzsuueTARjnxvVJYgHCv6sju17WaAm",
+    "https://tinyurl.com/3vh7wtzw": "https://lh3.googleusercontent.com/d/1aWJPXcMJVKuBQP-BtPrhiYw4zkUD7X79",
+    "https://tinyurl.com/muyt5s8b": "https://lh3.googleusercontent.com/d/1H-sYmRu2bt0LImhX7DsIT4qiFQ4TesmP",
+    "https://tinyurl.com/584ru7wa": "https://lh3.googleusercontent.com/d/1r99ihqUwHMAoBJagvLqMwrQRA6ic3h9p",
+    "https://tinyurl.com/nzzrwphh": "https://lh3.googleusercontent.com/d/1jS6bbQ-gS_jWO6AN_c3E-CgiK5oI1D0F",
+    "https://tinyurl.com/bdsszbkt": "https://lh3.googleusercontent.com/d/1mn2dsVk8GZayCda96j0JSMHE30bHIGYc",
+    "https://tinyurl.com/2d4frvdr": "https://lh3.googleusercontent.com/d/1Ny_gZWEYzYnmDPNZtq-YHUpwR3DrDVFr",
+    "https://tinyurl.com/mrxkm8by": "https://lh3.googleusercontent.com/d/1ML2DSxx822TtKYMpQSNZMw3tQ6XMwPR7",
+    "https://tinyurl.com/2p9v3vk5": "https://lh3.googleusercontent.com/d/13RwSuG5Oubha6MK3Ix7__8xvCUwO_r3S",
+    "https://tinyurl.com/52jv2m27": "https://lh3.googleusercontent.com/d/1ufxNM7x8U7Ti6K7Fhsw6-ilsfPGihttl",
+    "https://tinyurl.com/344kfaa7": "https://lh3.googleusercontent.com/d/1Qu-n8NG3AU81vi83jAVGAFwcPY96xNhb",
+    "https://tinyurl.com/4c7c2e8b": "https://lh3.googleusercontent.com/d/1mI1hWBqTUmvOPt-BlXnB7D-GNb9lOT5g",
+    "https://tinyurl.com/4b48h74n": "https://lh3.googleusercontent.com/d/10C5JnwgING8bf2XE_1TSjYqZPKGxkZWQ",
+    "https://tinyurl.com/4bhdmd92": "https://lh3.googleusercontent.com/d/1QrWIN-BU9_TlRfNHTtwCV3Ekkox757UG",
+    "https://tinyurl.com/esfbch7k": "https://lh3.googleusercontent.com/d/1Ev6rEckCVOmPmyxYOkhAGcl-DSI1nB4W",
+    "https://tinyurl.com/2jkrafp6": "https://lh3.googleusercontent.com/d/18oXsQltuPb47WnfNyx7yS6UuAR_t4cJE",
+    "https://tinyurl.com/bdhdd25w": "https://lh3.googleusercontent.com/d/1lmjhEM2Ns7E08GGoToYPHd6Rr7GlLnus",
+    "https://tinyurl.com/3pc9d37k": "https://lh3.googleusercontent.com/d/1iE-JE13mMidRxdyhQK-_riZ940YjnWFP",
+    "https://tinyurl.com/3k4trbmd": "https://lh3.googleusercontent.com/d/1ha5ijTFVNcTEb4njJakwexPciXOVmKMq",
+    "https://tinyurl.com/ms2s5zav": "https://lh3.googleusercontent.com/d/1MDiNs9ofoIr_e_2T9Yh4reABt9K9xrse",
+    "https://tinyurl.com/yc2539pt": "https://lh3.googleusercontent.com/d/13huMVjGBXeEvLIJ6kLBm7CVp30QXj0Gu",
+    "https://tinyurl.com/3xm7tjej": "https://lh3.googleusercontent.com/d/1DmzD5O-pIkS3Vd0WPDiq5mS3Dr2xwR_e",
+    "https://tinyurl.com/44e2cbxz": "https://lh3.googleusercontent.com/d/1jAwBDD-dlL3_1SBUA5xsEp4SAqvEwq3y",
+    "https://tinyurl.com/4rwhrjkc": "https://lh3.googleusercontent.com/d/1gYY4rUapPtweTl2AWfwnu0I66kna-SBx",
+    "https://tinyurl.com/5n6k78xd": "https://lh3.googleusercontent.com/d/1WOHBweWiXJrHQZbf9Ghp2tCtMmRmSGwN",
+    "https://tinyurl.com/2jy2uu78": "https://lh3.googleusercontent.com/d/1xPvbfk6lDvwS2ur8PYoKGcS7YQTkOMZ9",
+    "https://tinyurl.com/eu8pjz5t": "https://lh3.googleusercontent.com/d/17SImNMStIjg-SH2XsrH4R67F6VCSzy_B",
+    "https://tinyurl.com/ufvxw7ne": "https://lh3.googleusercontent.com/d/1zbnlSY8YIilWGGaDfpbKaIoYmV7THYqh",
+    "https://tinyurl.com/39zahuan": "https://lh3.googleusercontent.com/d/1hYw3_sHoM9zPWe552Eo0zNIy99em_N85",
+    "https://tinyurl.com/pcdb6e3a": "https://lh3.googleusercontent.com/d/18gvik3F-4XaDM-w4GF4KcmlKhcXlEFLH",
+    "https://tinyurl.com/mr2a8azt": "https://lh3.googleusercontent.com/d/1aYo22VL8TY50uOLWBRhRiMbe41Lmmuev",
+    "https://tinyurl.com/2z6tybjx": "https://lh3.googleusercontent.com/d/1bDYXTj20V6seKfU-PFxM4uo3wcDzUFU1",
+    "https://tinyurl.com/yt69wpfe": "https://lh3.googleusercontent.com/d/1yjvtv5wDvkuy9LLMZcSCRkkOVX1wfcHy",
+    "https://tinyurl.com/6s8cmp24": "https://lh3.googleusercontent.com/d/1klKvqC9w4nbXJ2cQ9jcOLTWG2Y6A3Ui5",
+    "https://tinyurl.com/fn7v2ppx": "https://lh3.googleusercontent.com/d/16WZM5ql6Ic2lusPpTFb75rSsu0O6AYGL",
+    "https://tinyurl.com/bv4panyr": "https://lh3.googleusercontent.com/d/1KL6llY3_pm4RXJvrxYCXIXOwJPaxRm5v",
+    "https://tinyurl.com/mr73r47r": "https://lh3.googleusercontent.com/d/1bawkjYo4n5U4q4oul7m6CFYGk5nTDcy3",
+    "https://tinyurl.com/bdew4nrz": "https://lh3.googleusercontent.com/d/1ftUq137xfHn5_9ocK2NNZzNpB6CawPXu",
+    "https://tinyurl.com/ns3fb4zu": "https://lh3.googleusercontent.com/d/16o7Tu20W6ueIGARzpScJbheO59X_7CTx",
+    "https://tinyurl.com/mryfdv22": "https://lh3.googleusercontent.com/d/1WiVuO2PzeSi_1dMw00u5LcRneHN5MOib",
+    "https://tinyurl.com/2p8wt7t": "https://lh3.googleusercontent.com/d/1Wd1B3-hSrGHPzoiW9sgQZy6uAg3xN82P",
+    "https://tinyurl.com/48um3ve7": "https://lh3.googleusercontent.com/d/1y5VPZNSEp7fPIeKZmrSLPK-bY6MZUP6I",
+    "https://tinyurl.com/42ct5fy4": "https://lh3.googleusercontent.com/d/1LkDpfbMoie8-5OB4M004Qyp0kRWU0__Q",
+    "https://tinyurl.com/wn6cb5t3": "https://lh3.googleusercontent.com/d/1GZLOpLALJI8D2k29z2R7EryufAL_r6hF",
+    "https://tinyurl.com/3mbf7dnx": "https://lh3.googleusercontent.com/d/1RoshZeayPcNMNh6LB39av8J1bGUPPUFB",
+    "https://tinyurl.com/3wefpxxz": "https://lh3.googleusercontent.com/d/1qd6d_PWRzSPnanQrC7eHzox69D4j9Owv",
+    "https://tinyurl.com/3df7bsy2": "https://lh3.googleusercontent.com/d/1W68EXJJs0kr5oZGo9m0qMmeV8iHUUv96",
+    "https://tinyurl.com/tz6wx679": "https://lh3.googleusercontent.com/d/1YPhVsi4-8BbD-oQAsWdFLY4NaeIjhDeU",
+    "https://tinyurl.com/55bmvnz4": "https://lh3.googleusercontent.com/d/1Wr44lH5KGu6zHMDMiRL0R9H0vhCfIaHE",
+    "https://tinyurl.com/3vtvdehy": "https://lh3.googleusercontent.com/d/1y9PP_ANb_LyV_-pAl6rGjV2ODt5nhTx7",
+    "https://tinyurl.com/4d59vxkw": "https://lh3.googleusercontent.com/d/1bkOrEIhqt6eE-wxCYtYeBeeFt7c7qP8A",
+    "https://tinyurl.com/bddh2uhe": "https://lh3.googleusercontent.com/d/1HNQSg0yXmDlBELemL_dI6ArNBx8OOyfm",
+    "https://tinyurl.com/mvn3w4wd": "https://lh3.googleusercontent.com/d/1xZSEPeFQkGvfhWN6SmJDFnch0o88cVak",
+    "https://tinyurl.com/mrxhmyzj": "https://lh3.googleusercontent.com/d/1Hv7sUtYAnL8CtngEswsnaw3kcwkSgmqK",
+    "https://tinyurl.com/jwzunj94": "https://lh3.googleusercontent.com/d/1dJC7ipQosG6fvT6vCMcCbxgS7sWVxABK",
+    "https://tinyurl.com/zrsynjkz": "https://lh3.googleusercontent.com/d/11HxDGqsTey_GFlsU15B8hMIiPfcUQZua",
+    "https://tinyurl.com/2juf42jp": "https://lh3.googleusercontent.com/d/1Y_G-zehUK0EaYQVN7ZLis1cp2ky8VtSX",
+    "https://tinyurl.com/yumy9kbz": "https://lh3.googleusercontent.com/d/1OyUUdRdLpyyYcuphzvxtlc_qBi22sT5N",
+    "https://tinyurl.com/y44remc9": "https://lh3.googleusercontent.com/d/1figI5aBfDLVAfmoSQZbDUQ4WfU8Vsovj",
+    "https://tinyurl.com/ymvw23zk": "https://lh3.googleusercontent.com/d/1FAhPtDWYaHDyT0ifyPT6s4tokjsYl2Hs",
+    "https://tinyurl.com/38xxe3xh": "https://lh3.googleusercontent.com/d/1pf1mrh7v69_e7MmNT1YgJz2Fhz8OjbO9",
+    "https://tinyurl.com/mvjshuy2": "https://lh3.googleusercontent.com/d/11zLKH72SWPNYr_w_eHd7bYBDAVMnaumL",
+    "https://tinyurl.com/4mb9j7km": "https://lh3.googleusercontent.com/d/1lebHAjo5MqS8EKH0yGpZZsQQVL6wHsBI"
+}
 
     for item in filtered_outages:
         m_url = item.get("mapUrl")
         if m_url and "tinyurl.com" in m_url:
-            if m_url in map_cache:
-                item["mapUrl"] = map_cache[m_url]
+            if m_url in builtin_map_cache:
+                item["mapUrl"] = builtin_map_cache[m_url]
             else:
                 try:
+                    import urllib.request
                     req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
-                    with urllib.request.urlopen(req, timeout=4) as resp:
+                    with urllib.request.urlopen(req, timeout=5) as resp:
                         f_url = resp.geturl()
                         m = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
                         if m:
-                            direct = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
-                            map_cache[m_url] = direct
-                            item["mapUrl"] = direct
+                            item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
                         else:
-                            map_cache[m_url] = f_url
+                            item["mapUrl"] = f_url
                 except Exception:
                     pass
-
-    try:
-        with open(map_cache_file, "w", encoding="utf-8") as f:
-            json.dump(map_cache, f, ensure_ascii=False, indent=2)
-    except Exception:
-        pass
 
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
