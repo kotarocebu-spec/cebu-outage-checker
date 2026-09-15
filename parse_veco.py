@@ -508,12 +508,12 @@ AREA_KEYWORDS = [
     {
         "en": "Cebu City (Fuente / Ramos / Zapatera / Kamputhaw)", "ja": "セブ市 (フエンテ / ラモス / サパテラ / カンプタウ)",
         "city_match": ["Cebu City", "Cebu"],
-        "keywords": ["fuente", "osmeña", "osmena", "ramos", "cogon ramos", "zapatera", "kamputhaw", "camputhaw", "santa cruz", "sta. cruz", "sikatuna", "sepulveda", "general maxilom", "mango avenue"]
+        "keywords": ["fuente", "osmeña", "osmena", "ramos", "cogon ramos", "zapatera", "kamputhaw", "camputhaw", "lorega", "lorega san miguel", "santa cruz", "sta. cruz", "sikatuna", "sepulveda", "general maxilom", "mango avenue"]
     },
     {
         "en": "Cebu City (Downtown / Colon / Pahina / Pari-an)", "ja": "セブ市 (ダウンタウン / コロン / パヒナ / パリアン)",
         "city_match": ["Cebu City", "Cebu"],
-        "keywords": ["downtown", "colon", "pari-an", "parian", "sto. niño", "sto nino", "san roque", "ermita", "pahina central", "pahina san nicolas", "kalubihan", "kamagayan", "t. padilla", "t padilla", "tejero", "tinago", "sanciangko", "borromeo", "carbon"]
+        "keywords": ["downtown", "colon", "pari-an", "parian", "sto. niño", "sto nino", "san roque", "ermita", "pahina central", "pahina san nicolas", "kalubihan", "kamagayan", "t. padilla", "t padilla", "tejero", "tinago", "sanciangko", "borromeo", "carbon", "sawang calero"]
     },
     {
         "en": "Cebu City (Mambaling / Duljo / Basak)", "ja": "セブ市 (マンバリン / ドゥルホ / バサック)",
@@ -618,58 +618,71 @@ AREA_KEYWORDS = [
     }
 ]
 
-def parse_area_summary(affected_en):
-    affected_lower = affected_en.lower()
+def parse_area_summary(affected_en, affected_ja=None):
+    if not affected_en:
+        return "Cebu", "セブ"
 
-    # 0. テキストに含まれる都市名を検出
-    detected_cities = []
-    for city_name in ["liloan", "consolacion", "minglanilla", "talisay", "cordova", "naga", "lapu-lapu", "lapulapu", "mandaue", "cebu"]:
-        if city_name in affected_lower:
-            detected_cities.append(city_name)
+    # 1. 計画停電パターン: "Portion of [Brgy], [City], along ..."
+    m_single = re.search(r'Portion[s]? of\s+([A-Za-z0-9\s\.\-]+?),\s*(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)', affected_en, re.IGNORECASE)
+    if m_single:
+        brgy_en = m_single.group(1).replace("Brgy. ", "").replace("Brgys. ", "").strip()
+        city_en = m_single.group(2).strip()
+        city_ja = cities_map_ja.get(city_en, city_en)
+        brgy_ja = clean_translated_japanese(cached_translate(brgy_en)).rstrip('。').rstrip('.')
+        return f"{city_en} ({brgy_en})", f"{city_ja} ({brgy_ja})"
 
-    # 1. 登録キーワードによる高精度マッチング（都市名が一致するものを最優先）
-    for area in AREA_KEYWORDS:
-        # 都市制限がある場合
-        if "city_match" in area and detected_cities:
-            area_cities = [c.lower() for c in area["city_match"]]
-            # 検出された都市がこのエリアの対象都市に含まれていない場合はスキップ
-            if not any(dc in " ".join(area_cities) for dc in detected_cities):
-                continue
-
-        for kw in area["keywords"]:
-            if kw in affected_lower:
-                return area["en"], area["ja"]
-
-    # 都市名不問で再度キーワードマッチング（フォールバック）
-    for area in AREA_KEYWORDS:
-        for kw in area["keywords"]:
-            if kw in affected_lower:
-                return area["en"], area["ja"]
-
-
-    # 2. パターン1: Portion of Brgy. XXX, City (複数バランガイ対応)
-    pattern1 = r"Portion[s]? of\s+(.*?),\s*(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)"
-    match1 = re.search(pattern1, affected_en, re.IGNORECASE)
-    if match1:
-        brgys, city = match1.groups()
-        brgys_clean = brgys.replace("Brgy. ", "").replace("Brgys. ", "").strip()
-        city_ja = cities_map_ja.get(city, city)
-        brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
-        return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
-        
-    # 3. パターン2: Portion of City (Brgy. XXX)
-    pattern2 = r"Portion[s]? of\s+(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*\((.*?)\)"
-    match2 = re.search(pattern2, affected_en, re.IGNORECASE)
-    if match2:
-        city, brgys = match2.groups()
-        brgys_clean = brgys.replace("Brgy. ", "").replace("Brgys. ", "").strip()
-        city_ja = cities_map_ja.get(city, city)
-        brgys_ja = cached_translate(brgys_clean).rstrip('。').rstrip('.')
-        return f"{city} ({brgys_clean})", f"{city_ja} ({brgys_ja})"
+    # 2. 輪番停電等で "Portion of [City]: [Brgys...]" のパターン
+    city_blocks = re.findall(r'Portion[s]? of\s+(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*[:：]\s*(.*?)(?=(?:Portion[s]? of\s+(?:Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*[:：])|$)', affected_en, re.IGNORECASE | re.DOTALL)
     
+    if city_blocks:
+        first_city_en, raw_brgys = city_blocks[0]
+        first_city_en = first_city_en.strip()
+        city_ja = cities_map_ja.get(first_city_en, first_city_en)
+        
+        cleaned = re.sub(r'\s*&\s*', ', ', raw_brgys)
+        cleaned = re.sub(r'\s+and\s+', ', ', cleaned, flags=re.IGNORECASE)
+        brgys_en = [b.strip() for b in cleaned.split(',') if b.strip() and len(b.strip()) > 1]
+        
+        top_en = brgys_en[:3]
+        
+        # 日本語側の先頭地名を取得
+        brgys_ja = []
+        if affected_ja:
+            m_ja = re.search(r'.*?の一部[:：]\s*(.*)', affected_ja)
+            if m_ja:
+                raw_ja = m_ja.group(1).strip()
+                raw_ja = re.sub(r'\s*&\s*', '、', raw_ja)
+                raw_ja = re.sub(r'\s*および\s*', '、', raw_ja)
+                brgys_ja = [p.strip() for p in re.split(r'[,、]', raw_ja) if p.strip()]
+        
+        if not brgys_ja:
+            top_ja = [clean_translated_japanese(cached_translate(b)).rstrip('。').rstrip('.') for b in top_en]
+        else:
+            top_ja = brgys_ja[:len(top_en)]
+        
+        suffix_en = "..." if len(brgys_en) > 3 or len(city_blocks) > 1 else ""
+        suffix_ja = "..." if len(brgys_en) > 3 or len(city_blocks) > 1 else ""
+        
+        tag_en = f"{first_city_en} ({' / '.join(top_en)}{suffix_en})"
+        tag_ja = f"{city_ja} ({' / '.join(top_ja)}{suffix_ja})"
+        return tag_en, tag_ja
+
+    # 3. カッコパターン: "Portion of [City] ([Brgy])"
+    m_paren = re.search(r'Portion[s]? of\s+(Cebu City|Mandaue City|Lapu-Lapu City|Talisay City|Liloan|Minglanilla|Consolacion|Cordova|City of Naga|Naga City)\s*\((.*?)\)', affected_en, re.IGNORECASE)
+    if m_paren:
+        city_en = m_paren.group(1).strip()
+        brgys = m_paren.group(2).strip()
+        city_ja = cities_map_ja.get(city_en, city_en)
+        cleaned = re.sub(r'\s*&\s*', ', ', brgys)
+        parts_en = [p.strip().replace("Brgy. ", "") for p in cleaned.split(',') if p.strip()]
+        top_en = parts_en[:3]
+        top_ja = [clean_translated_japanese(cached_translate(b)).rstrip('。').rstrip('.') for b in top_en]
+        suffix = "..." if len(parts_en) > 3 else ""
+        return f"{city_en} ({' / '.join(top_en)}{suffix})", f"{city_ja} ({' / '.join(top_ja)}{suffix})"
+
     # 4. 都市名のみマッチした場合
     for city, city_ja in cities_map_ja.items():
-        if city.lower() in affected_lower:
+        if city.lower() in affected_en.lower():
             return f"{city} (Other Areas)", f"{city_ja} (その他エリア)"
             
     return "Other (Manual Input)", "その他（手書き入力）"
@@ -1042,8 +1055,8 @@ def scrape_mcwd_raw_content():
             )
             page = context.new_page()
             
-            page.goto(base_url, timeout=60000, wait_until="domcontentloaded")
-            page.wait_for_timeout(8000)
+            page.goto(base_url, timeout=20000, wait_until="domcontentloaded")
+            page.wait_for_timeout(4000)
             
             soup = BeautifulSoup(page.content(), 'html.parser')
             browser.close()
@@ -1320,8 +1333,8 @@ def fetch_veco_from_spreadsheet(today_str):
                 sub_status = status_lines[sub_idx].upper() if sub_idx < len(status_lines) else (status.strip().upper() if status else "UPCOMING")
                 sub_map = map_lines[sub_idx] if sub_idx < len(map_lines) else map_url
                 
-                sub_area_en, sub_area_ja = parse_area_summary(sub_loc)
                 sub_affected_ja = clean_translated_japanese(cached_translate(sub_loc))
+                sub_area_en, sub_area_ja = parse_area_summary(sub_loc, sub_affected_ja)
                 
                 sub_details_en = details_en
                 sub_details_ja = details_ja
