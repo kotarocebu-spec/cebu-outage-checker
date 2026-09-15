@@ -902,145 +902,28 @@ def parse_rotational_brownout_complex(text, date_formatted, today_str):
     return entries
 
 # ==========================================
-# 統合マージプロセッサ (異なる工事の誤マージを防止 & MAPリンク重複統合)
+# 統合マージプロセッサ (完全重複のみ排除し、独立した回路・行データは保持)
 # ==========================================
 def merge_duplicate_outages(outages):
-    # 1. mapUrl を持つアイテムのスマート重複排除（同じGoogleマイマップリンクの更新版を上書き統合）
-    url_deduped = []
-    seen_map_keys = {}
-    for item in reversed(outages):
-        map_url = item.get("mapUrl", "").strip()
-        if map_url:
-            k = (item["date"], map_url)
-            if k in seen_map_keys:
-                continue
-            seen_map_keys[k] = True
-        url_deduped.append(item)
-    url_deduped.reverse()
-    outages = url_deduped
-
-    grouped = {}
+    """
+    同一日時・同一対象地域の完全重複のみを排除し、
+    回路（フィーダー）ごとに分かれた独立した行データは合体させずそのまま保持する。
+    """
+    seen = set()
+    deduped = []
     for item in outages:
-        is_conditional = "CONDITIONAL" in item["detailsEn"] or "赤アラート" in item["detailsJa"]
-        is_cancelled = "CANCELLED" in item["detailsEn"]
-        
-        # 目的 (detailsEn) をキーに含めることで、同じ日時だからといって別々の工事が誤合体されるのを防ぐ
-        purpose_key = clean_text_pipeline(item["detailsEn"]).lower()
-        
-        key = (item["date"], item["time"], item["type"], is_conditional, is_cancelled, purpose_key)
-        if key not in grouped:
-            grouped[key] = []
-        grouped[key].append(item)
-        
-    merged = []
-    for key, items in grouped.items():
-        if len(items) == 1:
-            merged.append(items[0])
+        # 重複判定キー：日付、時間、対象エリア（先頭60文字）、mapUrl
+        key = (
+            item.get("date", ""),
+            item.get("time", ""),
+            item.get("affectedEn", "")[:60].strip().lower(),
+            item.get("mapUrl", "").strip()
+        )
+        if key in seen:
             continue
-            
-        first = items[0]
-        date, time_str, item_type, is_conditional, is_cancelled, _ = key
-        
-        city_brgys_map = {}
-        for it in items:
-            item_city = "Other"
-            for known_city in ["Cebu City", "Mandaue City", "Talisay City", "Liloan", "Minglanilla", "Consolacion", "Cordova", "City of Naga", "Naga City"]:
-                if known_city.lower() in it["areaEn"].lower():
-                    item_city = known_city
-                    break
-            
-            # もし他に知られている都市（Liloanなど）の正常データが同グループに存在する場合、
-            # "Other (Manual Input)" のようなプレースホルダー行はマージ対象からスキップして無視する
-            if item_city == "Other" and len(items) > 1:
-                has_known_city = any(
-                    any(known.lower() in x["areaEn"].lower() for known in ["cebu city", "mandaue city", "talisay city", "liloan", "minglanilla", "consolacion", "cordova", "city of naga", "naga city"])
-                    for x in items
-                )
-                if has_known_city:
-                    continue
-            
-            en_brgys = []
-            en_match = re.search(r"Portion[s]? of\s+[^:]+:\s*(.*)", it["affectedEn"], re.IGNORECASE)
-            if en_match:
-                en_brgys = [b.strip() for b in en_match.group(1).split(",") if b.strip()]
-            else:
-                parentheses_match = re.search(r"\((.*?)\)", it["areaEn"])
-                if parentheses_match and "other" not in parentheses_match.group(1).lower():
-                    en_brgys = [b.strip() for b in parentheses_match.group(1).split(",") if b.strip()]
-                else:
-                    clean_aff = re.sub(r"^Portion[s]? of\s+", "", it["affectedEn"], flags=re.IGNORECASE).strip()
-                    en_brgys = [clean_aff]
-                    
-            ja_brgys = []
-            ja_match = re.search(r"[^:]+の一部エリア:\s*(.*)", it["affectedJa"], re.IGNORECASE)
-            if ja_match:
-                ja_brgys = [b.strip() for b in ja_match.group(1).split(",") if b.strip()]
-            else:
-                parentheses_match = re.search(r"\((.*?)\)", it["areaJa"])
-                if parentheses_match and "その他" not in parentheses_match.group(1) and "other" not in parentheses_match.group(1).lower():
-                    ja_brgys = [b.strip() for b in parentheses_match.group(1).split(",") if b.strip()]
-                else:
-                    clean_aff_ja = re.sub(r"^[^市町]+の一部エリア:\s*", "", it["affectedJa"]).strip()
-                    if clean_aff_ja == it["affectedJa"]:
-                        clean_aff_ja = re.sub(r"一部のエリア:?\s*", "", it["affectedJa"]).strip()
-                    ja_brgys = [clean_aff_ja]
-            
-            if len(en_brgys) == len(ja_brgys):
-                pairs = list(zip(en_brgys, ja_brgys))
-            else:
-                pairs = [(b, cached_translate(b)) for b in en_brgys]
-                
-            if item_city not in city_brgys_map:
-                city_brgys_map[item_city] = set()
-                
-            for en_b, ja_b in pairs:
-                if len(en_b) > 1:
-                    city_brgys_map[item_city].add((en_b, ja_b))
-        
-        area_en_parts = []
-        area_ja_parts = []
-        affected_en_lines = []
-        affected_ja_lines = []
-        
-        sorted_cities = sorted(list(city_brgys_map.keys()))
-        for city in sorted_cities:
-            city_ja = cities_map_ja.get(city, city)
-            
-            unique_pairs = sorted(list(city_brgys_map[city]), key=lambda x: x[0])
-            brgys_en = [p[0] for p in unique_pairs]
-            brgys_ja = [p[1] for p in unique_pairs]
-            
-            limit = 2
-            brgys_en_summary = ", ".join(brgys_en[:limit]) + "..." if len(brgys_en) > limit else ", ".join(brgys_en)
-            brgys_ja_summary = ", ".join(brgys_ja[:limit]) + "..." if len(brgys_ja) > limit else ", ".join(brgys_ja)
-            
-            area_en_parts.append(f"{city} ({brgys_en_summary})")
-            area_ja_parts.append(f"{city_ja} ({brgys_ja_summary})")
-            
-            affected_en_lines.append(f"Portion of {city}: {', '.join(brgys_en)}")
-            affected_ja_lines.append(f"{city_ja}の一部エリア: {', '.join(brgys_ja)}")
-            
-        combined_area_en = " / ".join(area_en_parts)
-        combined_area_ja = " / ".join(area_ja_parts)
-        combined_affected_en = " \n ".join(affected_en_lines)
-        combined_affected_ja = " \n ".join(affected_ja_lines)
-        
-        merged_item = {
-            "id": 0,
-            "type": item_type,
-            "date": date,
-            "day": first["day"],
-            "time": time_str,
-            "areaEn": combined_area_en,
-            "areaJa": combined_area_ja,
-            "affectedEn": combined_affected_en,
-            "affectedJa": combined_affected_ja,
-            "detailsEn": first["detailsEn"],
-            "detailsJa": first["detailsJa"]
-        }
-        merged.append(merged_item)
-        
-    return merged
+        seen.add(key)
+        deduped.append(item)
+    return deduped
 
 def remove_tbd_duplicates(outages):
     has_concrete_time = {}
@@ -1427,27 +1310,42 @@ def fetch_veco_from_spreadsheet(today_str):
             else:
                 details_en = title if title else "Scheduled maintenance outage."
                 details_ja = clean_translated_japanese(cached_translate(details_en))
-
-            if status and status.upper() == "RESTORED":
-                details_ja += "（復旧済み / 送電再開）"
-                details_en += " (Restored)"
-
-            affected_ja = clean_translated_japanese(cached_translate(locations))
+            loc_lines = [l.strip() for l in locations.split('\n') if l.strip()]
+            status_lines = [s.strip() for s in status.split('\n') if s.strip()]
+            map_lines = [m.strip() for m in map_url.split('\n') if m.strip()]
             
-            outages.append({
-                "id": 0,
-                "type": "electricity",
-                "date": exact_date,
-                "day": day_abbrev,
-                "time": formatted_time,
-                "areaEn": area_en,
-                "areaJa": area_ja,
-                "affectedEn": locations,
-                "affectedJa": affected_ja,
-                "detailsEn": details_en,
-                "detailsJa": details_ja,
-                "mapUrl": map_url
-            })
+            num_sub_entries = max(len(loc_lines), 1)
+            for sub_idx in range(num_sub_entries):
+                sub_loc = loc_lines[sub_idx] if sub_idx < len(loc_lines) else locations
+                sub_status = status_lines[sub_idx].upper() if sub_idx < len(status_lines) else (status.strip().upper() if status else "UPCOMING")
+                sub_map = map_lines[sub_idx] if sub_idx < len(map_lines) else map_url
+                
+                sub_area_en, sub_area_ja = parse_area_summary(sub_loc)
+                sub_affected_ja = clean_translated_japanese(cached_translate(sub_loc))
+                
+                sub_details_en = details_en
+                sub_details_ja = details_ja
+                if sub_status == "RESTORED":
+                    if "（復旧済み" not in sub_details_ja:
+                        sub_details_ja += "（復旧済み / 送電再開）"
+                    if "(Restored)" not in sub_details_en:
+                        sub_details_en += " (Restored)"
+
+                outages.append({
+                    "id": 0,
+                    "type": "electricity",
+                    "date": exact_date,
+                    "day": day_abbrev,
+                    "time": formatted_time,
+                    "areaEn": sub_area_en,
+                    "areaJa": sub_area_ja,
+                    "affectedEn": sub_loc,
+                    "affectedJa": sub_affected_ja,
+                    "detailsEn": sub_details_en,
+                    "detailsJa": sub_details_ja,
+                    "mapUrl": sub_map,
+                    "status": sub_status
+                })
             
         print(f"📊 Googleスプレッドシートから {len(outages)} 件の有効な停電データを取得しました。")
     except Exception as e:
