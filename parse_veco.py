@@ -1852,8 +1852,41 @@ def main():
     
     filtered_outages.sort(key=lambda x: (x['date'], parse_time_for_sorting(x['time'])))
     
-    for index, item in enumerate(filtered_outages, start=100):
-        item["id"] = index
+    # MAPリンクをGoogleアカウント不要の直接画像URLに自動変換
+    map_cache_file = "map_url_cache.json"
+    map_cache = {}
+    if os.path.exists(map_cache_file):
+        try:
+            with open(map_cache_file, "r", encoding="utf-8") as f:
+                map_cache = json.load(f)
+        except Exception:
+            pass
+
+    for item in filtered_outages:
+        m_url = item.get("mapUrl")
+        if m_url and "tinyurl.com" in m_url:
+            if m_url in map_cache:
+                item["mapUrl"] = map_cache[m_url]
+            else:
+                try:
+                    req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
+                    with urllib.request.urlopen(req, timeout=4) as resp:
+                        f_url = resp.geturl()
+                        m = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
+                        if m:
+                            direct = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
+                            map_cache[m_url] = direct
+                            item["mapUrl"] = direct
+                        else:
+                            map_cache[m_url] = f_url
+                except Exception:
+                    pass
+
+    try:
+        with open(map_cache_file, "w", encoding="utf-8") as f:
+            json.dump(map_cache, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
