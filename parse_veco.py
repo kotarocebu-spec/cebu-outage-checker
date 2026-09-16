@@ -1960,15 +1960,2069 @@ def main():
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
     
-    # 60グループマスターの読み込みと出力
-    groups_master_str = "[]"
-    master_json_path = "veco_groups_master.json"
-    if os.path.exists(master_json_path):
-        try:
-            with open(master_json_path, "r", encoding="utf-8") as mf:
-                groups_master_str = mf.read()
-        except Exception:
-            pass
+    # 60グループマスターの内蔵データ（外部JSONファイル不要の完全自己完結仕様）
+    groups_master_str = json.dumps([
+  {
+    "groupId": "grp-01",
+    "timeSlot": "15:00 - 17:00",
+    "areaJa": "セブ市 (カンピュソー / セブ ビジネス パーク / ラハグ...)",
+    "affectedJa": "セブ市の一部: カンピュソー、セブ ビジネス パーク、ラハグ、ルズ",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Cebu Business Park, Lahug, & Luz",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1BFD_JP33E470Fgeqi0dm0r-Nl8ZLWSSK",
+    "pins": [
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Cebu Business Park",
+        "lat": 10.3175,
+        "lng": 123.9055
+      },
+      {
+        "name": "Luz",
+        "lat": 10.3225,
+        "lng": 123.907
+      },
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-02",
+    "timeSlot": "15:00 - 17:00",
+    "areaJa": "セブ市 (カンピュソー / コゴン・ラモス / ロレガ...)",
+    "affectedJa": "セブ市の一部: カンピュソー、コゴン・ラモス、ロレガ、サパテラ",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Cogon Ramos, Lorega, & Zapatera",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1FoX9tiprhfBDfHTbb5I7I_Hu1jldtIrD",
+    "pins": [
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.899
+      },
+      {
+        "name": "Zapatera",
+        "lat": 10.311,
+        "lng": 123.901
+      },
+      {
+        "name": "Cogon Ramos",
+        "lat": 10.31,
+        "lng": 123.895
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-03",
+    "timeSlot": "15:00 - 17:00",
+    "areaJa": "セブ市 (バカヤン / タランバン...)",
+    "affectedJa": "セブ市の部分: バカヤンとタランバン、マンダウエ市の部分: バサック、カバンカラン、カンドゥマン、キューバク、ジャゴビアオ、ラボゴン、パグサブンガン、タボク、タワソン、コンソラシオンの部分: カシリ",
+    "affectedEn": "Portion of Cebu City: Bacayan & Talamban, Portion of Mandaue City: Basak, Cabancalan, Canduman, Cubacub, Jagobiao, Labogon, Pagsabungan, Tabok, & Tawason, Portion of Consolacion: Casili",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1drKLIRxdXoL5t-9aufdjw9ZPXat2d5Y2",
+    "pins": [
+      {
+        "name": "Talamban",
+        "lat": 10.368,
+        "lng": 123.918
+      },
+      {
+        "name": "Bacayan",
+        "lat": 10.375,
+        "lng": 123.92
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.352,
+        "lng": 123.928
+      },
+      {
+        "name": "Canduman",
+        "lat": 10.365,
+        "lng": 123.945
+      },
+      {
+        "name": "Tawason",
+        "lat": 10.372,
+        "lng": 123.94
+      },
+      {
+        "name": "Cubacub",
+        "lat": 10.375,
+        "lng": 123.952
+      },
+      {
+        "name": "Casili",
+        "lat": 10.382,
+        "lng": 123.95
+      },
+      {
+        "name": "Pagsabungan",
+        "lat": 10.358,
+        "lng": 123.948
+      },
+      {
+        "name": "Jagobiao",
+        "lat": 10.366,
+        "lng": 123.958
+      },
+      {
+        "name": "Labogon",
+        "lat": 10.341,
+        "lng": 123.958
+      }
+    ],
+    "pinCount": 10
+  },
+  {
+    "groupId": "grp-04",
+    "timeSlot": "15:00 - 17:00",
+    "areaJa": "セブ市 (バニラッド...)",
+    "affectedJa": "セブ市の一部: バニラッド、マンダウエ市の一部: バキリッド、バニラッド、カバンカラン、カスンティンガン、マグイカイ",
+    "affectedEn": "Portion of Cebu City: Banilad, Portion of Mandaue City: Bakilid, Banilad, Cabancalan, Casuntingan, & Maguikay",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1zattr9cxcXBe4F-PKPXXIxuwOxfEgP8c",
+    "pins": [
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      },
+      {
+        "name": "Maguikay",
+        "lat": 10.342,
+        "lng": 123.937
+      },
+      {
+        "name": "Bakilid",
+        "lat": 10.336,
+        "lng": 123.931
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.352,
+        "lng": 123.928
+      },
+      {
+        "name": "Casuntingan",
+        "lat": 10.348,
+        "lng": 123.932
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-05",
+    "timeSlot": "15:00 - 17:00",
+    "areaJa": "セブ市 (デイアズ / カルビハン / カマガヤン...)",
+    "affectedJa": "セブ市の一部: デイアズ、カルビハン、カマガヤン、ロレガ、パリアン、サンバグ 1、サン アントニオ、サン ロケ、セント。ニーニョ、T. パディラ、サパテラ",
+    "affectedEn": "Portion of Cebu City: Day-as, Kalubihan, Kamagayan, Lorega, Pari-an, Sambag 1, San Antonio, San Roque, Sto. Niño, T. Padilla, & Zapatera",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1yKF8O44B9YROdtGZa_QcKbIR0PcPPbRD",
+    "pins": [
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.899
+      },
+      {
+        "name": "Zapatera",
+        "lat": 10.311,
+        "lng": 123.901
+      },
+      {
+        "name": "San Antonio",
+        "lat": 10.302,
+        "lng": 123.895
+      },
+      {
+        "name": "Day-As",
+        "lat": 10.303,
+        "lng": 123.899
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-06",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "ミングラニラ (カドゥラワン / カラホアン / クアノス...)",
+    "affectedJa": "ミングラニーラの一部: カドゥラワン、カラホアン、クアノス、リナオ、マンドゥアン、パキニ、トゥボッド、トゥンハーン、ヴィト、第 1 区、第 3 区、第 4 区、タリサイ市の部分: キャンプ 7、キャンプ 8、ラワーン I、ラワーン II、ラワーン III、リパタ",
+    "affectedEn": "Portion of Minglanilla: Cadulawan, Calajo-an, Cuanos, Linao, Manduang, Pakigne, Tubod, Tunghaan, Vito, Ward 1, Ward 3, & Ward 4, Portion of Talisay City: Camp 7, Camp 8, Lawaan I, Lawaan II, Lawaan III, & Lipata",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1FBEouKi0fHoH2uZKTggpzGKsPtlMpNFS",
+    "pins": [
+      {
+        "name": "Lawaan I",
+        "lat": 10.2542,
+        "lng": 123.8285
+      },
+      {
+        "name": "Lawaan Ii",
+        "lat": 10.253,
+        "lng": 123.831
+      },
+      {
+        "name": "Lawaan Iii",
+        "lat": 10.256,
+        "lng": 123.826
+      },
+      {
+        "name": "Linao",
+        "lat": 10.2582,
+        "lng": 123.8202
+      },
+      {
+        "name": "Pakigne",
+        "lat": 10.25,
+        "lng": 123.805
+      },
+      {
+        "name": "Calajo-An",
+        "lat": 10.238,
+        "lng": 123.791
+      },
+      {
+        "name": "Cadulawan",
+        "lat": 10.248,
+        "lng": 123.788
+      }
+    ],
+    "pinCount": 7
+  },
+  {
+    "groupId": "grp-07",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "リロアン (カバディアンガン / コットコット / ジュベイ...)",
+    "affectedJa": "リロアンの一部: カバディアンガン、コットコット、ジュベイ、ムラオ",
+    "affectedEn": "Portion of Liloan: Cabadiangan, Cotcot, Jubay, & Mulao",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1_6wbx584Jj6GxHyPeh8a9JoZgV-pqVtH",
+    "pins": [
+      {
+        "name": "Cotcot",
+        "lat": 10.418,
+        "lng": 124.001
+      },
+      {
+        "name": "Jubay",
+        "lat": 10.408,
+        "lng": 123.998
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-08",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "リロアン (コットコットとジュベイ)",
+    "affectedJa": "リロアンの一部: コットコットとジュベイ",
+    "affectedEn": "Portion of Liloan: Cotcot & Jubay",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1bKnP1cWQqd9khoUnkQA-gU0R4XmHsdqp",
+    "pins": [
+      {
+        "name": "Cotcot",
+        "lat": 10.418,
+        "lng": 124.001
+      },
+      {
+        "name": "Jubay",
+        "lat": 10.408,
+        "lng": 123.998
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-09",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (カレタ / セブ ビジネス パーク / ヒポドロモ...)",
+    "affectedJa": "セブ市の一部: カレタ、セブ ビジネス パーク、ヒポドロモ、マボロ、サン アントニオ、サン ロケ",
+    "affectedEn": "Portion of Cebu City: Carreta, Cebu Business Park, Hipodromo, Mabolo, San Antonio, & San Roque",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1hghnWP3dXlgslR6Up-w7P6xWVOhCfORs",
+    "pins": [
+      {
+        "name": "Cebu Business Park",
+        "lat": 10.3175,
+        "lng": 123.9055
+      },
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Hipodromo",
+        "lat": 10.315,
+        "lng": 123.909
+      },
+      {
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.91
+      },
+      {
+        "name": "San Antonio",
+        "lat": 10.302,
+        "lng": 123.895
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-10",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "ミングラニラ (リパタ / パキーニ / ポブラシオン...)",
+    "affectedJa": "ミングラニーラの一部: リパタ、パキーニ、ポブラシオン、トゥンキル、タリサイ市の一部: ビアソン、カンソジョン、ドゥムログ、リナオ、モホン、プーク、サン イシドロ",
+    "affectedEn": "Portion of Minglanilla: Lipata, Pakigne, Poblacion, & Tungkil, Portion of Talisay City: Biasong, Cansojong, Dumlog, Linao, Mohon, Pooc, & San Isidro",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1TEQtLaAwL4_5fHxG9JgrjAIJOb__yQf6",
+    "pins": [
+      {
+        "name": "San Isidro",
+        "lat": 10.2605,
+        "lng": 123.8395
+      },
+      {
+        "name": "Cansojong",
+        "lat": 10.2545,
+        "lng": 123.8445
+      },
+      {
+        "name": "Dumlog",
+        "lat": 10.248,
+        "lng": 123.838
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.2512,
+        "lng": 123.8215
+      },
+      {
+        "name": "Linao",
+        "lat": 10.2582,
+        "lng": 123.8202
+      },
+      {
+        "name": "Pooc",
+        "lat": 10.241,
+        "lng": 123.832
+      },
+      {
+        "name": "Biasong",
+        "lat": 10.242,
+        "lng": 123.825
+      },
+      {
+        "name": "Pakigne",
+        "lat": 10.25,
+        "lng": 123.805
+      },
+      {
+        "name": "Tungkil",
+        "lat": 10.246,
+        "lng": 123.811
+      }
+    ],
+    "pinCount": 9
+  },
+  {
+    "groupId": "grp-11",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (カランバ / 国会議事堂跡 / グアダルーペ...)",
+    "affectedJa": "セブ市の一部: カランバ、国会議事堂跡、グアダルーペ、ラバンゴン、サンバッグ 1、サンバッグ 2",
+    "affectedEn": "Portion of Cebu City: Calamba, Capitol Site, Guadalupe, Labangon, Sambag 1, & Sambag 2",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1fmlWU3Dd5x8Xz6PCixYGx0SpNJq05bz9",
+    "pins": [
+      {
+        "name": "Guadalupe",
+        "lat": 10.322,
+        "lng": 123.878
+      },
+      {
+        "name": "Capitol",
+        "lat": 10.3165,
+        "lng": 123.891
+      },
+      {
+        "name": "Labangon",
+        "lat": 10.308,
+        "lng": 123.882
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.304,
+        "lng": 123.886
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-12",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (ブラカオとトン / タリサイ市の一部: ブラカオ...)",
+    "affectedJa": "セブ市の一部: ブラカオとトン、タリサイ市の一部: ブラカオ、キャンプ 4、カンドゥラワン、ジャクルパン、ラグタン、ラワーン 1、ラワーン 2、ラワーン 3、リナオ、マガウェイ、モホン、タブノク",
+    "affectedEn": "Portion of Cebu City: Bulacao & Toong, Portion of Talisay City: Bulacao, Camp 4, Candulawan, Jaclupan, Lagtang, Lawaan 1, Lawaan 2, Lawaan 3, Linao, Maghaway, Mohon, & Tabunok",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1q2UG_Y-9oBQW57bEZN9_1-_4tTSWD-f8",
+    "pins": [
+      {
+        "name": "Bulacao",
+        "lat": 10.278,
+        "lng": 123.848
+      },
+      {
+        "name": "Tabunok",
+        "lat": 10.2668,
+        "lng": 123.834
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.2512,
+        "lng": 123.8215
+      },
+      {
+        "name": "Linao",
+        "lat": 10.2582,
+        "lng": 123.8202
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-13",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (バニラッド / タランバン...)",
+    "affectedJa": "セブ市の一部: バニラッド & タランバン、マンダウエ市の一部: カバンカラン",
+    "affectedEn": "Portion of Cebu City: Banilad & Talamban, Portion of Mandaue City: Cabancalan",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1ede4D2oKiveec5ig-dqnm6zj5nSUkZos",
+    "pins": [
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      },
+      {
+        "name": "Talamban",
+        "lat": 10.368,
+        "lng": 123.918
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.352,
+        "lng": 123.928
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-14",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (アグスンゴット / アパス / ババグ...)",
+    "affectedJa": "セブ市の一部: アグスンゴット、アパス、ババグ、ビナリウ、ボンボン、ブオ、ブサイ、カンプソー、グバ、ラフグ、マルボグ、プランバト、プンオル・シブガイ、サンロケ、シラオ、タブナン、タグバオ、タプタップ",
+    "affectedEn": "Portion of Cebu City: Agsungot, Apas, Babag, Binaliw, Bonbon, Buot, Busay, Camputhaw, Guba, Lahug, Malubog, Pulangbato, Pung-ol Sibugay, San Roque, Sirao, Tabunan, Tagba-o, & Taptap",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1-a9ANwYKu3VZkU6fJ2MPtwQdgwaw6UKo",
+    "pins": [
+      {
+        "name": "Apas",
+        "lat": 10.334,
+        "lng": 123.9065
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Binaliw",
+        "lat": 10.402,
+        "lng": 123.925
+      },
+      {
+        "name": "Guba",
+        "lat": 10.425,
+        "lng": 123.895
+      },
+      {
+        "name": "Busay",
+        "lat": 10.355,
+        "lng": 123.875
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 7
+  },
+  {
+    "groupId": "grp-15",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (カンピュソーと国会議事堂跡)",
+    "affectedJa": "セブ市の一部: カンピュソーと国会議事堂跡",
+    "affectedEn": "Portion of Cebu City: Camputhaw & Capitol Site",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1YpzmIx7_EzriXBI5zLtXiUSuD1ldbfcw",
+    "pins": [
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Capitol",
+        "lat": 10.3165,
+        "lng": 123.891
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-16",
+    "timeSlot": "16:00 - 18:00",
+    "areaJa": "セブ市 (アドロン / アグスンゴット / バカヤン...)",
+    "affectedJa": "セブ市の部分: アドラン、アグスンゴット、バカヤン、ビナリウ、ブドラーン、カンビノコット、グバ、カルビハン、ラニプガ、ルサラン、マビニ、パリル、ピオス、プランバト、サンノゼ、タランバン、マンダウエ市の部分: カバンカラン、カンドゥマン、コンソラシオンの部分: カバンガハン、パナス",
+    "affectedEn": "Portion of Cebu City: Adlaon, Agsungot, Bacayan, Binaliw, Budlaan, Cambinocot, Guba, Kalubihan, Lanipga, Lusaran, Mabini, Paril, Pit-os, Pulangbato, San Jose, & Talamban, Portion of Mandaue City: Cabancalan & Canduman, Portion of Consolacion: Cabangahan & Panas",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1xplSAwqgJGBIiG_WKHMHIQPEBxHU2d-S",
+    "pins": [
+      {
+        "name": "Talamban",
+        "lat": 10.368,
+        "lng": 123.918
+      },
+      {
+        "name": "Paril",
+        "lat": 10.42,
+        "lng": 123.91
+      },
+      {
+        "name": "Pit-Os",
+        "lat": 10.388,
+        "lng": 123.923
+      },
+      {
+        "name": "Bacayan",
+        "lat": 10.375,
+        "lng": 123.92
+      },
+      {
+        "name": "Binaliw",
+        "lat": 10.402,
+        "lng": 123.925
+      },
+      {
+        "name": "Guba",
+        "lat": 10.425,
+        "lng": 123.895
+      },
+      {
+        "name": "Budlaan",
+        "lat": 10.37,
+        "lng": 123.895
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.352,
+        "lng": 123.928
+      },
+      {
+        "name": "Canduman",
+        "lat": 10.365,
+        "lng": 123.945
+      },
+      {
+        "name": "Cabangahan",
+        "lat": 10.395,
+        "lng": 123.945
+      }
+    ],
+    "pinCount": 10
+  },
+  {
+    "groupId": "grp-17",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "ナガ市 (アルパコ / バリロン / カンタオアン...)",
+    "affectedJa": "ナガ市の一部: アルパコ、バリロン、カンタオアン、コゴン、コロン、ギンダルハン、イナヤガン、ジャギミット、ラナス、ルタック、マヤナ、北ポブラシオン、パンダン、南ポブラシオン、タグジャギミット、タンケ、ティナーン、トゥヤン、ウリン、ミングラニラの一部: キャンプ 8、ラタバン、パナス、トゥンハーン、トゥンコップ",
+    "affectedEn": "Portion of City of Naga: Alpaco, Balirong, Cantao-an, Cogon, Colon, Guindaruhan, Inayagan, Jaguimit, Lanas, Lutac, Mayana, North Poblacion, Pangdan, South Poblacion, Tagjaguimit, Tangke, Tinaan, Tuyan, & Uling, Portion of Minglanilla: Camp 8, Lataban, Panas, Tunghaan, & Tungkop",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1HLSvs5uVLSx6uuOGCcxR8d_RNe4DzktU",
+    "pins": [
+      {
+        "name": "Tangke",
+        "lat": 10.2485,
+        "lng": 123.8545
+      },
+      {
+        "name": "Tungkop",
+        "lat": 10.23,
+        "lng": 123.775
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-18",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "マンダウエ市 (カバンカラン / カンドゥマン / カスンティンガン...)",
+    "affectedJa": "マンダウエ市の一部: カバンカラン、カンドゥマン、カスンティンガン、マグイカイ、パグサブンガン、ティンガブ",
+    "affectedEn": "Portion of Mandaue City: Cabancalan, Canduman, Casuntingan, Maguikay, Pagsabungan, & Tingub",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1BEOzsuueTARjnxvVJYgHCv6sju17WaAm",
+    "pins": [
+      {
+        "name": "Maguikay",
+        "lat": 10.342,
+        "lng": 123.937
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.352,
+        "lng": 123.928
+      },
+      {
+        "name": "Casuntingan",
+        "lat": 10.348,
+        "lng": 123.932
+      },
+      {
+        "name": "Tingub",
+        "lat": 10.362,
+        "lng": 123.935
+      },
+      {
+        "name": "Canduman",
+        "lat": 10.365,
+        "lng": 123.945
+      },
+      {
+        "name": "Pagsabungan",
+        "lat": 10.358,
+        "lng": 123.948
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-19",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "セブ市 (アパス / カサンバガン / ラフグ...)",
+    "affectedJa": "セブ市の一部: アパス、カサンバガン、ラフグ、サンアントニオ、マンダウエ市の一部: バニラッド",
+    "affectedEn": "Portion of Cebu City: Apas, Kasambagan, Lahug, & San Antonio, Portion of Mandaue City: Banilad",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1aWJPXcMJVKuBQP-BtPrhiYw4zkUD7X79",
+    "pins": [
+      {
+        "name": "Apas",
+        "lat": 10.334,
+        "lng": 123.9065
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      },
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      },
+      {
+        "name": "San Antonio",
+        "lat": 10.302,
+        "lng": 123.895
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-20",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "セブ市 (バサク / バサク パルド / バサク サン ニコラス...)",
+    "affectedJa": "セブ市の一部: バサク、バサク パルド、バサク サン ニコラス、ブヒサン、ブラカオ、キナサンアン パルド、パルド、ポブラシオン パルド、プンタ プリンセサ、キオット、サン ロケ",
+    "affectedEn": "Portion of Cebu City: Basak, Basak Pardo, Basak San Nicolas, Buhisan, Bulacao, Kinasang-an Pardo, Pardo, Poblacion Pardo, Punta Princesa, Quiot, & San Roque",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1H-sYmRu2bt0LImhX7DsIT4qiFQ4TesmP",
+    "pins": [
+      {
+        "name": "Punta Princesa",
+        "lat": 10.301,
+        "lng": 123.875
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Basak Pardo",
+        "lat": 10.288,
+        "lng": 123.862
+      },
+      {
+        "name": "Poblacion Pardo",
+        "lat": 10.291,
+        "lng": 123.858
+      },
+      {
+        "name": "Quiot",
+        "lat": 10.296,
+        "lng": 123.86
+      },
+      {
+        "name": "Bulacao",
+        "lat": 10.278,
+        "lng": 123.848
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 7
+  },
+  {
+    "groupId": "grp-21",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "セブ市 (カンピュトー / 国会議事堂跡 / グアダルーペ...)",
+    "affectedJa": "セブ市の一部: カンピュトー、国会議事堂跡、グアダルーペ、カルナサン、サパンダク",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Capitol Site, Guadalupe, Kalunasan, & Sapangdaku",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1r99ihqUwHMAoBJagvLqMwrQRA6ic3h9p",
+    "pins": [
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Guadalupe",
+        "lat": 10.322,
+        "lng": 123.878
+      },
+      {
+        "name": "Capitol",
+        "lat": 10.3165,
+        "lng": 123.891
+      },
+      {
+        "name": "Kalunasan",
+        "lat": 10.328,
+        "lng": 123.872
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-22",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "セブ市 (エルミタ / ロレガ / サンロケ...)",
+    "affectedJa": "セブ市の一部: エルミタ、ロレガ、サンロケ、T. パディラ、テヘロ、ティナゴ",
+    "affectedEn": "Portion of Cebu City: Ermita, Lorega, San Roque, T. Padilla, Tejero, & Tinago",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1jS6bbQ-gS_jWO6AN_c3E-CgiK5oI1D0F",
+    "pins": [
+      {
+        "name": "Tejero",
+        "lat": 10.303,
+        "lng": 123.908
+      },
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.899
+      },
+      {
+        "name": "Tinago",
+        "lat": 10.298,
+        "lng": 123.905
+      },
+      {
+        "name": "Ermita",
+        "lat": 10.292,
+        "lng": 123.898
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-23",
+    "timeSlot": "17:00 - 19:00",
+    "areaJa": "セブ市 (アパス / ラフグ / ルズ)",
+    "affectedJa": "セブ市の一部: アパス、ラフグ、ルズ",
+    "affectedEn": "Portion of Cebu City: Apas, Lahug, & Luz",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1mn2dsVk8GZayCda96j0JSMHE30bHIGYc",
+    "pins": [
+      {
+        "name": "Apas",
+        "lat": 10.334,
+        "lng": 123.9065
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Luz",
+        "lat": 10.3225,
+        "lng": 123.907
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-24",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (バサック サン ニコラス / カサンバガン / マボロ...)",
+    "affectedJa": "セブ市の一部: バサック サン ニコラス、カサンバガン、マボロ、サンノゼ、マンダウエ市の一部: スバンダク",
+    "affectedEn": "Portion of Cebu City: Basak San Nicolas, Kasambagan, Mabolo, & San Jose, Portion of Mandaue City: Subangdaku",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1Ny_gZWEYzYnmDPNZtq-YHUpwR3DrDVFr",
+    "pins": [
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      },
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-25",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (マボロ...)",
+    "affectedJa": "セブ市の一部: マボロ、マンダウエ市の一部: ギソ、スバンダク、ティポロ",
+    "affectedEn": "Portion of Cebu City: Mabolo, Portion of Mandaue City: Guizo, Subangdaku, & Tipolo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1ML2DSxx822TtKYMpQSNZMw3tQ6XMwPR7",
+    "pins": [
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      },
+      {
+        "name": "Tipolo",
+        "lat": 10.329,
+        "lng": 123.931
+      },
+      {
+        "name": "Guizo",
+        "lat": 10.328,
+        "lng": 123.938
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-26",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (バサク サン ニコラス / カランバ / エルミタ...)",
+    "affectedJa": "セブ市の一部: バサク サン ニコラス、カランバ、エルミタ、カルビハン、カマガヤン、ラバンゴン、マンバリン、パヒナ セントラル、パヒナ サン ニコラス、プンタ プリンセサ、サンバッグ 1、サン ニコラス プロパー、サワン カレロ",
+    "affectedEn": "Portion of Cebu City: Basak San Nicolas, Calamba, Ermita, Kalubihan, Kamagayan, Labangon, Mambaling, Pahina Central, Pahina San Nicolas, Punta Princesa, Sambag 1, San Nicolas Proper, & Sawang Calero",
+    "mapUrl": "https://lh3.googleusercontent.com/d/13RwSuG5Oubha6MK3Ix7__8xvCUwO_r3S",
+    "pins": [
+      {
+        "name": "Punta Princesa",
+        "lat": 10.301,
+        "lng": 123.875
+      },
+      {
+        "name": "Labangon",
+        "lat": 10.308,
+        "lng": 123.882
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Ermita",
+        "lat": 10.292,
+        "lng": 123.898
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.294,
+        "lng": 123.884
+      },
+      {
+        "name": "San Nicolas Proper",
+        "lat": 10.296,
+        "lng": 123.886
+      },
+      {
+        "name": "Pahina Central",
+        "lat": 10.299,
+        "lng": 123.891
+      },
+      {
+        "name": "Pahina San Nicolas",
+        "lat": 10.297,
+        "lng": 123.889
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.304,
+        "lng": 123.886
+      }
+    ],
+    "pinCount": 10
+  },
+  {
+    "groupId": "grp-27",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "マンダウエ市 (バサック / セントロ / ジャゴビアオ...)",
+    "affectedJa": "マンダウエ市の部分: バサック、セントロ、ジャゴビアオ、ラボゴン、パクナン、タボク、コンソラシオンの部分: ポブラシオン オリエンタル",
+    "affectedEn": "Portion of Mandaue City: Basak, Centro, Jagobiao, Labogon, Paknaan, & Tabok, Portion of Consolacion: Poblacion Oriental",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1ufxNM7x8U7Ti6K7Fhsw6-ilsfPGihttl",
+    "pins": [
+      {
+        "name": "Centro",
+        "lat": 10.324,
+        "lng": 123.944
+      },
+      {
+        "name": "Jagobiao",
+        "lat": 10.366,
+        "lng": 123.958
+      },
+      {
+        "name": "Paknaan",
+        "lat": 10.348,
+        "lng": 123.955
+      },
+      {
+        "name": "Labogon",
+        "lat": 10.341,
+        "lng": 123.958
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-28",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (アパス / カサンバガン / ラハグ...)",
+    "affectedJa": "セブ市の一部: アパス、カサンバガン、ラハグ、マンダウエ市の一部: バニラッド",
+    "affectedEn": "Portion of Cebu City: Apas, Kasambagan, & Lahug, Portion of Mandaue City: Banilad",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1Qu-n8NG3AU81vi83jAVGAFwcPY96xNhb",
+    "pins": [
+      {
+        "name": "Apas",
+        "lat": 10.334,
+        "lng": 123.9065
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      },
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-29",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "コンソラシオン (カンサガ / ジュガン / ラマック...)",
+    "affectedJa": "コンソラシオンの部分: カンサガ、ジュガン、ラマック、ピトゴ、ポブラシオン オリエンタル、リロアンの部分: ヤティ",
+    "affectedEn": "Portion of Consolacion: Cansaga, Jugan, Lamac, Pitogo, & Poblacion Oriental, Portion of Liloan: Yati",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1mI1hWBqTUmvOPt-BlXnB7D-GNb9lOT5g",
+    "pins": [
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.985
+      },
+      {
+        "name": "Jugan",
+        "lat": 10.368,
+        "lng": 123.965
+      },
+      {
+        "name": "Lamac",
+        "lat": 10.372,
+        "lng": 123.948
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-30",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (カンピュソー / 国会議事堂跡 / グアダルーペ...)",
+    "affectedJa": "セブ市の一部: カンピュソー、国会議事堂跡、グアダルーペ、カルビハン、カルナサン、ラハグ",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Capitol Site, Guadalupe, Kalubihan, Kalunasan, & Lahug",
+    "mapUrl": "https://lh3.googleusercontent.com/d/10C5JnwgING8bf2XE_1TSjYqZPKGxkZWQ",
+    "pins": [
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Guadalupe",
+        "lat": 10.322,
+        "lng": 123.878
+      },
+      {
+        "name": "Capitol",
+        "lat": 10.3165,
+        "lng": 123.891
+      },
+      {
+        "name": "Kalunasan",
+        "lat": 10.328,
+        "lng": 123.872
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-31",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "コンソラシオン (カバンガハン / キューバク / カンサガ...)",
+    "affectedJa": "慰めの一部: カバンガハン、キューバク、カンサガ、カシリ、ダンラグ、ガリング、パノイポイ、ポブラシオン オクシデンタル、ポブラシオン オリエンタル、ポログ、プルポガン、サクサク、ティルハオン、トロトロ",
+    "affectedEn": "Portion of Consolacion: Cabangahan, Cubacub, Cansaga, Casili, Danglag, Garing, Panoypoy, Poblacion Occidental, Poblacion Oriental, Polog, Pulpogan, Sacsac, Tilhaong, & Tolo-tolo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1QrWIN-BU9_TlRfNHTtwCV3Ekkox757UG",
+    "pins": [
+      {
+        "name": "Cubacub",
+        "lat": 10.375,
+        "lng": 123.952
+      },
+      {
+        "name": "Casili",
+        "lat": 10.382,
+        "lng": 123.95
+      },
+      {
+        "name": "Cabangahan",
+        "lat": 10.395,
+        "lng": 123.945
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-32",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "マンダウエ市 (ギゾ / スバンダク / ティポロ)",
+    "affectedJa": "マンダウエ市の一部: ギゾ、スバンダク、ティポロ",
+    "affectedEn": "Portion of Mandaue City: Guizo, Subangdaku, & Tipolo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1Ev6rEckCVOmPmyxYOkhAGcl-DSI1nB4W",
+    "pins": [
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      },
+      {
+        "name": "Tipolo",
+        "lat": 10.329,
+        "lng": 123.931
+      },
+      {
+        "name": "Guizo",
+        "lat": 10.328,
+        "lng": 123.938
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-33",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (マボロ / 北部埋立地...)",
+    "affectedJa": "セブ市の一部: マボロおよび北部埋立地、マンダウエ市の一部: アランアラン、カンバロ、セントロ、ギゾ、ロオク、オパオ、スバンダク、ティポロ、ウマパッド",
+    "affectedEn": "Portion of Cebu City: Mabolo & North Reclamation Area, Portion of Mandaue City: Alang-Alang, Cambaro, Centro, Guizo, Looc, Opao, Subangdaku, Tipolo, & Umapad",
+    "mapUrl": "https://lh3.googleusercontent.com/d/18oXsQltuPb47WnfNyx7yS6UuAR_t4cJE",
+    "pins": [
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      },
+      {
+        "name": "Tipolo",
+        "lat": 10.329,
+        "lng": 123.931
+      },
+      {
+        "name": "Guizo",
+        "lat": 10.328,
+        "lng": 123.938
+      },
+      {
+        "name": "Centro",
+        "lat": 10.324,
+        "lng": 123.944
+      },
+      {
+        "name": "Alang-Alang",
+        "lat": 10.332,
+        "lng": 123.948
+      },
+      {
+        "name": "Opao",
+        "lat": 10.324,
+        "lng": 123.952
+      },
+      {
+        "name": "Umapad",
+        "lat": 10.332,
+        "lng": 123.962
+      }
+    ],
+    "pinCount": 8
+  },
+  {
+    "groupId": "grp-34",
+    "timeSlot": "18:00 - 20:00",
+    "areaJa": "セブ市 (カサンバガンとマボロ / マンダウエ市の一部: バニラッド...)",
+    "affectedJa": "セブ市の一部: カサンバガンとマボロ、マンダウエ市の一部: バニラッド、スバンダク、ティポロ",
+    "affectedEn": "Portion of Cebu City: Kasambagan & Mabolo, Portion of Mandaue City: Banilad, Subangdaku, & Tipolo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1lmjhEM2Ns7E08GGoToYPHd6Rr7GlLnus",
+    "pins": [
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      },
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      },
+      {
+        "name": "Tipolo",
+        "lat": 10.329,
+        "lng": 123.931
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-35",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "セブ市 (カンピュソー / 国会議事堂跡 / ロレガ)",
+    "affectedJa": "セブ市の一部: カンピュソー、国会議事堂跡、ロレガ",
+    "affectedEn": "Portion of Cebu City: Camputhaw, Capitol Site, & Lorega",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1iE-JE13mMidRxdyhQK-_riZ940YjnWFP",
+    "pins": [
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Capitol",
+        "lat": 10.3165,
+        "lng": 123.891
+      },
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.899
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-36",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "ナガ市 (コロン / イナヤガン / タンケ...)",
+    "affectedJa": "ナガ市の一部: コロン、イナヤガン、タンケ、トゥヤン、ウリン、ミングラニラの一部: カラジョアン、リナオ、パキニ、トゥーレイ、トゥンハーン、トゥンキル、トゥンコップ、第 1 区、第 2 区、第 4 区",
+    "affectedEn": "Portion of City of Naga: Colon, Inayagan, Tangke, Tuyan, & Uling, Portion of Minglanilla: Calajoan, Linao, Pakigne, Tulay, Tunghaan, Tungkil, Tungkop, Ward 1, Ward 2, & Ward 4",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1ha5ijTFVNcTEb4njJakwexPciXOVmKMq",
+    "pins": [
+      {
+        "name": "Tangke",
+        "lat": 10.2485,
+        "lng": 123.8545
+      },
+      {
+        "name": "Linao",
+        "lat": 10.2582,
+        "lng": 123.8202
+      },
+      {
+        "name": "Pakigne",
+        "lat": 10.25,
+        "lng": 123.805
+      },
+      {
+        "name": "Tungkil",
+        "lat": 10.246,
+        "lng": 123.811
+      },
+      {
+        "name": "Tulay",
+        "lat": 10.235,
+        "lng": 123.785
+      },
+      {
+        "name": "Tungkop",
+        "lat": 10.23,
+        "lng": 123.775
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-37",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "セブ市 (バニラド / ブドラーン / ブサイ...)",
+    "affectedJa": "セブ市の一部: バニラド、ブドラーン、ブサイ、タランバン、マンダウエ市の一部: バニラド",
+    "affectedEn": "Portion of Cebu City: Banilad, Budlaan, Busay, & Talamban, Portion of Mandaue City: Banilad",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1MDiNs9ofoIr_e_2T9Yh4reABt9K9xrse",
+    "pins": [
+      {
+        "name": "Banilad",
+        "lat": 10.34,
+        "lng": 123.913
+      },
+      {
+        "name": "Talamban",
+        "lat": 10.368,
+        "lng": 123.918
+      },
+      {
+        "name": "Budlaan",
+        "lat": 10.37,
+        "lng": 123.895
+      },
+      {
+        "name": "Busay",
+        "lat": 10.355,
+        "lng": 123.875
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-38",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "セブ市 (ドゥルジョ ファティマ / エルミタ / マンバリン...)",
+    "affectedJa": "セブ市の一部: ドゥルジョ ファティマ、エルミタ、マンバリン、パヒナ セントラル、パシル、サン ニコラス プロパー、サン ロケ、サワン カレロ、スバ、ティサ",
+    "affectedEn": "Portion of Cebu City: Duljo Fatima, Ermita, Mambaling, Pahina Central, Pasil, San Nicolas Proper, San Roque, Sawang Calero, Suba, & Tisa",
+    "mapUrl": "https://lh3.googleusercontent.com/d/13huMVjGBXeEvLIJ6kLBm7CVp30QXj0Gu",
+    "pins": [
+      {
+        "name": "Tisa",
+        "lat": 10.305,
+        "lng": 123.868
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "Ermita",
+        "lat": 10.292,
+        "lng": 123.898
+      },
+      {
+        "name": "Pasil",
+        "lat": 10.293,
+        "lng": 123.891
+      },
+      {
+        "name": "Suba",
+        "lat": 10.292,
+        "lng": 123.888
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.294,
+        "lng": 123.884
+      },
+      {
+        "name": "San Nicolas Proper",
+        "lat": 10.296,
+        "lng": 123.886
+      },
+      {
+        "name": "Pahina Central",
+        "lat": 10.299,
+        "lng": 123.891
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 9
+  },
+  {
+    "groupId": "grp-39",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "その他（手書き入力）",
+    "affectedJa": "サンフェルナンドの一部: バルード、バサク、ブゴ、カバトバタン、ランタワン、リブロン、マグシコ、パナタラン、南ポブラシオン、タビオナン、タナナス、ティヌブダン",
+    "affectedEn": "Portion of San Fernando: Balud, Basak, Bugho, Cabatbatan, Lantawan, Liburon, Magsico, Panadtaran, South Poblacion, Tabionan, Tananas, & Tinubdan",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1DmzD5O-pIkS3Vd0WPDiq5mS3Dr2xwR_e",
+    "pins": [
+      {
+        "name": "Cebu City",
+        "lat": 10.315,
+        "lng": 123.89
+      }
+    ],
+    "pinCount": 1
+  },
+  {
+    "groupId": "grp-40",
+    "timeSlot": "19:00 - 21:00",
+    "areaJa": "セブ市 (イナヤワン / マンバリング...)",
+    "affectedJa": "セブ市の一部: イナヤワン & マンバリング、タリサイ市の一部: サン イシドロ",
+    "affectedEn": "Portion of Cebu City: Inayawan & Mambaling, Portion of Talisay City: San Isidro",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1jAwBDD-dlL3_1SBUA5xsEp4SAqvEwq3y",
+    "pins": [
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "Inayawan",
+        "lat": 10.272,
+        "lng": 123.862
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.2605,
+        "lng": 123.8395
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-41",
+    "timeSlot": "20:00 - 22:00",
+    "areaJa": "セブ市 (アパス / カサンバガン / ラハグ)",
+    "affectedJa": "セブ市の一部: アパス、カサンバガン、ラハグ",
+    "affectedEn": "Portion of Cebu City: Apas, Kasambagan, & Lahug",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1gYY4rUapPtweTl2AWfwnu0I66kna-SBx",
+    "pins": [
+      {
+        "name": "Apas",
+        "lat": 10.334,
+        "lng": 123.9065
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.3355,
+        "lng": 123.8965
+      },
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-42",
+    "timeSlot": "20:00 - 22:00",
+    "areaJa": "セブ市 (バサック サン ニコラス / カランバ / ドゥルジョ (ドゥルジョ ファティマ)...)",
+    "affectedJa": "セブ市の一部: バサック サン ニコラス、カランバ、ドゥルジョ (ドゥルジョ ファティマ)、グアダルーペ、マンバリン、パヒナ セントラル、サンバッグ 1、サンバッグ 2、サン アントニオ、サン ニコラス (サン ニコラス プロパー)、サン ロケ、サワン カレロ",
+    "affectedEn": "Portion of Cebu City: Basak San Nicolas, Calamba, Duljo (Duljo Fatima), Guadalupe, Mambaling, Pahina Central, Sambag 1, Sambag 2, San Antonio, San Nicolas (San Nicolas Proper), San Roque, & Sawang Calero",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1WOHBweWiXJrHQZbf9Ghp2tCtMmRmSGwN",
+    "pins": [
+      {
+        "name": "Guadalupe",
+        "lat": 10.322,
+        "lng": 123.878
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.294,
+        "lng": 123.884
+      },
+      {
+        "name": "San Nicolas Proper",
+        "lat": 10.296,
+        "lng": 123.886
+      },
+      {
+        "name": "Pahina Central",
+        "lat": 10.299,
+        "lng": 123.891
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.304,
+        "lng": 123.886
+      },
+      {
+        "name": "San Antonio",
+        "lat": 10.302,
+        "lng": 123.895
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 9
+  },
+  {
+    "groupId": "grp-43",
+    "timeSlot": "20:00 - 22:00",
+    "areaJa": "コンソラシオン (カレロ / カンサガ / ジュガン...)",
+    "affectedJa": "コンソラシオンの部分: カレロ、カンサガ、ジュガン、ナンカ、ピトゴ、ポブラシオン オクシデンタル、ポブラシオン オリエンタル、タユド、トゥグブンガン、リロアンの部分: カレロ、ジュガン、タユド、ヤティ、マンダウエ市の部分: ヤゴビアオ",
+    "affectedEn": "Portion of Consolacion: Calero, Cansaga, Jugan, Nangka, Pitogo, Poblacion Occidental, Poblacion Oriental, Tayud, & Tugbungan, Portion of Liloan: Calero, Jugan, Tayud, & Yati, Portion of Mandaue City: Jagobiao",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1xPvbfk6lDvwS2ur8PYoKGcS7YQTkOMZ9",
+    "pins": [
+      {
+        "name": "Jagobiao",
+        "lat": 10.366,
+        "lng": 123.958
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.985
+      },
+      {
+        "name": "Jugan",
+        "lat": 10.368,
+        "lng": 123.965
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-44",
+    "timeSlot": "20:00 - 22:00",
+    "areaJa": "コンソラシオン (カレロ / カンサガ / ジュガン...)",
+    "affectedJa": "慰めの部分: カレロ、カンサガ、ジュガン、ラマック、ピトゴ、ポブラシオン オクシデンタル、ポブラシオン オリエンタル、サン ビセンテ、タユド、ティルハオン、リロアンの部分: カタルマン、ペピト、サン ロケ、タユド、ヤティ",
+    "affectedEn": "Portion of Consolacion: Calero, Cansaga, Jugan, Lamac, Pitogo, Poblacion Occidental, Poblacion Oriental, San Vicente, Tayud, & Tilhaong, Portion of Liloan: Catarman, Pepito, San Roque, Tayud, & Yati",
+    "mapUrl": "https://lh3.googleusercontent.com/d/17SImNMStIjg-SH2XsrH4R67F6VCSzy_B",
+    "pins": [
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.985
+      },
+      {
+        "name": "Jugan",
+        "lat": 10.368,
+        "lng": 123.965
+      },
+      {
+        "name": "Lamac",
+        "lat": 10.372,
+        "lng": 123.948
+      }
+    ],
+    "pinCount": 4
+  },
+  {
+    "groupId": "grp-45",
+    "timeSlot": "20:00 - 22:00",
+    "areaJa": "セブ市 (カレタ / 北干拓地 / テヘロ)",
+    "affectedJa": "セブ市の一部: カレタ、北干拓地、テヘロ",
+    "affectedEn": "Portion of Cebu City: Carreta, North Reclamation Area, & Tejero",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1zbnlSY8YIilWGGaDfpbKaIoYmV7THYqh",
+    "pins": [
+      {
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.91
+      },
+      {
+        "name": "Tejero",
+        "lat": 10.303,
+        "lng": 123.908
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-46",
+    "timeSlot": "21:00 - 23:00",
+    "areaJa": "セブ市 (カレタ / マボロ / 北埋立地...)",
+    "affectedJa": "セブ市の一部: カレタ、マボロ、北埋立地、サンロケ、テジェロ、ティナゴ、マンダウエ市の一部: スバンダク",
+    "affectedEn": "Portion of Cebu City: Carreta, Mabolo, North Reclamation Area, San Roque, Tejero, & Tinago, Portion of Mandaue City: Subangdaku",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1hYw3_sHoM9zPWe552Eo0zNIy99em_N85",
+    "pins": [
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.91
+      },
+      {
+        "name": "Tejero",
+        "lat": 10.303,
+        "lng": 123.908
+      },
+      {
+        "name": "Tinago",
+        "lat": 10.298,
+        "lng": 123.905
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.326,
+        "lng": 123.925
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-47",
+    "timeSlot": "21:00 - 23:00",
+    "areaJa": "タリサイ市 (カンソジョン / ラワーン I / リナオ...)",
+    "affectedJa": "タリサイ市の一部: カンソジョン、ラワーン I、リナオ、モホン、サン イシドロ、サン ロケ、タブノク、タンケ",
+    "affectedEn": "Portion of Talisay City: Cansojong, Lawaan I, Linao, Mohon, San Isidro, San Roque, Tabunok, & Tangke",
+    "mapUrl": "https://lh3.googleusercontent.com/d/18gvik3F-4XaDM-w4GF4KcmlKhcXlEFLH",
+    "pins": [
+      {
+        "name": "Tabunok",
+        "lat": 10.2668,
+        "lng": 123.834
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.2605,
+        "lng": 123.8395
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      },
+      {
+        "name": "Tangke",
+        "lat": 10.2485,
+        "lng": 123.8545
+      },
+      {
+        "name": "Cansojong",
+        "lat": 10.2545,
+        "lng": 123.8445
+      },
+      {
+        "name": "Lawaan I",
+        "lat": 10.2542,
+        "lng": 123.8285
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.2512,
+        "lng": 123.8215
+      },
+      {
+        "name": "Linao",
+        "lat": 10.2582,
+        "lng": 123.8202
+      }
+    ],
+    "pinCount": 8
+  },
+  {
+    "groupId": "grp-48",
+    "timeSlot": "12:00 - 14:00",
+    "areaJa": "リロアン (カタルマン / コットコット / ジュベイ...)",
+    "affectedJa": "リロアンの一部: カタルマン、コットコット、ジュベイ、ポブラシオン、タユド",
+    "affectedEn": "Portion of Liloan: Catarman, Cotcot, Jubay, Poblacion, & Tayud",
+    "mapUrl": "https://lh3.googleusercontent.com/d/16WZM5ql6Ic2lusPpTFb75rSsu0O6AYGL",
+    "pins": [
+      {
+        "name": "Cotcot",
+        "lat": 10.418,
+        "lng": 124.001
+      },
+      {
+        "name": "Jubay",
+        "lat": 10.408,
+        "lng": 123.998
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-49",
+    "timeSlot": "12:00 - 14:00",
+    "areaJa": "マンダウエ市 (イババオ・エスタンシア / マグイカ / パクナン...)",
+    "affectedJa": "マンダウエ市の一部: イババオ・エスタンシア、マグイカ、パクナン、タボク",
+    "affectedEn": "Portion of Mandaue City: Ibabao-Estancia, Maguikay, Paknaan, & Tabok",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1KL6llY3_pm4RXJvrxYCXIXOwJPaxRm5v",
+    "pins": [
+      {
+        "name": "Ibabao-Estancia",
+        "lat": 10.334,
+        "lng": 123.942
+      },
+      {
+        "name": "Maguikay",
+        "lat": 10.342,
+        "lng": 123.937
+      },
+      {
+        "name": "Paknaan",
+        "lat": 10.348,
+        "lng": 123.955
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-50",
+    "timeSlot": "13:00 - 15:00",
+    "areaJa": "セブ市 (カランバ / グアダルーペ / ラバンゴン)",
+    "affectedJa": "セブ市の一部: カランバ、グアダルーペ、ラバンゴン",
+    "affectedEn": "Portion of Cebu City: Calamba, Guadalupe, & Labangon",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1ftUq137xfHn5_9ocK2NNZzNpB6CawPXu",
+    "pins": [
+      {
+        "name": "Guadalupe",
+        "lat": 10.322,
+        "lng": 123.878
+      },
+      {
+        "name": "Labangon",
+        "lat": 10.308,
+        "lng": 123.882
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.304,
+        "lng": 123.886
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-51",
+    "timeSlot": "13:00 - 15:00",
+    "areaJa": "セブ市 (カンプソーとヒポドロモ)",
+    "affectedJa": "セブ市の一部: カンプソーとヒポドロモ",
+    "affectedEn": "Portion of Cebu City: Camputhaw & Hipodromo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/16o7Tu20W6ueIGARzpScJbheO59X_7CTx",
+    "pins": [
+      {
+        "name": "Camputhaw",
+        "lat": 10.3185,
+        "lng": 123.8955
+      },
+      {
+        "name": "Hipodromo",
+        "lat": 10.315,
+        "lng": 123.909
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-52",
+    "timeSlot": "13:00 - 15:00",
+    "areaJa": "セブ市 (マンバリンとサンロケ / タリサイ市の一部: サンロケとタンケ...)",
+    "affectedJa": "セブ市の一部: マンバリンとサンロケ、タリサイ市の一部: サンロケとタンケ",
+    "affectedEn": "Portion of Cebu City: Mambaling & San Roque, Portion of Talisay City: San Roque & Tangke",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1WiVuO2PzeSi_1dMw00u5LcRneHN5MOib",
+    "pins": [
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      },
+      {
+        "name": "Tangke",
+        "lat": 10.2485,
+        "lng": 123.8545
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-53",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "セブ市 (カレタ / セブ ビジネス パーク / ヒポドロモ...)",
+    "affectedJa": "セブ市の一部: カレタ、セブ ビジネス パーク、ヒポドロモ、カサンバガン、ルス、マボロ、北開拓地",
+    "affectedEn": "Portion of Cebu City: Carreta, Cebu Business Park, Hipodromo, Kasambagan, Luz, Mabolo, & North Reclamation Area",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1Wd1B3-hSrGHPzoiW9sgQZy6uAg3xN82P",
+    "pins": [
+      {
+        "name": "Cebu Business Park",
+        "lat": 10.3175,
+        "lng": 123.9055
+      },
+      {
+        "name": "Luz",
+        "lat": 10.3225,
+        "lng": 123.907
+      },
+      {
+        "name": "Kasambagan",
+        "lat": 10.325,
+        "lng": 123.914
+      },
+      {
+        "name": "Mabolo",
+        "lat": 10.3185,
+        "lng": 123.918
+      },
+      {
+        "name": "Hipodromo",
+        "lat": 10.315,
+        "lng": 123.909
+      },
+      {
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.91
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-54",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "セブ市 (バサク パルド / バサク サン ニコラス / ブラカオ...)",
+    "affectedJa": "セブ市の一部: バサク パルド、バサク サン ニコラス、ブラカオ、コゴン パルド、イナヤワン、キナサンアン、マンバリン、ポブラシオン パルド、サン ロケ、タリサイ市の一部: ブラカオ、サン ロケ",
+    "affectedEn": "Portion of Cebu City: Basak Pardo, Basak San Nicolas, Bulacao, Cogon Pardo, Inayawan, Kinasang-an, Mambaling, Poblacion Pardo, & San Roque, Portion of Talisay City: Bulacao & San Roque",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1y5VPZNSEp7fPIeKZmrSLPK-bY6MZUP6I",
+    "pins": [
+      {
+        "name": "Mambaling",
+        "lat": 10.292,
+        "lng": 123.876
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Basak Pardo",
+        "lat": 10.288,
+        "lng": 123.862
+      },
+      {
+        "name": "Cogon Pardo",
+        "lat": 10.284,
+        "lng": 123.856
+      },
+      {
+        "name": "Poblacion Pardo",
+        "lat": 10.291,
+        "lng": 123.858
+      },
+      {
+        "name": "Bulacao",
+        "lat": 10.278,
+        "lng": 123.848
+      },
+      {
+        "name": "Inayawan",
+        "lat": 10.272,
+        "lng": 123.862
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      }
+    ],
+    "pinCount": 8
+  },
+  {
+    "groupId": "grp-55",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "マンダウエ市 (バキリド / カスンティンガン / マグカイ)",
+    "affectedJa": "マンダウエ市の一部: バキリド、カスンティンガン、マグカイ",
+    "affectedEn": "Portion of Mandaue City: Bakilid, Casuntingan, & Maguikay",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1LkDpfbMoie8-5OB4M004Qyp0kRWU0__Q",
+    "pins": [
+      {
+        "name": "Maguikay",
+        "lat": 10.342,
+        "lng": 123.937
+      },
+      {
+        "name": "Bakilid",
+        "lat": 10.336,
+        "lng": 123.931
+      },
+      {
+        "name": "Casuntingan",
+        "lat": 10.348,
+        "lng": 123.932
+      }
+    ],
+    "pinCount": 3
+  },
+  {
+    "groupId": "grp-56",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "リロアン (ラタバン / ポブラシオン / サンロケ...)",
+    "affectedJa": "リロアンの一部: ラタバン、ポブラシオン、サンロケ、サンビセンテ、スタ。クルーズ、タブラ、ヤティ",
+    "affectedEn": "Portion of Liloan: Lataban, Poblacion, San Roque, San Vicente, Sta. Cruz, Tabla, & Yati",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1GZLOpLALJI8D2k29z2R7EryufAL_r6hF",
+    "pins": [
+      {
+        "name": "San Roque",
+        "lat": 10.2585,
+        "lng": 123.858
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.985
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-57",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "セブ市 (バサック サン ニコラス / ブヒサン / カランバ...)",
+    "affectedJa": "セブ市の一部: バサック サン ニコラス、ブヒサン、カランバ、カルビハン、ラバンゴン、パムタン、プンタ プリンセサ、サンバッグ 1、サン ホセ、ティサ、トン",
+    "affectedEn": "Portion of Cebu City: Basak San Nicolas, Buhisan, Calamba, Kalubihan, Labangon, Pamutan, Punta Princesa, Sambag 1, San Jose, Tisa, & Toong",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1RoshZeayPcNMNh6LB39av8J1bGUPPUFB",
+    "pins": [
+      {
+        "name": "Punta Princesa",
+        "lat": 10.301,
+        "lng": 123.875
+      },
+      {
+        "name": "Tisa",
+        "lat": 10.305,
+        "lng": 123.868
+      },
+      {
+        "name": "Labangon",
+        "lat": 10.308,
+        "lng": 123.882
+      },
+      {
+        "name": "Basak San Nicolas",
+        "lat": 10.295,
+        "lng": 123.868
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.304,
+        "lng": 123.886
+      }
+    ],
+    "pinCount": 5
+  },
+  {
+    "groupId": "grp-58",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "ナガ市 (バイラン / カブンガハン / 中央ポブラシオン...)",
+    "affectedJa": "ナガ市の一部: バイラン、カブンガハン、中央ポブラシオン、コロン、東ポブラシオン、イノブラン、ジャギミット、ラングタッド、ルタック、メイント、北ポブラシオン、パタグ、南ポブラシオン、タンケ、ティナン、西ポブラシオン、サンフェルナンドの一部: バルド、ブゴ、グリーンヒルズ、イラヤ、ランタワン、パナタラン、ピタロ、サンイシドロ、サンガット、タナナス、トンゴ",
+    "affectedEn": "Portion of City of Naga: Bairan, Cabungahan, Central Poblacion, Colon, East Poblacion, Inoburan, Jaguimit, Langtad, Lutac, Mainit, North Poblacion, Patag, South Poblacion, Tangke, Tinaan, & West Poblacion, Portion of San Fernando: Balud, Bugho, Greenhills, Ilaya, Lantawan, Panadtaran, Pitalo, San Isidro, Sangat, Tananas, & Tonggo",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1qd6d_PWRzSPnanQrC7eHzox69D4j9Owv",
+    "pins": [
+      {
+        "name": "San Isidro",
+        "lat": 10.2605,
+        "lng": 123.8395
+      },
+      {
+        "name": "Tangke",
+        "lat": 10.2485,
+        "lng": 123.8545
+      }
+    ],
+    "pinCount": 2
+  },
+  {
+    "groupId": "grp-59",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "マンダウエ市 (アラン アラン / カンバロ / イババオ エスタンシア...)",
+    "affectedJa": "マンダウエ市の一部: アラン アラン、カンバロ、イババオ エスタンシア、オパオ、パクナン、タボク、ティポロ、ウマパッド",
+    "affectedEn": "Portion of Mandaue City: Alang-Alang, Cambaro, Ibabao-Estancia, Opao, Paknaan, Tabok, Tipolo, & Umapad",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1W68EXJJs0kr5oZGo9m0qMmeV8iHUUv96",
+    "pins": [
+      {
+        "name": "Tipolo",
+        "lat": 10.329,
+        "lng": 123.931
+      },
+      {
+        "name": "Ibabao-Estancia",
+        "lat": 10.334,
+        "lng": 123.942
+      },
+      {
+        "name": "Alang-Alang",
+        "lat": 10.332,
+        "lng": 123.948
+      },
+      {
+        "name": "Paknaan",
+        "lat": 10.348,
+        "lng": 123.955
+      },
+      {
+        "name": "Opao",
+        "lat": 10.324,
+        "lng": 123.952
+      },
+      {
+        "name": "Umapad",
+        "lat": 10.332,
+        "lng": 123.962
+      }
+    ],
+    "pinCount": 6
+  },
+  {
+    "groupId": "grp-60",
+    "timeSlot": "14:00 - 16:00",
+    "areaJa": "マンダウエ市 (アラン アラン / カンバロ / セントロ...)",
+    "affectedJa": "マンダウエ市の一部: アラン アラン、カンバロ、セントロ、ギゾ、イババオ エスタンシア、ロオク、マントゥヨン",
+    "affectedEn": "Portion of Mandaue City: Alang-Alang, Cambaro, Centro, Guizo, Ibabao-Estancia, Looc, & Mantuyong",
+    "mapUrl": "https://lh3.googleusercontent.com/d/1YPhVsi4-8BbD-oQAsWdFLY4NaeIjhDeU",
+    "pins": [
+      {
+        "name": "Guizo",
+        "lat": 10.328,
+        "lng": 123.938
+      },
+      {
+        "name": "Mantuyong",
+        "lat": 10.327,
+        "lng": 123.941
+      },
+      {
+        "name": "Centro",
+        "lat": 10.324,
+        "lng": 123.944
+      },
+      {
+        "name": "Ibabao-Estancia",
+        "lat": 10.334,
+        "lng": 123.942
+      },
+      {
+        "name": "Alang-Alang",
+        "lat": 10.332,
+        "lng": 123.948
+      }
+    ],
+    "pinCount": 5
+  }
+], ensure_ascii=False, indent=2)
 
     new_data_js_content = f"""/**
  * Cebu Infrastructure Checker - Integrated Data Source
