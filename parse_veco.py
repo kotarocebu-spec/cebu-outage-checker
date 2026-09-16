@@ -1971,24 +1971,14 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1BFD_JP33E470Fgeqi0dm0r-Nl8ZLWSSK",
     "pins": [
       {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
-      },
-      {
-        "name": "Cebu Business Park",
-        "lat": 10.3175,
-        "lng": 123.9055
-      },
-      {
-        "name": "Luz",
-        "lat": 10.3225,
-        "lng": 123.907
-      },
-      {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "lat": 10.32,
+        "lng": 123.896
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
       }
     ],
     "pinCount": 4
@@ -2003,23 +1993,23 @@ def main():
     "pins": [
       {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
-      },
-      {
-        "name": "Lorega",
-        "lat": 10.308,
-        "lng": 123.899
-      },
-      {
-        "name": "Zapatera",
-        "lat": 10.311,
-        "lng": 123.901
+        "lat": 10.32,
+        "lng": 123.896
       },
       {
         "name": "Cogon Ramos",
         "lat": 10.31,
-        "lng": 123.895
+        "lng": 123.898
+      },
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.904
+      },
+      {
+        "name": "Zapatera",
+        "lat": 10.31,
+        "lng": 123.904
       }
     ],
     "pinCount": 4
@@ -2033,44 +2023,29 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1drKLIRxdXoL5t-9aufdjw9ZPXat2d5Y2",
     "pins": [
       {
+        "name": "Bacayan",
+        "lat": 10.38,
+        "lng": 123.915
+      },
+      {
         "name": "Talamban",
         "lat": 10.368,
         "lng": 123.918
       },
       {
-        "name": "Bacayan",
-        "lat": 10.375,
-        "lng": 123.92
-      },
-      {
         "name": "Cabancalan",
-        "lat": 10.352,
-        "lng": 123.928
+        "lat": 10.35,
+        "lng": 123.932
       },
       {
         "name": "Canduman",
-        "lat": 10.365,
-        "lng": 123.945
-      },
-      {
-        "name": "Tawason",
-        "lat": 10.372,
-        "lng": 123.94
+        "lat": 10.362,
+        "lng": 123.938
       },
       {
         "name": "Cubacub",
         "lat": 10.375,
-        "lng": 123.952
-      },
-      {
-        "name": "Casili",
-        "lat": 10.382,
-        "lng": 123.95
-      },
-      {
-        "name": "Pagsabungan",
-        "lat": 10.358,
-        "lng": 123.948
+        "lng": 123.935
       },
       {
         "name": "Jagobiao",
@@ -2079,8 +2054,18 @@ def main():
       },
       {
         "name": "Labogon",
-        "lat": 10.341,
-        "lng": 123.958
+        "lat": 10.352,
+        "lng": 123.955
+      },
+      {
+        "name": "Pagsabungan",
+        "lat": 10.358,
+        "lng": 123.948
+      },
+      {
+        "name": "Tabok",
+        "lat": 10.352,
+        "lng": 123.945
       }
     ],
     "pinCount": 10
@@ -2095,28 +2080,23 @@ def main():
     "pins": [
       {
         "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
-      },
-      {
-        "name": "Maguikay",
         "lat": 10.342,
-        "lng": 123.937
-      },
-      {
-        "name": "Bakilid",
-        "lat": 10.336,
-        "lng": 123.931
+        "lng": 123.918
       },
       {
         "name": "Cabancalan",
-        "lat": 10.352,
-        "lng": 123.928
+        "lat": 10.35,
+        "lng": 123.932
       },
       {
         "name": "Casuntingan",
-        "lat": 10.348,
-        "lng": 123.932
+        "lat": 10.342,
+        "lng": 123.93
+      },
+      {
+        "name": "Maguikay",
+        "lat": 10.338,
+        "lng": 123.935
       }
     ],
     "pinCount": 5
@@ -2130,29 +2110,54 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1yKF8O44B9YROdtGZa_QcKbIR0PcPPbRD",
     "pins": [
       {
-        "name": "Lorega",
-        "lat": 10.308,
-        "lng": 123.899
+        "name": "Day-As",
+        "lat": 10.304,
+        "lng": 123.902
       },
       {
-        "name": "Zapatera",
-        "lat": 10.311,
-        "lng": 123.901
+        "name": "Kalubihan",
+        "lat": 10.3,
+        "lng": 123.898
+      },
+      {
+        "name": "Kamagayan",
+        "lat": 10.302,
+        "lng": 123.9
+      },
+      {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.904
+      },
+      {
+        "name": "Pari-An",
+        "lat": 10.3,
+        "lng": 123.905
+      },
+      {
+        "name": "Sambag 1",
+        "lat": 10.312,
+        "lng": 123.893
       },
       {
         "name": "San Antonio",
-        "lat": 10.302,
-        "lng": 123.895
-      },
-      {
-        "name": "Day-As",
-        "lat": 10.303,
-        "lng": 123.899
+        "lat": 10.308,
+        "lng": 123.896
       },
       {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Sto. Niño",
+        "lat": 10.295,
+        "lng": 123.902
+      },
+      {
+        "name": "Zapatera",
+        "lat": 10.31,
+        "lng": 123.904
       }
     ],
     "pinCount": 5
@@ -2166,39 +2171,89 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1FBEouKi0fHoH2uZKTggpzGKsPtlMpNFS",
     "pins": [
       {
-        "name": "Lawaan I",
-        "lat": 10.2542,
-        "lng": 123.8285
+        "name": "Cadulawan",
+        "lat": 10.252,
+        "lng": 123.788
       },
       {
-        "name": "Lawaan Ii",
-        "lat": 10.253,
-        "lng": 123.831
+        "name": "Calajo-An",
+        "lat": 10.24,
+        "lng": 123.805
       },
       {
-        "name": "Lawaan Iii",
-        "lat": 10.256,
-        "lng": 123.826
+        "name": "Cuanos",
+        "lat": 10.26,
+        "lng": 123.77
       },
       {
         "name": "Linao",
-        "lat": 10.2582,
-        "lng": 123.8202
+        "lat": 10.258,
+        "lng": 123.822
+      },
+      {
+        "name": "Manduang",
+        "lat": 10.255,
+        "lng": 123.76
       },
       {
         "name": "Pakigne",
         "lat": 10.25,
-        "lng": 123.805
+        "lng": 123.81
       },
       {
-        "name": "Calajo-An",
+        "name": "Tubod",
+        "lat": 10.242,
+        "lng": 123.785
+      },
+      {
+        "name": "Tunghaan",
         "lat": 10.238,
-        "lng": 123.791
+        "lng": 123.79
       },
       {
-        "name": "Cadulawan",
+        "name": "Vito",
+        "lat": 10.235,
+        "lng": 123.795
+      },
+      {
+        "name": "Ward 1",
+        "lat": 10.245,
+        "lng": 123.796
+      },
+      {
+        "name": "Ward 3",
+        "lat": 10.247,
+        "lng": 123.8
+      },
+      {
+        "name": "Ward 4",
         "lat": 10.248,
-        "lng": 123.788
+        "lng": 123.802
+      },
+      {
+        "name": "Camp 8",
+        "lat": 10.275,
+        "lng": 123.755
+      },
+      {
+        "name": "Lawaan I",
+        "lat": 10.262,
+        "lng": 123.832
+      },
+      {
+        "name": "Lawaan Ii",
+        "lat": 10.265,
+        "lng": 123.828
+      },
+      {
+        "name": "Lawaan Iii",
+        "lat": 10.268,
+        "lng": 123.822
+      },
+      {
+        "name": "Lipata",
+        "lat": 10.255,
+        "lng": 123.815
       }
     ],
     "pinCount": 7
@@ -2212,6 +2267,11 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1_6wbx584Jj6GxHyPeh8a9JoZgV-pqVtH",
     "pins": [
       {
+        "name": "Cabadiangan",
+        "lat": 10.418,
+        "lng": 123.965
+      },
+      {
         "name": "Cotcot",
         "lat": 10.418,
         "lng": 124.001
@@ -2220,6 +2280,11 @@ def main():
         "name": "Jubay",
         "lat": 10.408,
         "lng": 123.998
+      },
+      {
+        "name": "Mulao",
+        "lat": 10.428,
+        "lng": 123.945
       }
     ],
     "pinCount": 2
@@ -2254,34 +2319,24 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1hghnWP3dXlgslR6Up-w7P6xWVOhCfORs",
     "pins": [
       {
-        "name": "Cebu Business Park",
-        "lat": 10.3175,
-        "lng": 123.9055
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.912
       },
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
-      },
-      {
-        "name": "Hipodromo",
-        "lat": 10.315,
-        "lng": 123.909
-      },
-      {
-        "name": "Carreta",
-        "lat": 10.312,
-        "lng": 123.91
+        "lat": 10.32,
+        "lng": 123.915
       },
       {
         "name": "San Antonio",
-        "lat": 10.302,
-        "lng": 123.895
+        "lat": 10.308,
+        "lng": 123.896
       },
       {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
       }
     ],
     "pinCount": 6
@@ -2295,49 +2350,54 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1TEQtLaAwL4_5fHxG9JgrjAIJOb__yQf6",
     "pins": [
       {
-        "name": "San Isidro",
-        "lat": 10.2605,
-        "lng": 123.8395
-      },
-      {
-        "name": "Cansojong",
-        "lat": 10.2545,
-        "lng": 123.8445
-      },
-      {
-        "name": "Dumlog",
-        "lat": 10.248,
-        "lng": 123.838
-      },
-      {
-        "name": "Mohon",
-        "lat": 10.2512,
-        "lng": 123.8215
-      },
-      {
-        "name": "Linao",
-        "lat": 10.2582,
-        "lng": 123.8202
-      },
-      {
-        "name": "Pooc",
-        "lat": 10.241,
-        "lng": 123.832
-      },
-      {
-        "name": "Biasong",
-        "lat": 10.242,
-        "lng": 123.825
+        "name": "Lipata",
+        "lat": 10.255,
+        "lng": 123.815
       },
       {
         "name": "Pakigne",
         "lat": 10.25,
-        "lng": 123.805
+        "lng": 123.81
+      },
+      {
+        "name": "Poblacion",
+        "lat": 10.245,
+        "lng": 123.798
       },
       {
         "name": "Tungkil",
-        "lat": 10.246,
-        "lng": 123.811
+        "lat": 10.248,
+        "lng": 123.802
+      },
+      {
+        "name": "Cansojong",
+        "lat": 10.255,
+        "lng": 123.838
+      },
+      {
+        "name": "Dumlog",
+        "lat": 10.245,
+        "lng": 123.835
+      },
+      {
+        "name": "Linao",
+        "lat": 10.258,
+        "lng": 123.822
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.25,
+        "lng": 123.825
+      },
+      {
+        "name": "Pooc",
+        "lat": 10.24,
+        "lng": 123.828
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.26,
+        "lng": 123.818
       }
     ],
     "pinCount": 9
@@ -2351,24 +2411,34 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1fmlWU3Dd5x8Xz6PCixYGx0SpNJq05bz9",
     "pins": [
       {
-        "name": "Guadalupe",
-        "lat": 10.322,
-        "lng": 123.878
+        "name": "Calamba",
+        "lat": 10.31,
+        "lng": 123.89
       },
       {
-        "name": "Capitol",
-        "lat": 10.3165,
-        "lng": 123.891
+        "name": "Capitol Site",
+        "lat": 10.317,
+        "lng": 123.89
+      },
+      {
+        "name": "Guadalupe",
+        "lat": 10.325,
+        "lng": 123.882
       },
       {
         "name": "Labangon",
         "lat": 10.308,
-        "lng": 123.882
+        "lng": 123.885
       },
       {
-        "name": "Calamba",
-        "lat": 10.304,
-        "lng": 123.886
+        "name": "Sambag 1",
+        "lat": 10.312,
+        "lng": 123.893
+      },
+      {
+        "name": "Sambag 2",
+        "lat": 10.315,
+        "lng": 123.893
       }
     ],
     "pinCount": 4
@@ -2384,22 +2454,67 @@ def main():
       {
         "name": "Bulacao",
         "lat": 10.278,
-        "lng": 123.848
+        "lng": 123.85
       },
       {
-        "name": "Tabunok",
-        "lat": 10.2668,
-        "lng": 123.834
+        "name": "Toong",
+        "lat": 10.315,
+        "lng": 123.845
       },
       {
-        "name": "Mohon",
-        "lat": 10.2512,
-        "lng": 123.8215
+        "name": "Camp 4",
+        "lat": 10.312,
+        "lng": 123.795
+      },
+      {
+        "name": "Candulawan",
+        "lat": 10.282,
+        "lng": 123.828
+      },
+      {
+        "name": "Jaclupan",
+        "lat": 10.29,
+        "lng": 123.815
+      },
+      {
+        "name": "Lagtang",
+        "lat": 10.275,
+        "lng": 123.83
+      },
+      {
+        "name": "Lawaan 1",
+        "lat": 10.262,
+        "lng": 123.832
+      },
+      {
+        "name": "Lawaan 2",
+        "lat": 10.265,
+        "lng": 123.828
+      },
+      {
+        "name": "Lawaan 3",
+        "lat": 10.268,
+        "lng": 123.822
       },
       {
         "name": "Linao",
-        "lat": 10.2582,
-        "lng": 123.8202
+        "lat": 10.258,
+        "lng": 123.822
+      },
+      {
+        "name": "Maghaway",
+        "lat": 10.285,
+        "lng": 123.805
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.25,
+        "lng": 123.825
+      },
+      {
+        "name": "Tabunok",
+        "lat": 10.265,
+        "lng": 123.84
       }
     ],
     "pinCount": 4
@@ -2414,18 +2529,13 @@ def main():
     "pins": [
       {
         "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
+        "lat": 10.342,
+        "lng": 123.918
       },
       {
         "name": "Talamban",
         "lat": 10.368,
         "lng": 123.918
-      },
-      {
-        "name": "Cabancalan",
-        "lat": 10.352,
-        "lng": 123.928
       }
     ],
     "pinCount": 3
@@ -2440,38 +2550,63 @@ def main():
     "pins": [
       {
         "name": "Apas",
-        "lat": 10.334,
-        "lng": 123.9065
+        "lat": 10.345,
+        "lng": 123.91
       },
       {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
-      },
-      {
-        "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "name": "Babag",
+        "lat": 10.355,
+        "lng": 123.85
       },
       {
         "name": "Binaliw",
         "lat": 10.402,
-        "lng": 123.925
+        "lng": 123.902
       },
       {
-        "name": "Guba",
-        "lat": 10.425,
-        "lng": 123.895
+        "name": "Bonbon",
+        "lat": 10.365,
+        "lng": 123.835
+      },
+      {
+        "name": "Buot",
+        "lat": 10.348,
+        "lng": 123.82
       },
       {
         "name": "Busay",
-        "lat": 10.355,
+        "lat": 10.36,
         "lng": 123.875
       },
       {
+        "name": "Camputhaw",
+        "lat": 10.32,
+        "lng": 123.896
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
+      },
+      {
+        "name": "Malubog",
+        "lat": 10.378,
+        "lng": 123.865
+      },
+      {
+        "name": "Pulangbato",
+        "lat": 10.382,
+        "lng": 123.905
+      },
+      {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Sirao",
+        "lat": 10.415,
+        "lng": 123.86
       }
     ],
     "pinCount": 7
@@ -2486,13 +2621,13 @@ def main():
     "pins": [
       {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "lat": 10.32,
+        "lng": 123.896
       },
       {
-        "name": "Capitol",
-        "lat": 10.3165,
-        "lng": 123.891
+        "name": "Capitol Site",
+        "lat": 10.317,
+        "lng": 123.89
       }
     ],
     "pinCount": 2
@@ -2506,54 +2641,44 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1xplSAwqgJGBIiG_WKHMHIQPEBxHU2d-S",
     "pins": [
       {
+        "name": "Bacayan",
+        "lat": 10.38,
+        "lng": 123.915
+      },
+      {
+        "name": "Binaliw",
+        "lat": 10.402,
+        "lng": 123.902
+      },
+      {
+        "name": "Budlaan",
+        "lat": 10.37,
+        "lng": 123.9
+      },
+      {
+        "name": "Kalubihan",
+        "lat": 10.3,
+        "lng": 123.898
+      },
+      {
+        "name": "Pit-Os",
+        "lat": 10.395,
+        "lng": 123.912
+      },
+      {
+        "name": "Pulangbato",
+        "lat": 10.382,
+        "lng": 123.905
+      },
+      {
         "name": "Talamban",
         "lat": 10.368,
         "lng": 123.918
       },
       {
-        "name": "Paril",
-        "lat": 10.42,
-        "lng": 123.91
-      },
-      {
-        "name": "Pit-Os",
-        "lat": 10.388,
-        "lng": 123.923
-      },
-      {
-        "name": "Bacayan",
-        "lat": 10.375,
-        "lng": 123.92
-      },
-      {
-        "name": "Binaliw",
-        "lat": 10.402,
-        "lng": 123.925
-      },
-      {
-        "name": "Guba",
-        "lat": 10.425,
-        "lng": 123.895
-      },
-      {
-        "name": "Budlaan",
-        "lat": 10.37,
-        "lng": 123.895
-      },
-      {
-        "name": "Cabancalan",
-        "lat": 10.352,
-        "lng": 123.928
-      },
-      {
         "name": "Canduman",
-        "lat": 10.365,
-        "lng": 123.945
-      },
-      {
-        "name": "Cabangahan",
-        "lat": 10.395,
-        "lng": 123.945
+        "lat": 10.362,
+        "lng": 123.938
       }
     ],
     "pinCount": 10
@@ -2567,14 +2692,84 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1HLSvs5uVLSx6uuOGCcxR8d_RNe4DzktU",
     "pins": [
       {
-        "name": "Tangke",
-        "lat": 10.2485,
-        "lng": 123.8545
+        "name": "Alpaco",
+        "lat": 10.215,
+        "lng": 123.73
       },
       {
-        "name": "Tungkop",
+        "name": "Balirong",
+        "lat": 10.235,
+        "lng": 123.745
+      },
+      {
+        "name": "Cantao-An",
+        "lat": 10.225,
+        "lng": 123.74
+      },
+      {
+        "name": "Cogon",
         "lat": 10.23,
-        "lng": 123.775
+        "lng": 123.752
+      },
+      {
+        "name": "Colon",
+        "lat": 10.212,
+        "lng": 123.762
+      },
+      {
+        "name": "Inayagan",
+        "lat": 10.228,
+        "lng": 123.778
+      },
+      {
+        "name": "Jaguimit",
+        "lat": 10.24,
+        "lng": 123.68
+      },
+      {
+        "name": "Lutac",
+        "lat": 10.22,
+        "lng": 123.72
+      },
+      {
+        "name": "North Poblacion",
+        "lat": 10.215,
+        "lng": 123.76
+      },
+      {
+        "name": "South Poblacion",
+        "lat": 10.206,
+        "lng": 123.758
+      },
+      {
+        "name": "Tangke",
+        "lat": 10.215,
+        "lng": 123.755
+      },
+      {
+        "name": "Tinaan",
+        "lat": 10.208,
+        "lng": 123.758
+      },
+      {
+        "name": "Tuyan",
+        "lat": 10.22,
+        "lng": 123.77
+      },
+      {
+        "name": "Uling",
+        "lat": 10.245,
+        "lng": 123.705
+      },
+      {
+        "name": "Lataban",
+        "lat": 10.435,
+        "lng": 123.978
+      },
+      {
+        "name": "Tunghaan",
+        "lat": 10.238,
+        "lng": 123.79
       }
     ],
     "pinCount": 2
@@ -2588,34 +2783,34 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1BEOzsuueTARjnxvVJYgHCv6sju17WaAm",
     "pins": [
       {
-        "name": "Maguikay",
-        "lat": 10.342,
-        "lng": 123.937
-      },
-      {
         "name": "Cabancalan",
-        "lat": 10.352,
-        "lng": 123.928
-      },
-      {
-        "name": "Casuntingan",
-        "lat": 10.348,
+        "lat": 10.35,
         "lng": 123.932
       },
       {
-        "name": "Tingub",
+        "name": "Canduman",
         "lat": 10.362,
-        "lng": 123.935
+        "lng": 123.938
       },
       {
-        "name": "Canduman",
-        "lat": 10.365,
-        "lng": 123.945
+        "name": "Casuntingan",
+        "lat": 10.342,
+        "lng": 123.93
+      },
+      {
+        "name": "Maguikay",
+        "lat": 10.338,
+        "lng": 123.935
       },
       {
         "name": "Pagsabungan",
         "lat": 10.358,
         "lng": 123.948
+      },
+      {
+        "name": "Tingub",
+        "lat": 10.365,
+        "lng": 123.942
       }
     ],
     "pinCount": 6
@@ -2630,28 +2825,23 @@ def main():
     "pins": [
       {
         "name": "Apas",
-        "lat": 10.334,
-        "lng": 123.9065
-      },
-      {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
+        "lat": 10.345,
+        "lng": 123.91
       },
       {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
       },
       {
-        "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
       },
       {
         "name": "San Antonio",
-        "lat": 10.302,
-        "lng": 123.895
+        "lat": 10.308,
+        "lng": 123.896
       }
     ],
     "pinCount": 5
@@ -2665,39 +2855,49 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1H-sYmRu2bt0LImhX7DsIT4qiFQ4TesmP",
     "pins": [
       {
-        "name": "Punta Princesa",
-        "lat": 10.301,
-        "lng": 123.875
+        "name": "Basak",
+        "lat": 10.29,
+        "lng": 123.865
       },
       {
         "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
+        "lat": 10.292,
+        "lng": 123.87
       },
       {
-        "name": "Basak Pardo",
-        "lat": 10.288,
-        "lng": 123.862
-      },
-      {
-        "name": "Poblacion Pardo",
-        "lat": 10.291,
-        "lng": 123.858
-      },
-      {
-        "name": "Quiot",
-        "lat": 10.296,
+        "name": "Buhisan",
+        "lat": 10.31,
         "lng": 123.86
       },
       {
         "name": "Bulacao",
         "lat": 10.278,
-        "lng": 123.848
+        "lng": 123.85
+      },
+      {
+        "name": "Kinasang-An Pardo",
+        "lat": 10.282,
+        "lng": 123.858
+      },
+      {
+        "name": "Pardo",
+        "lat": 10.285,
+        "lng": 123.855
+      },
+      {
+        "name": "Punta Princesa",
+        "lat": 10.298,
+        "lng": 123.875
+      },
+      {
+        "name": "Quiot",
+        "lat": 10.298,
+        "lng": 123.86
       },
       {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
       }
     ],
     "pinCount": 7
@@ -2712,23 +2912,28 @@ def main():
     "pins": [
       {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "lat": 10.32,
+        "lng": 123.896
+      },
+      {
+        "name": "Capitol Site",
+        "lat": 10.317,
+        "lng": 123.89
       },
       {
         "name": "Guadalupe",
-        "lat": 10.322,
-        "lng": 123.878
-      },
-      {
-        "name": "Capitol",
-        "lat": 10.3165,
-        "lng": 123.891
+        "lat": 10.325,
+        "lng": 123.882
       },
       {
         "name": "Kalunasan",
-        "lat": 10.328,
-        "lng": 123.872
+        "lat": 10.332,
+        "lng": 123.878
+      },
+      {
+        "name": "Sapangdaku",
+        "lat": 10.338,
+        "lng": 123.865
       }
     ],
     "pinCount": 4
@@ -2742,29 +2947,29 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1jS6bbQ-gS_jWO6AN_c3E-CgiK5oI1D0F",
     "pins": [
       {
-        "name": "Tejero",
-        "lat": 10.303,
-        "lng": 123.908
-      },
-      {
-        "name": "Lorega",
-        "lat": 10.308,
-        "lng": 123.899
-      },
-      {
-        "name": "Tinago",
-        "lat": 10.298,
-        "lng": 123.905
-      },
-      {
         "name": "Ermita",
         "lat": 10.292,
         "lng": 123.898
       },
       {
+        "name": "Lorega",
+        "lat": 10.308,
+        "lng": 123.904
+      },
+      {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Tejero",
+        "lat": 10.304,
+        "lng": 123.91
+      },
+      {
+        "name": "Tinago",
+        "lat": 10.298,
+        "lng": 123.908
       }
     ],
     "pinCount": 5
@@ -2779,18 +2984,13 @@ def main():
     "pins": [
       {
         "name": "Apas",
-        "lat": 10.334,
-        "lng": 123.9065
+        "lat": 10.345,
+        "lng": 123.91
       },
       {
         "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
-      },
-      {
-        "name": "Luz",
-        "lat": 10.3225,
-        "lng": 123.907
+        "lat": 10.336,
+        "lng": 123.898
       }
     ],
     "pinCount": 3
@@ -2804,24 +3004,19 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1Ny_gZWEYzYnmDPNZtq-YHUpwR3DrDVFr",
     "pins": [
       {
+        "name": "Basak San Nicolas",
+        "lat": 10.292,
+        "lng": 123.87
+      },
+      {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
       },
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
-      },
-      {
-        "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
-      },
-      {
-        "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
+        "lat": 10.32,
+        "lng": 123.915
       }
     ],
     "pinCount": 4
@@ -2836,23 +3031,18 @@ def main():
     "pins": [
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
+        "lat": 10.32,
+        "lng": 123.915
       },
       {
         "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
+        "lat": 10.32,
+        "lng": 123.928
       },
       {
         "name": "Tipolo",
         "lat": 10.329,
         "lng": 123.931
-      },
-      {
-        "name": "Guizo",
-        "lat": 10.328,
-        "lng": 123.938
       }
     ],
     "pinCount": 4
@@ -2866,24 +3056,14 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/13RwSuG5Oubha6MK3Ix7__8xvCUwO_r3S",
     "pins": [
       {
-        "name": "Punta Princesa",
-        "lat": 10.301,
-        "lng": 123.875
-      },
-      {
-        "name": "Labangon",
-        "lat": 10.308,
-        "lng": 123.882
-      },
-      {
-        "name": "Mambaling",
-        "lat": 10.292,
-        "lng": 123.876
-      },
-      {
         "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
+        "lat": 10.292,
+        "lng": 123.87
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.31,
+        "lng": 123.89
       },
       {
         "name": "Ermita",
@@ -2891,29 +3071,54 @@ def main():
         "lng": 123.898
       },
       {
-        "name": "Sawang Calero",
-        "lat": 10.294,
-        "lng": 123.884
+        "name": "Kalubihan",
+        "lat": 10.3,
+        "lng": 123.898
       },
       {
-        "name": "San Nicolas Proper",
-        "lat": 10.296,
-        "lng": 123.886
+        "name": "Kamagayan",
+        "lat": 10.302,
+        "lng": 123.9
+      },
+      {
+        "name": "Labangon",
+        "lat": 10.308,
+        "lng": 123.885
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.288,
+        "lng": 123.875
       },
       {
         "name": "Pahina Central",
-        "lat": 10.299,
-        "lng": 123.891
+        "lat": 10.302,
+        "lng": 123.895
       },
       {
         "name": "Pahina San Nicolas",
-        "lat": 10.297,
-        "lng": 123.889
+        "lat": 10.298,
+        "lng": 123.892
       },
       {
-        "name": "Calamba",
-        "lat": 10.304,
-        "lng": 123.886
+        "name": "Punta Princesa",
+        "lat": 10.298,
+        "lng": 123.875
+      },
+      {
+        "name": "Sambag 1",
+        "lat": 10.312,
+        "lng": 123.893
+      },
+      {
+        "name": "San Nicolas Proper",
+        "lat": 10.295,
+        "lng": 123.89
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.29,
+        "lng": 123.885
       }
     ],
     "pinCount": 10
@@ -2927,9 +3132,14 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1ufxNM7x8U7Ti6K7Fhsw6-ilsfPGihttl",
     "pins": [
       {
+        "name": "Basak",
+        "lat": 10.355,
+        "lng": 123.95
+      },
+      {
         "name": "Centro",
-        "lat": 10.324,
-        "lng": 123.944
+        "lat": 10.328,
+        "lng": 123.942
       },
       {
         "name": "Jagobiao",
@@ -2937,14 +3147,19 @@ def main():
         "lng": 123.958
       },
       {
-        "name": "Paknaan",
-        "lat": 10.348,
+        "name": "Labogon",
+        "lat": 10.352,
         "lng": 123.955
       },
       {
-        "name": "Labogon",
-        "lat": 10.341,
-        "lng": 123.958
+        "name": "Paknaan",
+        "lat": 10.36,
+        "lng": 123.96
+      },
+      {
+        "name": "Tabok",
+        "lat": 10.352,
+        "lng": 123.945
       }
     ],
     "pinCount": 4
@@ -2959,23 +3174,18 @@ def main():
     "pins": [
       {
         "name": "Apas",
-        "lat": 10.334,
-        "lng": 123.9065
-      },
-      {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
+        "lat": 10.345,
+        "lng": 123.91
       },
       {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
       },
       {
-        "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
       }
     ],
     "pinCount": 4
@@ -2989,9 +3199,9 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1mI1hWBqTUmvOPt-BlXnB7D-GNb9lOT5g",
     "pins": [
       {
-        "name": "Yati",
-        "lat": 10.388,
-        "lng": 123.985
+        "name": "Cansaga",
+        "lat": 10.37,
+        "lng": 123.96
       },
       {
         "name": "Jugan",
@@ -3002,6 +3212,16 @@ def main():
         "name": "Lamac",
         "lat": 10.372,
         "lng": 123.948
+      },
+      {
+        "name": "Pitogo",
+        "lat": 10.365,
+        "lng": 123.958
+      },
+      {
+        "name": "Poblacion Oriental",
+        "lat": 10.378,
+        "lng": 123.96
       }
     ],
     "pinCount": 3
@@ -3015,29 +3235,34 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/10C5JnwgING8bf2XE_1TSjYqZPKGxkZWQ",
     "pins": [
       {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
+        "name": "Camputhaw",
+        "lat": 10.32,
+        "lng": 123.896
       },
       {
-        "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "name": "Capitol Site",
+        "lat": 10.317,
+        "lng": 123.89
       },
       {
         "name": "Guadalupe",
-        "lat": 10.322,
-        "lng": 123.878
+        "lat": 10.325,
+        "lng": 123.882
       },
       {
-        "name": "Capitol",
-        "lat": 10.3165,
-        "lng": 123.891
+        "name": "Kalubihan",
+        "lat": 10.3,
+        "lng": 123.898
       },
       {
         "name": "Kalunasan",
-        "lat": 10.328,
-        "lng": 123.872
+        "lat": 10.332,
+        "lng": 123.878
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
       }
     ],
     "pinCount": 5
@@ -3053,17 +3278,67 @@ def main():
       {
         "name": "Cubacub",
         "lat": 10.375,
-        "lng": 123.952
+        "lng": 123.935
+      },
+      {
+        "name": "Cansaga",
+        "lat": 10.37,
+        "lng": 123.96
       },
       {
         "name": "Casili",
-        "lat": 10.382,
-        "lng": 123.95
+        "lat": 10.385,
+        "lng": 123.94
       },
       {
-        "name": "Cabangahan",
-        "lat": 10.395,
+        "name": "Danglag",
+        "lat": 10.398,
         "lng": 123.945
+      },
+      {
+        "name": "Garing",
+        "lat": 10.395,
+        "lng": 123.955
+      },
+      {
+        "name": "Panoypoy",
+        "lat": 10.412,
+        "lng": 123.93
+      },
+      {
+        "name": "Poblacion Occidental",
+        "lat": 10.375,
+        "lng": 123.955
+      },
+      {
+        "name": "Poblacion Oriental",
+        "lat": 10.378,
+        "lng": 123.96
+      },
+      {
+        "name": "Polog",
+        "lat": 10.418,
+        "lng": 123.925
+      },
+      {
+        "name": "Pulpogan",
+        "lat": 10.382,
+        "lng": 123.948
+      },
+      {
+        "name": "Sacsac",
+        "lat": 10.405,
+        "lng": 123.938
+      },
+      {
+        "name": "Tilhaong",
+        "lat": 10.388,
+        "lng": 123.952
+      },
+      {
+        "name": "Tolo-Tolo",
+        "lat": 10.395,
+        "lng": 123.935
       }
     ],
     "pinCount": 3
@@ -3077,19 +3352,19 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1Ev6rEckCVOmPmyxYOkhAGcl-DSI1nB4W",
     "pins": [
       {
+        "name": "Guizo",
+        "lat": 10.322,
+        "lng": 123.938
+      },
+      {
         "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
+        "lat": 10.32,
+        "lng": 123.928
       },
       {
         "name": "Tipolo",
         "lat": 10.329,
         "lng": 123.931
-      },
-      {
-        "name": "Guizo",
-        "lat": 10.328,
-        "lng": 123.938
       }
     ],
     "pinCount": 3
@@ -3104,13 +3379,38 @@ def main():
     "pins": [
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
+        "lat": 10.32,
+        "lng": 123.915
+      },
+      {
+        "name": "Cambaro",
+        "lat": 10.325,
+        "lng": 123.945
+      },
+      {
+        "name": "Centro",
+        "lat": 10.328,
+        "lng": 123.942
+      },
+      {
+        "name": "Guizo",
+        "lat": 10.322,
+        "lng": 123.938
+      },
+      {
+        "name": "Looc",
+        "lat": 10.318,
+        "lng": 123.948
+      },
+      {
+        "name": "Opao",
+        "lat": 10.322,
+        "lng": 123.952
       },
       {
         "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
+        "lat": 10.32,
+        "lng": 123.928
       },
       {
         "name": "Tipolo",
@@ -3118,28 +3418,8 @@ def main():
         "lng": 123.931
       },
       {
-        "name": "Guizo",
-        "lat": 10.328,
-        "lng": 123.938
-      },
-      {
-        "name": "Centro",
-        "lat": 10.324,
-        "lng": 123.944
-      },
-      {
-        "name": "Alang-Alang",
-        "lat": 10.332,
-        "lng": 123.948
-      },
-      {
-        "name": "Opao",
-        "lat": 10.324,
-        "lng": 123.952
-      },
-      {
         "name": "Umapad",
-        "lat": 10.332,
+        "lat": 10.338,
         "lng": 123.962
       }
     ],
@@ -3156,22 +3436,17 @@ def main():
       {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
       },
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
-      },
-      {
-        "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
+        "lat": 10.32,
+        "lng": 123.915
       },
       {
         "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
+        "lat": 10.32,
+        "lng": 123.928
       },
       {
         "name": "Tipolo",
@@ -3191,18 +3466,18 @@ def main():
     "pins": [
       {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
+        "lat": 10.32,
+        "lng": 123.896
       },
       {
-        "name": "Capitol",
-        "lat": 10.3165,
-        "lng": 123.891
+        "name": "Capitol Site",
+        "lat": 10.317,
+        "lng": 123.89
       },
       {
         "name": "Lorega",
         "lat": 10.308,
-        "lng": 123.899
+        "lng": 123.904
       }
     ],
     "pinCount": 3
@@ -3216,34 +3491,59 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1ha5ijTFVNcTEb4njJakwexPciXOVmKMq",
     "pins": [
       {
+        "name": "Colon",
+        "lat": 10.212,
+        "lng": 123.762
+      },
+      {
+        "name": "Inayagan",
+        "lat": 10.228,
+        "lng": 123.778
+      },
+      {
         "name": "Tangke",
-        "lat": 10.2485,
-        "lng": 123.8545
+        "lat": 10.215,
+        "lng": 123.755
+      },
+      {
+        "name": "Tuyan",
+        "lat": 10.22,
+        "lng": 123.77
+      },
+      {
+        "name": "Uling",
+        "lat": 10.245,
+        "lng": 123.705
       },
       {
         "name": "Linao",
-        "lat": 10.2582,
-        "lng": 123.8202
+        "lat": 10.258,
+        "lng": 123.822
       },
       {
         "name": "Pakigne",
         "lat": 10.25,
-        "lng": 123.805
+        "lng": 123.81
+      },
+      {
+        "name": "Tunghaan",
+        "lat": 10.238,
+        "lng": 123.79
       },
       {
         "name": "Tungkil",
+        "lat": 10.248,
+        "lng": 123.802
+      },
+      {
+        "name": "Ward 1",
+        "lat": 10.245,
+        "lng": 123.796
+      },
+      {
+        "name": "Ward 2",
         "lat": 10.246,
-        "lng": 123.811
-      },
-      {
-        "name": "Tulay",
-        "lat": 10.235,
-        "lng": 123.785
-      },
-      {
-        "name": "Tungkop",
-        "lat": 10.23,
-        "lng": 123.775
+        "lng": 123.798
       }
     ],
     "pinCount": 6
@@ -3258,23 +3558,23 @@ def main():
     "pins": [
       {
         "name": "Banilad",
-        "lat": 10.34,
-        "lng": 123.913
-      },
-      {
-        "name": "Talamban",
-        "lat": 10.368,
+        "lat": 10.342,
         "lng": 123.918
       },
       {
         "name": "Budlaan",
         "lat": 10.37,
-        "lng": 123.895
+        "lng": 123.9
       },
       {
         "name": "Busay",
-        "lat": 10.355,
+        "lat": 10.36,
         "lng": 123.875
+      },
+      {
+        "name": "Talamban",
+        "lat": 10.368,
+        "lng": 123.918
       }
     ],
     "pinCount": 4
@@ -3288,14 +3588,9 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/13huMVjGBXeEvLIJ6kLBm7CVp30QXj0Gu",
     "pins": [
       {
-        "name": "Tisa",
-        "lat": 10.305,
-        "lng": 123.868
-      },
-      {
-        "name": "Mambaling",
+        "name": "Duljo Fatima",
         "lat": 10.292,
-        "lng": 123.876
+        "lng": 123.882
       },
       {
         "name": "Ermita",
@@ -3303,34 +3598,44 @@ def main():
         "lng": 123.898
       },
       {
-        "name": "Pasil",
-        "lat": 10.293,
-        "lng": 123.891
-      },
-      {
-        "name": "Suba",
-        "lat": 10.292,
-        "lng": 123.888
-      },
-      {
-        "name": "Sawang Calero",
-        "lat": 10.294,
-        "lng": 123.884
-      },
-      {
-        "name": "San Nicolas Proper",
-        "lat": 10.296,
-        "lng": 123.886
+        "name": "Mambaling",
+        "lat": 10.288,
+        "lng": 123.875
       },
       {
         "name": "Pahina Central",
-        "lat": 10.299,
-        "lng": 123.891
+        "lat": 10.302,
+        "lng": 123.895
+      },
+      {
+        "name": "Pasil",
+        "lat": 10.292,
+        "lng": 123.892
+      },
+      {
+        "name": "San Nicolas Proper",
+        "lat": 10.295,
+        "lng": 123.89
       },
       {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.29,
+        "lng": 123.885
+      },
+      {
+        "name": "Suba",
+        "lat": 10.29,
+        "lng": 123.89
+      },
+      {
+        "name": "Tisa",
+        "lat": 10.305,
+        "lng": 123.875
       }
     ],
     "pinCount": 9
@@ -3344,9 +3649,49 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1DmzD5O-pIkS3Vd0WPDiq5mS3Dr2xwR_e",
     "pins": [
       {
-        "name": "Cebu City",
-        "lat": 10.315,
-        "lng": 123.89
+        "name": "Balud",
+        "lat": 10.145,
+        "lng": 123.695
+      },
+      {
+        "name": "Basak",
+        "lat": 10.355,
+        "lng": 123.95
+      },
+      {
+        "name": "Bugho",
+        "lat": 10.18,
+        "lng": 123.67
+      },
+      {
+        "name": "Liburon",
+        "lat": 10.155,
+        "lng": 123.69
+      },
+      {
+        "name": "Magsico",
+        "lat": 10.168,
+        "lng": 123.675
+      },
+      {
+        "name": "Panadtaran",
+        "lat": 10.175,
+        "lng": 123.722
+      },
+      {
+        "name": "South Poblacion",
+        "lat": 10.16,
+        "lng": 123.71
+      },
+      {
+        "name": "Tananas",
+        "lat": 10.17,
+        "lng": 123.69
+      },
+      {
+        "name": "Tinubdan",
+        "lat": 10.16,
+        "lng": 123.68
       }
     ],
     "pinCount": 1
@@ -3360,19 +3705,14 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1jAwBDD-dlL3_1SBUA5xsEp4SAqvEwq3y",
     "pins": [
       {
-        "name": "Mambaling",
-        "lat": 10.292,
-        "lng": 123.876
-      },
-      {
         "name": "Inayawan",
         "lat": 10.272,
         "lng": 123.862
       },
       {
-        "name": "San Isidro",
-        "lat": 10.2605,
-        "lng": 123.8395
+        "name": "Mambaling",
+        "lat": 10.288,
+        "lng": 123.875
       }
     ],
     "pinCount": 3
@@ -3387,18 +3727,18 @@ def main():
     "pins": [
       {
         "name": "Apas",
-        "lat": 10.334,
-        "lng": 123.9065
-      },
-      {
-        "name": "Lahug",
-        "lat": 10.3355,
-        "lng": 123.8965
+        "lat": 10.345,
+        "lng": 123.91
       },
       {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
+      },
+      {
+        "name": "Lahug",
+        "lat": 10.336,
+        "lng": 123.898
       }
     ],
     "pinCount": 3
@@ -3412,49 +3752,64 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1WOHBweWiXJrHQZbf9Ghp2tCtMmRmSGwN",
     "pins": [
       {
-        "name": "Guadalupe",
-        "lat": 10.322,
-        "lng": 123.878
-      },
-      {
-        "name": "Mambaling",
-        "lat": 10.292,
-        "lng": 123.876
-      },
-      {
         "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
-      },
-      {
-        "name": "Sawang Calero",
-        "lat": 10.294,
-        "lng": 123.884
-      },
-      {
-        "name": "San Nicolas Proper",
-        "lat": 10.296,
-        "lng": 123.886
-      },
-      {
-        "name": "Pahina Central",
-        "lat": 10.299,
-        "lng": 123.891
+        "lat": 10.292,
+        "lng": 123.87
       },
       {
         "name": "Calamba",
-        "lat": 10.304,
-        "lng": 123.886
+        "lat": 10.31,
+        "lng": 123.89
       },
       {
-        "name": "San Antonio",
+        "name": "Duljo",
+        "lat": 10.292,
+        "lng": 123.882
+      },
+      {
+        "name": "Guadalupe",
+        "lat": 10.325,
+        "lng": 123.882
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.288,
+        "lng": 123.875
+      },
+      {
+        "name": "Pahina Central",
         "lat": 10.302,
         "lng": 123.895
       },
       {
+        "name": "Sambag 1",
+        "lat": 10.312,
+        "lng": 123.893
+      },
+      {
+        "name": "Sambag 2",
+        "lat": 10.315,
+        "lng": 123.893
+      },
+      {
+        "name": "San Antonio",
+        "lat": 10.308,
+        "lng": 123.896
+      },
+      {
+        "name": "San Nicolas",
+        "lat": 10.295,
+        "lng": 123.89
+      },
+      {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Sawang Calero",
+        "lat": 10.29,
+        "lng": 123.885
       }
     ],
     "pinCount": 9
@@ -3468,19 +3823,54 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1xPvbfk6lDvwS2ur8PYoKGcS7YQTkOMZ9",
     "pins": [
       {
-        "name": "Jagobiao",
-        "lat": 10.366,
-        "lng": 123.958
+        "name": "Calero",
+        "lat": 10.368,
+        "lng": 123.972
       },
       {
-        "name": "Yati",
-        "lat": 10.388,
-        "lng": 123.985
+        "name": "Cansaga",
+        "lat": 10.37,
+        "lng": 123.96
       },
       {
         "name": "Jugan",
         "lat": 10.368,
         "lng": 123.965
+      },
+      {
+        "name": "Nangka",
+        "lat": 10.362,
+        "lng": 123.952
+      },
+      {
+        "name": "Pitogo",
+        "lat": 10.365,
+        "lng": 123.958
+      },
+      {
+        "name": "Poblacion Occidental",
+        "lat": 10.375,
+        "lng": 123.955
+      },
+      {
+        "name": "Poblacion Oriental",
+        "lat": 10.378,
+        "lng": 123.96
+      },
+      {
+        "name": "Tayud",
+        "lat": 10.37,
+        "lng": 123.98
+      },
+      {
+        "name": "Tugbungan",
+        "lat": 10.372,
+        "lng": 123.968
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.968
       }
     ],
     "pinCount": 3
@@ -3494,14 +3884,14 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/17SImNMStIjg-SH2XsrH4R67F6VCSzy_B",
     "pins": [
       {
-        "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "name": "Calero",
+        "lat": 10.368,
+        "lng": 123.972
       },
       {
-        "name": "Yati",
-        "lat": 10.388,
-        "lng": 123.985
+        "name": "Cansaga",
+        "lat": 10.37,
+        "lng": 123.96
       },
       {
         "name": "Jugan",
@@ -3512,6 +3902,46 @@ def main():
         "name": "Lamac",
         "lat": 10.372,
         "lng": 123.948
+      },
+      {
+        "name": "Pitogo",
+        "lat": 10.365,
+        "lng": 123.958
+      },
+      {
+        "name": "Poblacion Occidental",
+        "lat": 10.375,
+        "lng": 123.955
+      },
+      {
+        "name": "Poblacion Oriental",
+        "lat": 10.378,
+        "lng": 123.96
+      },
+      {
+        "name": "San Vicente",
+        "lat": 10.385,
+        "lng": 123.96
+      },
+      {
+        "name": "Tayud",
+        "lat": 10.37,
+        "lng": 123.98
+      },
+      {
+        "name": "Tilhaong",
+        "lat": 10.388,
+        "lng": 123.952
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.968
       }
     ],
     "pinCount": 4
@@ -3527,12 +3957,12 @@ def main():
       {
         "name": "Carreta",
         "lat": 10.312,
-        "lng": 123.91
+        "lng": 123.912
       },
       {
         "name": "Tejero",
-        "lat": 10.303,
-        "lng": 123.908
+        "lat": 10.304,
+        "lng": 123.91
       }
     ],
     "pinCount": 2
@@ -3546,34 +3976,29 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1hYw3_sHoM9zPWe552Eo0zNIy99em_N85",
     "pins": [
       {
-        "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
-      },
-      {
         "name": "Carreta",
         "lat": 10.312,
-        "lng": 123.91
+        "lng": 123.912
+      },
+      {
+        "name": "Mabolo",
+        "lat": 10.32,
+        "lng": 123.915
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.402,
+        "lng": 123.988
       },
       {
         "name": "Tejero",
-        "lat": 10.303,
-        "lng": 123.908
+        "lat": 10.304,
+        "lng": 123.91
       },
       {
         "name": "Tinago",
         "lat": 10.298,
-        "lng": 123.905
-      },
-      {
-        "name": "Subangdaku",
-        "lat": 10.326,
-        "lng": 123.925
-      },
-      {
-        "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lng": 123.908
       }
     ],
     "pinCount": 6
@@ -3587,44 +4012,44 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/18gvik3F-4XaDM-w4GF4KcmlKhcXlEFLH",
     "pins": [
       {
-        "name": "Tabunok",
-        "lat": 10.2668,
-        "lng": 123.834
-      },
-      {
-        "name": "San Isidro",
-        "lat": 10.2605,
-        "lng": 123.8395
-      },
-      {
-        "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
-      },
-      {
-        "name": "Tangke",
-        "lat": 10.2485,
-        "lng": 123.8545
-      },
-      {
         "name": "Cansojong",
-        "lat": 10.2545,
-        "lng": 123.8445
+        "lat": 10.255,
+        "lng": 123.838
       },
       {
         "name": "Lawaan I",
-        "lat": 10.2542,
-        "lng": 123.8285
-      },
-      {
-        "name": "Mohon",
-        "lat": 10.2512,
-        "lng": 123.8215
+        "lat": 10.262,
+        "lng": 123.832
       },
       {
         "name": "Linao",
-        "lat": 10.2582,
-        "lng": 123.8202
+        "lat": 10.258,
+        "lng": 123.822
+      },
+      {
+        "name": "Mohon",
+        "lat": 10.25,
+        "lng": 123.825
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.26,
+        "lng": 123.818
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.26,
+        "lng": 123.845
+      },
+      {
+        "name": "Tabunok",
+        "lat": 10.265,
+        "lng": 123.84
+      },
+      {
+        "name": "Tangke",
+        "lat": 10.252,
+        "lng": 123.852
       }
     ],
     "pinCount": 8
@@ -3638,6 +4063,11 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/16WZM5ql6Ic2lusPpTFb75rSsu0O6AYGL",
     "pins": [
       {
+        "name": "Catarman",
+        "lat": 10.389,
+        "lng": 124.015
+      },
+      {
         "name": "Cotcot",
         "lat": 10.418,
         "lng": 124.001
@@ -3646,6 +4076,16 @@ def main():
         "name": "Jubay",
         "lat": 10.408,
         "lng": 123.998
+      },
+      {
+        "name": "Poblacion",
+        "lat": 10.399,
+        "lng": 123.996
+      },
+      {
+        "name": "Tayud",
+        "lat": 10.38,
+        "lng": 123.985
       }
     ],
     "pinCount": 2
@@ -3660,18 +4100,23 @@ def main():
     "pins": [
       {
         "name": "Ibabao-Estancia",
-        "lat": 10.334,
-        "lng": 123.942
+        "lat": 10.335,
+        "lng": 123.945
       },
       {
         "name": "Maguikay",
-        "lat": 10.342,
-        "lng": 123.937
+        "lat": 10.338,
+        "lng": 123.935
       },
       {
         "name": "Paknaan",
-        "lat": 10.348,
-        "lng": 123.955
+        "lat": 10.36,
+        "lng": 123.96
+      },
+      {
+        "name": "Tabok",
+        "lat": 10.352,
+        "lng": 123.945
       }
     ],
     "pinCount": 3
@@ -3685,19 +4130,19 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1ftUq137xfHn5_9ocK2NNZzNpB6CawPXu",
     "pins": [
       {
+        "name": "Calamba",
+        "lat": 10.31,
+        "lng": 123.89
+      },
+      {
         "name": "Guadalupe",
-        "lat": 10.322,
-        "lng": 123.878
+        "lat": 10.325,
+        "lng": 123.882
       },
       {
         "name": "Labangon",
         "lat": 10.308,
-        "lng": 123.882
-      },
-      {
-        "name": "Calamba",
-        "lat": 10.304,
-        "lng": 123.886
+        "lng": 123.885
       }
     ],
     "pinCount": 3
@@ -3712,13 +4157,8 @@ def main():
     "pins": [
       {
         "name": "Camputhaw",
-        "lat": 10.3185,
-        "lng": 123.8955
-      },
-      {
-        "name": "Hipodromo",
-        "lat": 10.315,
-        "lng": 123.909
+        "lat": 10.32,
+        "lng": 123.896
       }
     ],
     "pinCount": 2
@@ -3733,18 +4173,18 @@ def main():
     "pins": [
       {
         "name": "Mambaling",
-        "lat": 10.292,
-        "lng": 123.876
+        "lat": 10.288,
+        "lng": 123.875
       },
       {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
       },
       {
         "name": "Tangke",
-        "lat": 10.2485,
-        "lng": 123.8545
+        "lat": 10.252,
+        "lng": 123.852
       }
     ],
     "pinCount": 3
@@ -3758,34 +4198,19 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1Wd1B3-hSrGHPzoiW9sgQZy6uAg3xN82P",
     "pins": [
       {
-        "name": "Cebu Business Park",
-        "lat": 10.3175,
-        "lng": 123.9055
-      },
-      {
-        "name": "Luz",
-        "lat": 10.3225,
-        "lng": 123.907
+        "name": "Carreta",
+        "lat": 10.312,
+        "lng": 123.912
       },
       {
         "name": "Kasambagan",
         "lat": 10.325,
-        "lng": 123.914
+        "lng": 123.912
       },
       {
         "name": "Mabolo",
-        "lat": 10.3185,
-        "lng": 123.918
-      },
-      {
-        "name": "Hipodromo",
-        "lat": 10.315,
-        "lng": 123.909
-      },
-      {
-        "name": "Carreta",
-        "lat": 10.312,
-        "lng": 123.91
+        "lat": 10.32,
+        "lng": 123.915
       }
     ],
     "pinCount": 6
@@ -3799,34 +4224,24 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1y5VPZNSEp7fPIeKZmrSLPK-bY6MZUP6I",
     "pins": [
       {
-        "name": "Mambaling",
-        "lat": 10.292,
-        "lng": 123.876
+        "name": "Basak Pardo",
+        "lat": 10.29,
+        "lng": 123.865
       },
       {
         "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
-      },
-      {
-        "name": "Basak Pardo",
-        "lat": 10.288,
-        "lng": 123.862
-      },
-      {
-        "name": "Cogon Pardo",
-        "lat": 10.284,
-        "lng": 123.856
-      },
-      {
-        "name": "Poblacion Pardo",
-        "lat": 10.291,
-        "lng": 123.858
+        "lat": 10.292,
+        "lng": 123.87
       },
       {
         "name": "Bulacao",
         "lat": 10.278,
-        "lng": 123.848
+        "lng": 123.85
+      },
+      {
+        "name": "Cogon Pardo",
+        "lat": 10.288,
+        "lng": 123.858
       },
       {
         "name": "Inayawan",
@@ -3834,9 +4249,24 @@ def main():
         "lng": 123.862
       },
       {
-        "name": "San Roque",
-        "lat": 10.2585,
+        "name": "Kinasang-An",
+        "lat": 10.282,
         "lng": 123.858
+      },
+      {
+        "name": "Mambaling",
+        "lat": 10.288,
+        "lng": 123.875
+      },
+      {
+        "name": "Poblacion Pardo",
+        "lat": 10.285,
+        "lng": 123.855
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.402,
+        "lng": 123.988
       }
     ],
     "pinCount": 8
@@ -3850,19 +4280,19 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1LkDpfbMoie8-5OB4M004Qyp0kRWU0__Q",
     "pins": [
       {
-        "name": "Maguikay",
-        "lat": 10.342,
-        "lng": 123.937
-      },
-      {
         "name": "Bakilid",
-        "lat": 10.336,
-        "lng": 123.931
+        "lat": 10.328,
+        "lng": 123.935
       },
       {
         "name": "Casuntingan",
-        "lat": 10.348,
-        "lng": 123.932
+        "lat": 10.342,
+        "lng": 123.93
+      },
+      {
+        "name": "Maguikay",
+        "lat": 10.338,
+        "lng": 123.935
       }
     ],
     "pinCount": 3
@@ -3876,14 +4306,39 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1GZLOpLALJI8D2k29z2R7EryufAL_r6hF",
     "pins": [
       {
+        "name": "Lataban",
+        "lat": 10.435,
+        "lng": 123.978
+      },
+      {
+        "name": "Poblacion",
+        "lat": 10.399,
+        "lng": 123.996
+      },
+      {
         "name": "San Roque",
-        "lat": 10.2585,
-        "lng": 123.858
+        "lat": 10.402,
+        "lng": 123.988
+      },
+      {
+        "name": "San Vicente",
+        "lat": 10.4,
+        "lng": 123.975
+      },
+      {
+        "name": "Sta. Cruz",
+        "lat": 10.405,
+        "lng": 123.982
+      },
+      {
+        "name": "Tabla",
+        "lat": 10.44,
+        "lng": 123.955
       },
       {
         "name": "Yati",
         "lat": 10.388,
-        "lng": 123.985
+        "lng": 123.968
       }
     ],
     "pinCount": 2
@@ -3897,29 +4352,54 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1RoshZeayPcNMNh6LB39av8J1bGUPPUFB",
     "pins": [
       {
-        "name": "Punta Princesa",
-        "lat": 10.301,
-        "lng": 123.875
+        "name": "Basak San Nicolas",
+        "lat": 10.292,
+        "lng": 123.87
       },
       {
-        "name": "Tisa",
-        "lat": 10.305,
-        "lng": 123.868
+        "name": "Buhisan",
+        "lat": 10.31,
+        "lng": 123.86
+      },
+      {
+        "name": "Calamba",
+        "lat": 10.31,
+        "lng": 123.89
+      },
+      {
+        "name": "Kalubihan",
+        "lat": 10.3,
+        "lng": 123.898
       },
       {
         "name": "Labangon",
         "lat": 10.308,
-        "lng": 123.882
+        "lng": 123.885
       },
       {
-        "name": "Basak San Nicolas",
-        "lat": 10.295,
-        "lng": 123.868
+        "name": "Pamutan",
+        "lat": 10.335,
+        "lng": 123.83
       },
       {
-        "name": "Calamba",
-        "lat": 10.304,
-        "lng": 123.886
+        "name": "Punta Princesa",
+        "lat": 10.298,
+        "lng": 123.875
+      },
+      {
+        "name": "Sambag 1",
+        "lat": 10.312,
+        "lng": 123.893
+      },
+      {
+        "name": "Tisa",
+        "lat": 10.305,
+        "lng": 123.875
+      },
+      {
+        "name": "Toong",
+        "lat": 10.315,
+        "lng": 123.845
       }
     ],
     "pinCount": 5
@@ -3933,14 +4413,94 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1qd6d_PWRzSPnanQrC7eHzox69D4j9Owv",
     "pins": [
       {
-        "name": "San Isidro",
-        "lat": 10.2605,
-        "lng": 123.8395
+        "name": "Central Poblacion",
+        "lat": 10.21,
+        "lng": 123.76
+      },
+      {
+        "name": "Colon",
+        "lat": 10.212,
+        "lng": 123.762
+      },
+      {
+        "name": "Inoburan",
+        "lat": 10.2,
+        "lng": 123.75
+      },
+      {
+        "name": "Jaguimit",
+        "lat": 10.24,
+        "lng": 123.68
+      },
+      {
+        "name": "Langtad",
+        "lat": 10.192,
+        "lng": 123.742
+      },
+      {
+        "name": "Lutac",
+        "lat": 10.22,
+        "lng": 123.72
+      },
+      {
+        "name": "Mainit",
+        "lat": 10.205,
+        "lng": 123.725
+      },
+      {
+        "name": "North Poblacion",
+        "lat": 10.215,
+        "lng": 123.76
+      },
+      {
+        "name": "South Poblacion",
+        "lat": 10.206,
+        "lng": 123.758
       },
       {
         "name": "Tangke",
-        "lat": 10.2485,
-        "lng": 123.8545
+        "lat": 10.215,
+        "lng": 123.755
+      },
+      {
+        "name": "Tinaan",
+        "lat": 10.208,
+        "lng": 123.758
+      },
+      {
+        "name": "West Poblacion",
+        "lat": 10.21,
+        "lng": 123.756
+      },
+      {
+        "name": "Bugho",
+        "lat": 10.22,
+        "lng": 123.7
+      },
+      {
+        "name": "Panadtaran",
+        "lat": 10.175,
+        "lng": 123.722
+      },
+      {
+        "name": "Pitalo",
+        "lat": 10.182,
+        "lng": 123.73
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.26,
+        "lng": 123.818
+      },
+      {
+        "name": "Sangat",
+        "lat": 10.15,
+        "lng": 123.7
+      },
+      {
+        "name": "Tananas",
+        "lat": 10.17,
+        "lng": 123.69
       }
     ],
     "pinCount": 2
@@ -3954,33 +4514,38 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1W68EXJJs0kr5oZGo9m0qMmeV8iHUUv96",
     "pins": [
       {
+        "name": "Cambaro",
+        "lat": 10.325,
+        "lng": 123.945
+      },
+      {
+        "name": "Ibabao-Estancia",
+        "lat": 10.335,
+        "lng": 123.945
+      },
+      {
+        "name": "Opao",
+        "lat": 10.322,
+        "lng": 123.952
+      },
+      {
+        "name": "Paknaan",
+        "lat": 10.36,
+        "lng": 123.96
+      },
+      {
+        "name": "Tabok",
+        "lat": 10.352,
+        "lng": 123.945
+      },
+      {
         "name": "Tipolo",
         "lat": 10.329,
         "lng": 123.931
       },
       {
-        "name": "Ibabao-Estancia",
-        "lat": 10.334,
-        "lng": 123.942
-      },
-      {
-        "name": "Alang-Alang",
-        "lat": 10.332,
-        "lng": 123.948
-      },
-      {
-        "name": "Paknaan",
-        "lat": 10.348,
-        "lng": 123.955
-      },
-      {
-        "name": "Opao",
-        "lat": 10.324,
-        "lng": 123.952
-      },
-      {
         "name": "Umapad",
-        "lat": 10.332,
+        "lat": 10.338,
         "lng": 123.962
       }
     ],
@@ -3995,29 +4560,34 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1YPhVsi4-8BbD-oQAsWdFLY4NaeIjhDeU",
     "pins": [
       {
-        "name": "Guizo",
-        "lat": 10.328,
-        "lng": 123.938
-      },
-      {
-        "name": "Mantuyong",
-        "lat": 10.327,
-        "lng": 123.941
+        "name": "Cambaro",
+        "lat": 10.325,
+        "lng": 123.945
       },
       {
         "name": "Centro",
-        "lat": 10.324,
-        "lng": 123.944
-      },
-      {
-        "name": "Ibabao-Estancia",
-        "lat": 10.334,
+        "lat": 10.328,
         "lng": 123.942
       },
       {
-        "name": "Alang-Alang",
-        "lat": 10.332,
+        "name": "Guizo",
+        "lat": 10.322,
+        "lng": 123.938
+      },
+      {
+        "name": "Ibabao-Estancia",
+        "lat": 10.335,
+        "lng": 123.945
+      },
+      {
+        "name": "Looc",
+        "lat": 10.318,
         "lng": 123.948
+      },
+      {
+        "name": "Mantuyong",
+        "lat": 10.326,
+        "lng": 123.942
       }
     ],
     "pinCount": 5
