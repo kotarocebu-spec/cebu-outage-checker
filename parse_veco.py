@@ -1960,12 +1960,24 @@ def main():
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
     
+    # 60グループマスターの読み込みと出力
+    groups_master_str = "[]"
+    master_json_path = "veco_groups_master.json"
+    if os.path.exists(master_json_path):
+        try:
+            with open(master_json_path, "r", encoding="utf-8") as mf:
+                groups_master_str = mf.read()
+        except Exception:
+            pass
+
     new_data_js_content = f"""/**
  * Cebu Infrastructure Checker - Integrated Data Source
  */
 export const CEBU_AREAS = {cebu_areas_str};
 
 export const VECO_OUTAGES = {outages_json_str};
+
+export const VECO_GROUPS_MASTER = {groups_master_str};
 """
 
     with open('data.js', 'w', encoding='utf-8') as f:
