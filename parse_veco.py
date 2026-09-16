@@ -1814,14 +1814,16 @@ def fetch_veco_calendar_outages(today_str):
         affected_ja = clean_translated_japanese(affected_ja)
 
         clean_status = "SCHEDULED"
-        if "RESTORED" in status.upper():
+        if "NOT IMPLEMENTED" in status.upper() or "REMAINED ON" in status.upper() or "GRID CONDITIONS" in status.upper():
+            clean_status = "AVOIDED"
+        elif "RESTORED" in status.upper():
             clean_status = "RESTORED"
         elif "ONGOING" in status.upper() or "ACTIVE" in status.upper():
             clean_status = "ONGOING"
+        elif "UPCOMING" in status.upper():
+            clean_status = "UPCOMING"
         elif "CANCELLED" in status.upper():
             clean_status = "CANCELLED"
-        elif "REMAINED ON" in status.upper():
-            clean_status = "NORMAL_GRID"
 
         item = {
             "id": 1000 + idx,
@@ -1853,7 +1855,8 @@ else:
     DEFAULT_MASTER_GROUPS = []
 
 def main():
-    today = datetime.datetime.now()
+    pht_tz = datetime.timezone(datetime.timedelta(hours=8))
+    today = datetime.datetime.now(pht_tz)
     today_str = today.strftime("%Y/%m/%d")
 
     # 1. 電気（VECO公式カレンダー）情報の取得
@@ -1867,7 +1870,7 @@ def main():
         final_mcwd_outages = []
 
     # 3. 終了済み過去イベントのステータス更新（夜間に予定が全滅するのを防止）
-    now_dt = datetime.datetime.now()
+    now_dt = datetime.datetime.now(pht_tz)
     filtered_outages = []
     for item in (final_veco_outages + final_mcwd_outages):
         time_slot = item.get("time", "")
