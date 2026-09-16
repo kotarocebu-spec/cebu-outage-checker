@@ -1731,6 +1731,119 @@ def fetch_veco_legacy_scraping(today_str):
     return final_veco_outages
 
 
+def fetch_veco_calendar_outages(today_str):
+    """
+    VECO公式 Service Interruption Calendar のバックエンドデータ（Googleスプレッドシート）から
+    リアルタイムに全日程の停電スケジュール（輪番停電＋計画保守）を直接取得します。
+    """
+    print("\n⚡ 1. VECO公式カレンダー（GoogleスプレッドシートAPI）から最新スケジュールを取得中...")
+    spreadsheet_id = '1rRq3A_2gFf0n68THzBVf6IYkHiSrhl1ZA6yOe50bp8o'
+    url_main = f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}/gviz/tq?tqx=out:json"
+    url_updates = f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}/gviz/tq?tqx=out:json&sheet=updates"
+
+    def fetch_gviz(url):
+        try:
+            import urllib.request
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                text = resp.read().decode('utf-8')
+            m = re.search(r'google\.visualization\.Query\.setResponse\(([\s\S]*)\);?', text)
+            if not m:
+                return []
+            data = json.loads(m.group(1))
+            cols = [c.get('label') or f"col_{i}" for i, c in enumerate(data['table']['cols'])]
+            rows = []
+            for r in data['table']['rows']:
+                row_vals = []
+                for c in r['c']:
+                    if c is None:
+                        row_vals.append(None)
+                    else:
+                        row_vals.append(c.get('f') or c.get('v'))
+                rows.append(dict(zip(cols, row_vals)))
+            return rows
+        except Exception as e:
+            print(f"⚠️ スプレッドシート取得エラー ({url}): {e}")
+            return []
+
+    main_rows = fetch_gviz(url_main)
+    print(f"📊 カレンダーメインデータ取得成功: {len(main_rows)} 件")
+
+    if not main_rows:
+        print("⚠️ カレンダー取得失敗のため、フォールバックで従来スクレイピングを実行します...")
+        return fetch_veco_legacy_scraping(today_str)
+
+    calendar_outages = []
+    for idx, r in enumerate(main_rows):
+        exact_date = r.get('exactDate')
+        if not exact_date:
+            continue
+        
+        date_formatted = exact_date.replace('-', '/')
+        if date_formatted < today_str:
+            # 過去の日程はスキップ
+            continue
+            
+        category = (r.get('category') or '').strip().lower()
+        time_info = r.get('timeInfo') or ''
+        parsed_time = parse_time(time_info)
+        locations = r.get('locations') or ''
+        title = r.get('title') or ''
+        status = (r.get('status') or '').strip()
+        map_link = r.get('mapLinks') or ''
+        
+        try:
+            dt = datetime.datetime.strptime(date_formatted, "%Y/%m/%d")
+            day_str = dt.strftime("%a")
+        except Exception:
+            day_str = ""
+
+        area_en, area_ja = parse_area_summary(locations)
+        
+        if "rotational" in category:
+            details_en = "Rotational Brownouts / Grid Alert"
+            details_ja = "計画的な供給制限（輪番停電）です。"
+            if not title:
+                title = details_en
+        else:
+            details_en = title if title else "Scheduled Distribution System Maintenance"
+            details_ja = cached_translate(details_en)
+            details_ja = clean_translated_japanese(details_ja)
+
+        affected_ja = cached_translate(locations)
+        affected_ja = clean_translated_japanese(affected_ja)
+
+        clean_status = "SCHEDULED"
+        if "RESTORED" in status.upper():
+            clean_status = "RESTORED"
+        elif "ONGOING" in status.upper() or "ACTIVE" in status.upper():
+            clean_status = "ONGOING"
+        elif "CANCELLED" in status.upper():
+            clean_status = "CANCELLED"
+        elif "REMAINED ON" in status.upper():
+            clean_status = "NORMAL_GRID"
+
+        item = {
+            "id": 1000 + idx,
+            "type": "electricity",
+            "date": date_formatted,
+            "day": day_str,
+            "time": parsed_time,
+            "areaEn": area_en,
+            "areaJa": area_ja,
+            "affectedEn": locations,
+            "affectedJa": affected_ja,
+            "detailsEn": details_en,
+            "detailsJa": details_ja,
+            "mapUrl": map_link,
+            "status": clean_status
+        }
+        calendar_outages.append(item)
+
+    print(f"✅ カレンダーから本日および未来の停電スケジュール {len(calendar_outages)} 件を生成しました。")
+    return calendar_outages
+
+
 # 60グループ全件精密ピン＆半径マスターデータ（外部JSONファイルから読み込み）
 MASTER_FILE = os.path.join(os.path.dirname(__file__), 'veco_groups_master.json')
 if os.path.exists(MASTER_FILE):
@@ -1743,8 +1856,8 @@ def main():
     today = datetime.datetime.now()
     today_str = today.strftime("%Y/%m/%d")
 
-    # 1. 電気（VECO）情報の取得
-    final_veco_outages = fetch_veco_legacy_scraping(today_str)
+    # 1. 電気（VECO公式カレンダー）情報の取得
+    final_veco_outages = fetch_veco_calendar_outages(today_str)
 
     # 2. 水道（MCWD）情報の取得
     try:
@@ -1753,7 +1866,7 @@ def main():
         print(f"⚠️ MCWD取得スキップ: {e}")
         final_mcwd_outages = []
 
-    # 3. 終了済み過去イベントの自動除外
+    # 3. 終了済み過去イベントのステータス更新（夜間に予定が全滅するのを防止）
     now_dt = datetime.datetime.now()
     filtered_outages = []
     for item in (final_veco_outages + final_mcwd_outages):
@@ -1764,8 +1877,7 @@ def main():
             end_m = int(m.group(4))
             end_dt = now_dt.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
             if now_dt > end_dt:
-                print(f"⏰ 終了済みのイベントを自動除外しました: {item.get('date')} {time_slot} ({item.get('areaJa', '')})")
-                continue
+                item["status"] = "RESTORED"
         filtered_outages.append(item)
 
     builtin_map_cache = {
