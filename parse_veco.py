@@ -2033,6 +2033,11 @@ def main():
         "lng": 123.918
       },
       {
+        "name": "Basak",
+        "lat": 10.355,
+        "lng": 123.95
+      },
+      {
         "name": "Cabancalan",
         "lat": 10.35,
         "lng": 123.932
@@ -2041,11 +2046,6 @@ def main():
         "name": "Canduman",
         "lat": 10.362,
         "lng": 123.938
-      },
-      {
-        "name": "Cubacub",
-        "lat": 10.375,
-        "lng": 123.935
       },
       {
         "name": "Jagobiao",
@@ -2066,6 +2066,11 @@ def main():
         "name": "Tabok",
         "lat": 10.352,
         "lng": 123.945
+      },
+      {
+        "name": "Casili",
+        "lat": 10.385,
+        "lng": 123.94
       }
     ],
     "pinCount": 10
@@ -2082,6 +2087,11 @@ def main():
         "name": "Banilad",
         "lat": 10.342,
         "lng": 123.918
+      },
+      {
+        "name": "Bakilid",
+        "lat": 10.328,
+        "lng": 123.935
       },
       {
         "name": "Cabancalan",
@@ -2146,8 +2156,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Sto. Niño",
@@ -2171,71 +2181,6 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1FBEouKi0fHoH2uZKTggpzGKsPtlMpNFS",
     "pins": [
       {
-        "name": "Cadulawan",
-        "lat": 10.252,
-        "lng": 123.788
-      },
-      {
-        "name": "Calajo-An",
-        "lat": 10.24,
-        "lng": 123.805
-      },
-      {
-        "name": "Cuanos",
-        "lat": 10.26,
-        "lng": 123.77
-      },
-      {
-        "name": "Linao",
-        "lat": 10.258,
-        "lng": 123.822
-      },
-      {
-        "name": "Manduang",
-        "lat": 10.255,
-        "lng": 123.76
-      },
-      {
-        "name": "Pakigne",
-        "lat": 10.25,
-        "lng": 123.81
-      },
-      {
-        "name": "Tubod",
-        "lat": 10.242,
-        "lng": 123.785
-      },
-      {
-        "name": "Tunghaan",
-        "lat": 10.238,
-        "lng": 123.79
-      },
-      {
-        "name": "Vito",
-        "lat": 10.235,
-        "lng": 123.795
-      },
-      {
-        "name": "Ward 1",
-        "lat": 10.245,
-        "lng": 123.796
-      },
-      {
-        "name": "Ward 3",
-        "lat": 10.247,
-        "lng": 123.8
-      },
-      {
-        "name": "Ward 4",
-        "lat": 10.248,
-        "lng": 123.802
-      },
-      {
-        "name": "Camp 8",
-        "lat": 10.275,
-        "lng": 123.755
-      },
-      {
         "name": "Lawaan I",
         "lat": 10.262,
         "lng": 123.832
@@ -2249,11 +2194,6 @@ def main():
         "name": "Lawaan Iii",
         "lat": 10.268,
         "lng": 123.822
-      },
-      {
-        "name": "Lipata",
-        "lat": 10.255,
-        "lng": 123.815
       }
     ],
     "pinCount": 7
@@ -2335,8 +2275,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       }
     ],
     "pinCount": 6
@@ -2349,26 +2289,6 @@ def main():
     "affectedEn": "Portion of Minglanilla: Lipata, Pakigne, Poblacion, & Tungkil, Portion of Talisay City: Biasong, Cansojong, Dumlog, Linao, Mohon, Pooc, & San Isidro",
     "mapUrl": "https://lh3.googleusercontent.com/d/1TEQtLaAwL4_5fHxG9JgrjAIJOb__yQf6",
     "pins": [
-      {
-        "name": "Lipata",
-        "lat": 10.255,
-        "lng": 123.815
-      },
-      {
-        "name": "Pakigne",
-        "lat": 10.25,
-        "lng": 123.81
-      },
-      {
-        "name": "Poblacion",
-        "lat": 10.245,
-        "lng": 123.798
-      },
-      {
-        "name": "Tungkil",
-        "lat": 10.248,
-        "lng": 123.802
-      },
       {
         "name": "Cansojong",
         "lat": 10.255,
@@ -2462,6 +2382,11 @@ def main():
         "lng": 123.845
       },
       {
+        "name": "Bulacao",
+        "lat": 10.272,
+        "lng": 123.845
+      },
+      {
         "name": "Camp 4",
         "lat": 10.312,
         "lng": 123.795
@@ -2536,6 +2461,11 @@ def main():
         "name": "Talamban",
         "lat": 10.368,
         "lng": 123.918
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.35,
+        "lng": 123.932
       }
     ],
     "pinCount": 3
@@ -2600,8 +2530,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Sirao",
@@ -2674,6 +2604,11 @@ def main():
         "name": "Talamban",
         "lat": 10.368,
         "lng": 123.918
+      },
+      {
+        "name": "Cabancalan",
+        "lat": 10.35,
+        "lng": 123.932
       },
       {
         "name": "Canduman",
@@ -2896,8 +2831,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       }
     ],
     "pinCount": 7
@@ -2958,8 +2893,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Tejero",
@@ -3017,6 +2952,11 @@ def main():
         "name": "Mabolo",
         "lat": 10.32,
         "lng": 123.915
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.32,
+        "lng": 123.928
       }
     ],
     "pinCount": 4
@@ -3033,6 +2973,11 @@ def main():
         "name": "Mabolo",
         "lat": 10.32,
         "lng": 123.915
+      },
+      {
+        "name": "Guizo",
+        "lat": 10.322,
+        "lng": 123.938
       },
       {
         "name": "Subangdaku",
@@ -3160,6 +3105,11 @@ def main():
         "name": "Tabok",
         "lat": 10.352,
         "lng": 123.945
+      },
+      {
+        "name": "Poblacion Oriental",
+        "lat": 10.378,
+        "lng": 123.96
       }
     ],
     "pinCount": 4
@@ -3222,6 +3172,11 @@ def main():
         "name": "Poblacion Oriental",
         "lat": 10.378,
         "lng": 123.96
+      },
+      {
+        "name": "Yati",
+        "lat": 10.388,
+        "lng": 123.968
       }
     ],
     "pinCount": 3
@@ -3619,8 +3574,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Sawang Calero",
@@ -3713,6 +3668,11 @@ def main():
         "name": "Mambaling",
         "lat": 10.288,
         "lng": 123.875
+      },
+      {
+        "name": "San Isidro",
+        "lat": 10.26,
+        "lng": 123.818
       }
     ],
     "pinCount": 3
@@ -3803,8 +3763,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Sawang Calero",
@@ -3868,9 +3828,24 @@ def main():
         "lng": 123.968
       },
       {
+        "name": "Calero",
+        "lat": 10.385,
+        "lng": 123.992
+      },
+      {
+        "name": "Tayud",
+        "lat": 10.38,
+        "lng": 123.985
+      },
+      {
         "name": "Yati",
         "lat": 10.388,
         "lng": 123.968
+      },
+      {
+        "name": "Jagobiao",
+        "lat": 10.366,
+        "lng": 123.958
       }
     ],
     "pinCount": 3
@@ -3934,9 +3909,19 @@ def main():
         "lng": 123.952
       },
       {
+        "name": "Catarman",
+        "lat": 10.389,
+        "lng": 124.015
+      },
+      {
         "name": "San Roque",
         "lat": 10.402,
         "lng": 123.988
+      },
+      {
+        "name": "Tayud",
+        "lat": 10.38,
+        "lng": 123.985
       },
       {
         "name": "Yati",
@@ -3987,8 +3972,8 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
       },
       {
         "name": "Tejero",
@@ -3999,6 +3984,11 @@ def main():
         "name": "Tinago",
         "lat": 10.298,
         "lng": 123.908
+      },
+      {
+        "name": "Subangdaku",
+        "lat": 10.32,
+        "lng": 123.928
       }
     ],
     "pinCount": 6
@@ -4130,19 +4120,29 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1ftUq137xfHn5_9ocK2NNZzNpB6CawPXu",
     "pins": [
       {
-        "name": "Calamba",
-        "lat": 10.31,
-        "lng": 123.89
+        "name": "Salvador St (Banawa/Guadalupe)",
+        "lat": 10.3135,
+        "lng": 123.8795
       },
       {
-        "name": "Guadalupe",
-        "lat": 10.325,
+        "name": "Katipunan St (Labangon)",
+        "lat": 10.306,
         "lng": 123.882
       },
       {
-        "name": "Labangon",
-        "lat": 10.308,
-        "lng": 123.885
+        "name": "V. Rama Ave (Calamba)",
+        "lat": 10.3115,
+        "lng": 123.888
+      },
+      {
+        "name": "M. Velez St (Capitol Site)",
+        "lat": 10.3175,
+        "lng": 123.886
+      },
+      {
+        "name": "Horseshoe Hills (Banawa)",
+        "lat": 10.316,
+        "lng": 123.8745
       }
     ],
     "pinCount": 3
@@ -4172,19 +4172,24 @@ def main():
     "mapUrl": "https://lh3.googleusercontent.com/d/1WiVuO2PzeSi_1dMw00u5LcRneHN5MOib",
     "pins": [
       {
-        "name": "Mambaling",
-        "lat": 10.288,
-        "lng": 123.875
+        "name": "San Roque (Talisay / CSCR)",
+        "lat": 10.258,
+        "lng": 123.856
       },
       {
-        "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "name": "Tangke (Talisay / CSCR)",
+        "lat": 10.251,
+        "lng": 123.85
       },
       {
-        "name": "Tangke",
-        "lat": 10.252,
-        "lng": 123.852
+        "name": "Inayawan (Cebu City)",
+        "lat": 10.268,
+        "lng": 123.868
+      },
+      {
+        "name": "Mambaling / SRP (Cebu City)",
+        "lat": 10.28,
+        "lng": 123.878
       }
     ],
     "pinCount": 3
@@ -4265,8 +4270,18 @@ def main():
       },
       {
         "name": "San Roque",
-        "lat": 10.402,
-        "lng": 123.988
+        "lat": 10.295,
+        "lng": 123.905
+      },
+      {
+        "name": "Bulacao",
+        "lat": 10.272,
+        "lng": 123.845
+      },
+      {
+        "name": "San Roque",
+        "lat": 10.26,
+        "lng": 123.845
       }
     ],
     "pinCount": 8
