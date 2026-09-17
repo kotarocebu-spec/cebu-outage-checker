@@ -1,0 +1,2459 @@
+[
+  {
+    "groupId": "meco-f01",
+    "feederNumber": "1",
+    "title": "MECO FEEDER 1",
+    "color": "#b45309",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Basak西部 / CLIP工業団地 / Sudtunggan / Tangke)",
+    "areaEn": "Lapu-Lapu City (Basak West / CLIP / Sudtunggan / Tangke)",
+    "affectedJa": "Cebu Light Industrial Park (CLIP), MTC Mactan Town Center, Basak Elementary School, BF Better Living Sudtungan, Tangke, La Aldea Buena Mactan, Timpolok Rd, George Tampus St",
+    "affectedEn": "Cebu Light Industrial Park (CLIP), MTC Mactan Town Center, Basak Elementary School, BF Better Living Sudtungan, Tangke, La Aldea Buena Mactan, Timpolok Rd, George Tampus St",
+    "pins": [
+      {
+        "name": "MTC Mactan Town Center (MerryMart/Bo's)",
+        "lat": 10.28587,
+        "lng": 123.94192,
+        "radius": 300
+      },
+      {
+        "name": "Basak Elementary & High School",
+        "lat": 10.28806,
+        "lng": 123.94561,
+        "radius": 200
+      },
+      {
+        "name": "Tangke Residential Area",
+        "lat": 10.27929,
+        "lng": 123.93505,
+        "radius": 220
+      },
+      {
+        "name": "George Tampus Street (Basak West)",
+        "lat": 10.28029,
+        "lng": 123.9426,
+        "radius": 350
+      },
+      {
+        "name": "BF Better Living - Sudtunggan",
+        "lat": 10.27734,
+        "lng": 123.93891,
+        "radius": 350
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.28308,
+        "lng": 123.93771,
+        "radius": 300
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.2917,
+        "lng": 123.94715,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.29566,
+        "lng": 123.94672,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.29795,
+        "lng": 123.94853,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.30521,
+        "lng": 123.95093,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.30791,
+        "lng": 123.95471,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.30749,
+        "lng": 123.95711,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.30664,
+        "lng": 123.95917,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.28317,
+        "lng": 123.94887,
+        "radius": 500
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.28578,
+        "lng": 123.95179,
+        "radius": 500
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.29018,
+        "lng": 123.94973,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.29963,
+        "lng": 123.95016,
+        "radius": 150
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.28173,
+        "lng": 123.95376,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f02",
+    "feederNumber": "2",
+    "title": "MECO FEEDER 2",
+    "color": "#16a34a",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Pajo / Sangi / Benito Ebuen Airbase)",
+    "areaEn": "Lapu-Lapu City (Pajo / Sangi / Benito Ebuen Airbase)",
+    "affectedJa": "MECO本社、ベニト・エブエン空軍基地、サンギ通り",
+    "affectedEn": "MECO Main Office, Benito Ebuen Airbase, Sangi Road",
+    "pins": [
+      {
+        "name": "MECO Main Office",
+        "lat": 10.29862,
+        "lng": 123.95333,
+        "radius": 300
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.31103,
+        "lng": 123.95119,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.29617,
+        "lng": 123.95196,
+        "radius": 250
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.30158,
+        "lng": 123.95891,
+        "radius": 300
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29465,
+        "lng": 123.94999,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.30183,
+        "lng": 123.95331,
+        "radius": 250
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.30137,
+        "lng": 123.95752,
+        "radius": 350
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.30751,
+        "lng": 123.95139,
+        "radius": 150
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.31095,
+        "lng": 123.95857,
+        "radius": 150
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.30479,
+        "lng": 123.95711,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.31078,
+        "lng": 123.95325,
+        "radius": 150
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.30994,
+        "lng": 123.96037,
+        "radius": 100
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.30985,
+        "lng": 123.96209,
+        "radius": 150
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.30825,
+        "lng": 123.9717,
+        "radius": 350
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.30698,
+        "lng": 123.96981,
+        "radius": 300
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.30994,
+        "lng": 123.96715,
+        "radius": 300
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.31061,
+        "lng": 123.96389,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.31289,
+        "lng": 123.97058,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.31146,
+        "lng": 123.97333,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.31779,
+        "lng": 123.97711,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.32049,
+        "lng": 123.9784,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.31517,
+        "lng": 123.97419,
+        "radius": 150
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.30977,
+        "lng": 123.9747,
+        "radius": 200
+      },
+      {
+        "name": "Point 24",
+        "lat": 10.31365,
+        "lng": 123.9729,
+        "radius": 200
+      },
+      {
+        "name": "Point 25",
+        "lat": 10.31686,
+        "lng": 123.97548,
+        "radius": 100
+      },
+      {
+        "name": "Point 26",
+        "lat": 10.31543,
+        "lng": 123.9717,
+        "radius": 100
+      },
+      {
+        "name": "Point 27",
+        "lat": 10.3107,
+        "lng": 123.9678,
+        "radius": 200
+      },
+      {
+        "name": "Point 28",
+        "lat": 10.31129,
+        "lng": 123.95642,
+        "radius": 100
+      },
+      {
+        "name": "Point 29",
+        "lat": 10.31087,
+        "lng": 123.95496,
+        "radius": 100
+      },
+      {
+        "name": "Point 30",
+        "lat": 10.30594,
+        "lng": 123.95201,
+        "radius": 100
+      },
+      {
+        "name": "Point 31",
+        "lat": 10.30631,
+        "lng": 123.95462,
+        "radius": 100
+      },
+      {
+        "name": "Point 32",
+        "lat": 10.29828,
+        "lng": 123.95556,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f03",
+    "feederNumber": "3",
+    "title": "MECO FEEDER 3",
+    "color": "#78350f",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Basak東部 / Cagudoy / Pajac / Plumera)",
+    "areaEn": "Lapu-Lapu City (Basak East / Cagudoy / Pajac / Plumera)",
+    "affectedJa": "Vivien's Hotel、コンドPlumera Mactan、LLIC国際大学、ガイサノ・セイバーズマート",
+    "affectedEn": "Vivien's Hotel, Plumera Mactan, LLIC, Gaisano Saver's Mart",
+    "pins": [
+      {
+        "name": "Point 2",
+        "lat": 10.29203,
+        "lng": 123.95904,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.29334,
+        "lng": 123.96071,
+        "radius": 250
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.29453,
+        "lng": 123.96385,
+        "radius": 100
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29081,
+        "lng": 123.95737,
+        "radius": 250
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29501,
+        "lng": 123.97322,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.2967,
+        "lng": 123.97541,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.29864,
+        "lng": 123.97722,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.30297,
+        "lng": 123.98112,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.30379,
+        "lng": 123.98264,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.30529,
+        "lng": 123.98415,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.30096,
+        "lng": 123.97822,
+        "radius": 100
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.29157,
+        "lng": 123.96872,
+        "radius": 150
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.29225,
+        "lng": 123.97022,
+        "radius": 100
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.29347,
+        "lng": 123.97129,
+        "radius": 100
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.30761,
+        "lng": 123.985,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f04",
+    "feederNumber": "4",
+    "title": "MECO FEEDER 4",
+    "color": "#2563eb",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Bankal / Deka 5 / Mahayahay)",
+    "areaEn": "Lapu-Lapu City (Bankal / Deka 5 / Mahayahay)",
+    "affectedJa": "Deca Homes 5、Bankal Elementary School、Mahayahay",
+    "affectedEn": "Deca Homes 5, Bankal Elementary School, Mahayahay",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.29968,
+        "lng": 123.9841,
+        "radius": 150
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.30035,
+        "lng": 123.98582,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.30128,
+        "lng": 123.98874,
+        "radius": 300
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.29959,
+        "lng": 123.99213,
+        "radius": 300
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29744,
+        "lng": 123.99419,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.30348,
+        "lng": 123.99067,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.30352,
+        "lng": 123.99314,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.3009,
+        "lng": 123.99526,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.29507,
+        "lng": 123.99402,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f05",
+    "feederNumber": "5",
+    "title": "MECO FEEDER 5",
+    "color": "#84cc16",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Basak南東 / Sudtunggan / Collinwood)",
+    "areaEn": "Lapu-Lapu City (Basak South-East / Sudtunggan / Collinwood)",
+    "affectedJa": "Collinwood Subdivision, Sudtunggan, Gaisano Grand Mall Basak周辺",
+    "affectedEn": "Collinwood Subdivision, Sudtunggan, Gaisano Grand Mall vicinity",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.27831,
+        "lng": 123.95762,
+        "radius": 200
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.27071,
+        "lng": 123.96329,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.27177,
+        "lng": 123.96269,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.27215,
+        "lng": 123.96183,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.27362,
+        "lng": 123.96024,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.27544,
+        "lng": 123.95874,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.2803,
+        "lng": 123.95883,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.27633,
+        "lng": 123.96097,
+        "radius": 350
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.2822,
+        "lng": 123.96239,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.27865,
+        "lng": 123.96204,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.27535,
+        "lng": 123.96496,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.27696,
+        "lng": 123.96548,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.27966,
+        "lng": 123.96462,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.2819,
+        "lng": 123.96672,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.28258,
+        "lng": 123.96973,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.28469,
+        "lng": 123.96883,
+        "radius": 100
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.28038,
+        "lng": 123.97101,
+        "radius": 300
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.27916,
+        "lng": 123.97453,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.27687,
+        "lng": 123.97363,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.27502,
+        "lng": 123.97106,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.27742,
+        "lng": 123.97174,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.27949,
+        "lng": 123.96651,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f06",
+    "feederNumber": "6",
+    "title": "MECO FEEDER 6",
+    "color": "#059669",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Marigondon北部 / Suba-basbas境界)",
+    "areaEn": "Lapu-Lapu City (Marigondon North / Suba-basbas border)",
+    "affectedJa": "Marigondon Crossing, Plantation Bay周辺",
+    "affectedEn": "Marigondon Crossing, Plantation Bay vicinity",
+    "pins": [
+      {
+        "name": "Marigondon Crossing",
+        "lat": 10.28325,
+        "lng": 123.97548,
+        "radius": 250
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.2643,
+        "lng": 124.05041,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.28532,
+        "lng": 123.97252,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.29001,
+        "lng": 123.97846,
+        "radius": 250
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.28851,
+        "lng": 123.97646,
+        "radius": 250
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.28524,
+        "lng": 123.97634,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.28262,
+        "lng": 123.97822,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.28359,
+        "lng": 123.98063,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.28137,
+        "lng": 123.98176,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.27966,
+        "lng": 123.9805,
+        "radius": 100
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.28106,
+        "lng": 123.98509,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.27989,
+        "lng": 123.98676,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.28684,
+        "lng": 123.98595,
+        "radius": 150
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.28268,
+        "lng": 123.98681,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.28353,
+        "lng": 123.98934,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.28198,
+        "lng": 123.98983,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.27945,
+        "lng": 123.98915,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.2812,
+        "lng": 123.99284,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.28152,
+        "lng": 123.99606,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.28099,
+        "lng": 123.99764,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.27863,
+        "lng": 123.99462,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.27943,
+        "lng": 123.99221,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.27905,
+        "lng": 123.99608,
+        "radius": 100
+      },
+      {
+        "name": "Point 24",
+        "lat": 10.28329,
+        "lng": 123.98365,
+        "radius": 200
+      },
+      {
+        "name": "Point 25",
+        "lat": 10.28515,
+        "lng": 123.98691,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f07",
+    "feederNumber": "7",
+    "title": "MECO FEEDER 7",
+    "color": "#1d4ed8",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Poblacion / Looc / Canjulao / Tiangue Rd)",
+    "areaEn": "Lapu-Lapu City (Poblacion / Looc / Canjulao / Tiangue Rd)",
+    "affectedJa": "オポン旧市街、フェリーターミナル、Tiangue Road沿い、Canjulao、Hoops Dome周辺",
+    "affectedEn": "Opon Poblacion, Ferry Terminal, Tiangue Road, Canjulao, Hoops Dome vicinity",
+    "pins": [
+      {
+        "name": "Hoops Dome Sports Complex",
+        "lat": 10.30973,
+        "lng": 123.94698,
+        "radius": 300
+      },
+      {
+        "name": "Gun-ob Barangay Hall",
+        "lat": 10.30107,
+        "lng": 123.94011,
+        "radius": 600
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.30681,
+        "lng": 123.94329,
+        "radius": 300
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.30641,
+        "lng": 123.94786,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.30113,
+        "lng": 123.94593,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.30375,
+        "lng": 123.94842,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.3043,
+        "lng": 123.94599,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.29398,
+        "lng": 123.93913,
+        "radius": 500
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.29381,
+        "lng": 123.94359,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.29119,
+        "lng": 123.94325,
+        "radius": 150
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.28992,
+        "lng": 123.93857,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.31424,
+        "lng": 123.95265,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.31348,
+        "lng": 123.95565,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.31383,
+        "lng": 123.95874,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.31412,
+        "lng": 123.96104,
+        "radius": 100
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.31657,
+        "lng": 123.96136,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.31695,
+        "lng": 123.95917,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.31832,
+        "lng": 123.96219,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.31973,
+        "lng": 123.96473,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.31811,
+        "lng": 123.96535,
+        "radius": 100
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.31465,
+        "lng": 123.96119,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.31209,
+        "lng": 123.96035,
+        "radius": 100
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.31395,
+        "lng": 123.95007,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f08",
+    "feederNumber": "8",
+    "title": "MECO FEEDER 8",
+    "color": "#ca8a04",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Pusok / 第一・第二マクタンブリッジ取付部)",
+    "areaEn": "Lapu-Lapu City (Pusok / 1st & 2nd Mactan Bridge approaches)",
+    "affectedJa": "プソック、マリーナモール、アイランドセントラルモール、両ブリッジ周辺",
+    "affectedEn": "Pusok, Marina Mall, Island Central Mactan, Bridge approaches",
+    "pins": [
+      {
+        "name": "Marina Mall / Island Central",
+        "lat": 10.32058,
+        "lng": 123.96852,
+        "radius": 250
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.32269,
+        "lng": 123.97024,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.32336,
+        "lng": 123.97256,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.32456,
+        "lng": 123.97496,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.32252,
+        "lng": 123.97676,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.32108,
+        "lng": 123.9741,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.31825,
+        "lng": 123.97402,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.31961,
+        "lng": 123.97174,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.31741,
+        "lng": 123.97041,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.31724,
+        "lng": 123.96827,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.31513,
+        "lng": 123.96801,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.31416,
+        "lng": 123.96518,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.3131,
+        "lng": 123.96398,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.31657,
+        "lng": 123.97273,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f10",
+    "feederNumber": "10",
+    "title": "MECO FEEDER 10",
+    "color": "#9333ea",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (MEPZ 2 / CLIP工業団地)",
+    "areaEn": "Lapu-Lapu City (MEPZ 2 / Cebu Light Industrial Park)",
+    "affectedJa": "MEPZ 2 輸出加工区、Cebu Light Industrial Park (CLIP)",
+    "affectedEn": "MEPZ 2 Zone, Cebu Light Industrial Park (CLIP)",
+    "pins": [
+      {
+        "name": "Cebu Light Industrial Park (CLIP)",
+        "lat": 10.29013,
+        "lng": 123.9638,
+        "radius": 100
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.29111,
+        "lng": 123.96256,
+        "radius": 100
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.28845,
+        "lng": 123.96368,
+        "radius": 100
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.28736,
+        "lng": 123.96273,
+        "radius": 100
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.28609,
+        "lng": 123.9617,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f10a",
+    "feederNumber": "10A",
+    "title": "MECO FEEDER 10A",
+    "color": "#c026d3",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (MEPZ 2 商業区画 / Pueblo Verde / Tamiya)",
+    "areaEn": "Lapu-Lapu City (MEPZ 2 Commercial / Pueblo Verde / Tamiya)",
+    "affectedJa": "The Outlets at Pueblo Verde, Robinsons Supermarket, Tamiya Terminal, MEPZ 2商業エリア",
+    "affectedEn": "The Outlets at Pueblo Verde, Robinsons Supermarket, Tamiya Terminal, MEPZ 2 Commercial zone",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.28388,
+        "lng": 123.95694,
+        "radius": 150
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.28583,
+        "lng": 123.95788,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.28786,
+        "lng": 123.95998,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.28908,
+        "lng": 123.96119,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29191,
+        "lng": 123.9614,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f11",
+    "feederNumber": "11",
+    "title": "MECO FEEDER 11",
+    "color": "#a3e635",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Mactan Newtown 手前 / Mactan proper)",
+    "areaEn": "Lapu-Lapu City (Mactan Proper)",
+    "affectedJa": "マクタンプロパー地区",
+    "affectedEn": "Mactan proper district",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.30783,
+        "lng": 124.01219,
+        "radius": 150
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.30776,
+        "lng": 124.01406,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f12",
+    "feederNumber": "12",
+    "title": "MECO FEEDER 12",
+    "color": "#15803d",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Agus / Soong / Marigondon東部)",
+    "areaEn": "Lapu-Lapu City (Agus / Soong / Marigondon East)",
+    "affectedJa": "Agus、Soong、リゾートホテル群",
+    "affectedEn": "Agus, Soong, resort hotel areas",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.30571,
+        "lng": 124.005,
+        "radius": 200
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.3028,
+        "lng": 124.00535,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.29955,
+        "lng": 124.01135,
+        "radius": 600
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.30158,
+        "lng": 124.01719,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.30361,
+        "lng": 124.01582,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.30453,
+        "lng": 124.01341,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.30487,
+        "lng": 124.01084,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.30504,
+        "lng": 124.00801,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.3074,
+        "lng": 124.00947,
+        "radius": 150
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.31006,
+        "lng": 124.01191,
+        "radius": 150
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.30888,
+        "lng": 124.01041,
+        "radius": 100
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.30593,
+        "lng": 124.00303,
+        "radius": 150
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.30048,
+        "lng": 124.0053,
+        "radius": 150
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.29322,
+        "lng": 124.01118,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.29381,
+        "lng": 124.00972,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.29601,
+        "lng": 124.00809,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.29275,
+        "lng": 124.00685,
+        "radius": 100
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.29199,
+        "lng": 124.00839,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f13",
+    "feederNumber": "13",
+    "title": "MECO FEEDER 13",
+    "color": "#a21caf",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Buaya / Mactan空港北側)",
+    "areaEn": "Lapu-Lapu City (Buaya / Airport North)",
+    "affectedJa": "ブアヤ地区、空港北側エリア",
+    "affectedEn": "Buaya, Airport North area",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.31703,
+        "lng": 123.99616,
+        "radius": 200
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.31534,
+        "lng": 123.99423,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.31129,
+        "lng": 123.99719,
+        "radius": 600
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.31353,
+        "lng": 123.99213,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.3115,
+        "lng": 123.99054,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.30888,
+        "lng": 123.98852,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.3088,
+        "lng": 123.99136,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.30504,
+        "lng": 123.99646,
+        "radius": 150
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.30965,
+        "lng": 124.00419,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.30876,
+        "lng": 124.00655,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.31036,
+        "lng": 124.00844,
+        "radius": 150
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.31095,
+        "lng": 124.00573,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.31268,
+        "lng": 124.00307,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f14",
+    "feederNumber": "14",
+    "title": "MECO FEEDER 14",
+    "color": "#b91c1c",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Maribago / Jpark Island Resort)",
+    "areaEn": "Lapu-Lapu City (Maribago / Jpark Island Resort)",
+    "affectedJa": "マリバゴ中心部、Jpark Island Resort、Buyong、Costabella Resort",
+    "affectedEn": "Maribago proper, Jpark Island Resort, Buyong, Costabella Resort",
+    "pins": [
+      {
+        "name": "Point 1",
+        "lat": 10.29727,
+        "lng": 123.97964,
+        "radius": 200
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.29461,
+        "lng": 123.98063,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.29545,
+        "lng": 123.98483,
+        "radius": 450
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.29199,
+        "lng": 123.9899,
+        "radius": 450
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.29811,
+        "lng": 123.98745,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.29676,
+        "lng": 123.98994,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.29507,
+        "lng": 123.99221,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.29119,
+        "lng": 123.98226,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.28819,
+        "lng": 123.98247,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.29094,
+        "lng": 123.98462,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.28733,
+        "lng": 123.9796,
+        "radius": 150
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.28661,
+        "lng": 123.98423,
+        "radius": 100
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.28874,
+        "lng": 123.99067,
+        "radius": 300
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.28612,
+        "lng": 123.99333,
+        "radius": 250
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.28629,
+        "lng": 123.99706,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.29018,
+        "lng": 123.99556,
+        "radius": 450
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.28997,
+        "lng": 123.99947,
+        "radius": 100
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.29562,
+        "lng": 123.99629,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.2941,
+        "lng": 123.99925,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.29533,
+        "lng": 124.0014,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.29786,
+        "lng": 123.99796,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.29647,
+        "lng": 123.99934,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.2983,
+        "lng": 124.00239,
+        "radius": 200
+      },
+      {
+        "name": "Point 24",
+        "lat": 10.29896,
+        "lng": 124.00408,
+        "radius": 100
+      },
+      {
+        "name": "Point 25",
+        "lat": 10.30027,
+        "lng": 124.00009,
+        "radius": 350
+      },
+      {
+        "name": "Point 26",
+        "lat": 10.30128,
+        "lng": 124.00314,
+        "radius": 100
+      },
+      {
+        "name": "Point 27",
+        "lat": 10.30289,
+        "lng": 124.00174,
+        "radius": 200
+      },
+      {
+        "name": "Point 28",
+        "lat": 10.30438,
+        "lng": 124.00037,
+        "radius": 150
+      },
+      {
+        "name": "Point 29",
+        "lat": 10.30533,
+        "lng": 123.99964,
+        "radius": 150
+      },
+      {
+        "name": "Point 30",
+        "lat": 10.30667,
+        "lng": 124.00099,
+        "radius": 100
+      },
+      {
+        "name": "Point 31",
+        "lat": 10.3032,
+        "lng": 123.9988,
+        "radius": 100
+      },
+      {
+        "name": "Point 32",
+        "lat": 10.28948,
+        "lng": 124.00453,
+        "radius": 100
+      },
+      {
+        "name": "Point 33",
+        "lat": 10.29079,
+        "lng": 124.0062,
+        "radius": 150
+      },
+      {
+        "name": "Point 34",
+        "lat": 10.28948,
+        "lng": 124.00771,
+        "radius": 150
+      },
+      {
+        "name": "Point 35",
+        "lat": 10.29062,
+        "lng": 124.00955,
+        "radius": 100
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f15",
+    "feederNumber": "15",
+    "title": "MECO FEEDER 15",
+    "color": "#1e40af",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Suba-basbas東部 / Marigondon南部 / Plantation Bay)",
+    "areaEn": "Lapu-Lapu City (Suba-basbas East / Marigondon South)",
+    "affectedJa": "Plantation Bay Resort & Spa、Marigondon南部海岸",
+    "affectedEn": "Plantation Bay Resort & Spa, Marigondon South coast",
+    "pins": [
+      {
+        "name": "Plantation Bay Resort & Spa",
+        "lat": 10.27996,
+        "lng": 123.97822,
+        "radius": 250
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.26273,
+        "lng": 123.97874,
+        "radius": 350
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.26763,
+        "lng": 123.97771,
+        "radius": 350
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.27599,
+        "lng": 123.97848,
+        "radius": 350
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.25977,
+        "lng": 123.97925,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.26028,
+        "lng": 123.9826,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.26729,
+        "lng": 123.98294,
+        "radius": 600
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.27117,
+        "lng": 123.97754,
+        "radius": 350
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.26975,
+        "lng": 123.98887,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.2721,
+        "lng": 123.9905,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.27473,
+        "lng": 123.99187,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.27709,
+        "lng": 123.98303,
+        "radius": 400
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.2776,
+        "lng": 123.98724,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.27447,
+        "lng": 123.98732,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.27236,
+        "lng": 123.98355,
+        "radius": 450
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.28908,
+        "lng": 124.002,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.29144,
+        "lng": 124.00157,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.29216,
+        "lng": 124.00346,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.29655,
+        "lng": 124.005,
+        "radius": 150
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.29427,
+        "lng": 124.00505,
+        "radius": 150
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f16",
+    "feederNumber": "16",
+    "title": "MECO FEEDER 16",
+    "color": "#701a75",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Babag / Calawisan / CCLEX取付部)",
+    "areaEn": "Lapu-Lapu City (Babag / Calawisan / CCLEX Approach)",
+    "affectedJa": "ババグ、カラウィサン、CCLEXコルドバ分岐路周辺",
+    "affectedEn": "Babag, Calawisan, CCLEX approach",
+    "pins": [
+      {
+        "name": "Babag Barangay Hall",
+        "lat": 10.27607,
+        "lng": 123.94441,
+        "radius": 250
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.27092,
+        "lng": 123.93848,
+        "radius": 350
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.2738,
+        "lng": 123.94209,
+        "radius": 300
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.27726,
+        "lng": 123.94655,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.27666,
+        "lng": 123.95256,
+        "radius": 250
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.27379,
+        "lng": 123.95376,
+        "radius": 300
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.27244,
+        "lng": 123.95591,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.27075,
+        "lng": 123.95282,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.27177,
+        "lng": 123.94913,
+        "radius": 300
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.2749,
+        "lng": 123.95067,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.26982,
+        "lng": 123.94617,
+        "radius": 300
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.26768,
+        "lng": 123.94265,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.26582,
+        "lng": 123.94514,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.26649,
+        "lng": 123.94668,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.26336,
+        "lng": 123.94591,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.26269,
+        "lng": 123.94398,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.25836,
+        "lng": 123.94359,
+        "radius": 500
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.26093,
+        "lng": 123.94745,
+        "radius": 150
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.25663,
+        "lng": 123.94795,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.25904,
+        "lng": 123.94808,
+        "radius": 100
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.25361,
+        "lng": 123.94896,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.2509,
+        "lng": 123.94896,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.2485,
+        "lng": 123.9481,
+        "radius": 200
+      },
+      {
+        "name": "Point 24",
+        "lat": 10.24588,
+        "lng": 123.94672,
+        "radius": 200
+      },
+      {
+        "name": "Point 25",
+        "lat": 10.24626,
+        "lng": 123.94415,
+        "radius": 200
+      },
+      {
+        "name": "Point 26",
+        "lat": 10.24824,
+        "lng": 123.94205,
+        "radius": 200
+      },
+      {
+        "name": "Point 27",
+        "lat": 10.24954,
+        "lng": 123.93939,
+        "radius": 200
+      },
+      {
+        "name": "Point 28",
+        "lat": 10.25109,
+        "lng": 123.93728,
+        "radius": 200
+      },
+      {
+        "name": "Point 29",
+        "lat": 10.25328,
+        "lng": 123.93591,
+        "radius": 200
+      },
+      {
+        "name": "Point 30",
+        "lat": 10.25683,
+        "lng": 123.93591,
+        "radius": 200
+      },
+      {
+        "name": "Point 31",
+        "lat": 10.25818,
+        "lng": 123.93857,
+        "radius": 200
+      },
+      {
+        "name": "Point 32",
+        "lat": 10.25539,
+        "lng": 123.9384,
+        "radius": 300
+      },
+      {
+        "name": "Point 33",
+        "lat": 10.25175,
+        "lng": 123.94355,
+        "radius": 500
+      },
+      {
+        "name": "Point 34",
+        "lat": 10.2483,
+        "lng": 123.9505,
+        "radius": 150
+      },
+      {
+        "name": "Point 35",
+        "lat": 10.24889,
+        "lng": 123.95205,
+        "radius": 150
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f17",
+    "feederNumber": "17",
+    "title": "MECO FEEDER 17",
+    "color": "#0d9488",
+    "city": "cordovalapulapu",
+    "areaJa": "ラプラプ市・コルドバ (Suba-basbas / Gabi / Alegria Palms)",
+    "areaEn": "Lapu-Lapu & Cordova (Suba-basbas / Gabi / Alegria Palms)",
+    "affectedJa": "Happy Heim AirBnB, Suba-basbas, Coral Village, T-Shine Resort, Saekyung, Pacific Cebu Resort, Costa Mira, Gabi Resort, Whole Brgy. Gabi, Alegria Palms Uno/Dos, Ajoya, Benthel",
+    "affectedEn": "Happy Heim AirBnB, Suba-basbas, Coral Village, T-Shine Resort, Saekyung, Pacific Cebu Resort, Costa Mira, Gabi Resort, Whole Brgy. Gabi, Alegria Palms Uno/Dos, Ajoya, Benthel",
+    "pins": [
+      {
+        "name": "Alegria Palms Dos Subdivision",
+        "lat": 10.25513,
+        "lng": 123.95247,
+        "radius": 250
+      },
+      {
+        "name": "Alegria Palms Uno Subdivision",
+        "lat": 10.25901,
+        "lng": 123.95162,
+        "radius": 250
+      },
+      {
+        "name": "T-Shine Resort and Spa",
+        "lat": 10.26467,
+        "lng": 123.95033,
+        "radius": 200
+      },
+      {
+        "name": "Pacific Cebu Resort",
+        "lat": 10.26703,
+        "lng": 123.95024,
+        "radius": 200
+      },
+      {
+        "name": "Saekyung Suba-basbas",
+        "lat": 10.26332,
+        "lng": 123.9517,
+        "radius": 200
+      },
+      {
+        "name": "Gabi Barangay Hall",
+        "lat": 10.25217,
+        "lng": 123.95256,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.26653,
+        "lng": 123.95282,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.26822,
+        "lng": 123.95582,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.2694,
+        "lng": 123.95848,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.26264,
+        "lng": 123.95634,
+        "radius": 600
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.25513,
+        "lng": 123.95565,
+        "radius": 350
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.25741,
+        "lng": 123.959,
+        "radius": 350
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.25986,
+        "lng": 123.96226,
+        "radius": 300
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.26476,
+        "lng": 123.96037,
+        "radius": 500
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.26105,
+        "lng": 123.96518,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.26392,
+        "lng": 123.96638,
+        "radius": 250
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.26568,
+        "lng": 123.96441,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.27042,
+        "lng": 123.96509,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.27346,
+        "lng": 123.96475,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.27599,
+        "lng": 123.96664,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.27379,
+        "lng": 123.96792,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.27329,
+        "lng": 123.9717,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.27126,
+        "lng": 123.97161,
+        "radius": 200
+      },
+      {
+        "name": "Point 24",
+        "lat": 10.26856,
+        "lng": 123.97136,
+        "radius": 200
+      },
+      {
+        "name": "Point 25",
+        "lat": 10.26543,
+        "lng": 123.97187,
+        "radius": 200
+      },
+      {
+        "name": "Point 26",
+        "lat": 10.26366,
+        "lng": 123.97239,
+        "radius": 200
+      },
+      {
+        "name": "Point 27",
+        "lat": 10.26113,
+        "lng": 123.97333,
+        "radius": 200
+      },
+      {
+        "name": "Point 28",
+        "lat": 10.25893,
+        "lng": 123.97445,
+        "radius": 200
+      },
+      {
+        "name": "Point 29",
+        "lat": 10.25759,
+        "lng": 123.97247,
+        "radius": 200
+      },
+      {
+        "name": "Point 30",
+        "lat": 10.25776,
+        "lng": 123.96973,
+        "radius": 200
+      },
+      {
+        "name": "Point 31",
+        "lat": 10.26071,
+        "lng": 123.97127,
+        "radius": 200
+      },
+      {
+        "name": "Point 32",
+        "lat": 10.2678,
+        "lng": 123.96913,
+        "radius": 200
+      },
+      {
+        "name": "Point 33",
+        "lat": 10.26907,
+        "lng": 123.96698,
+        "radius": 200
+      },
+      {
+        "name": "Point 34",
+        "lat": 10.27135,
+        "lng": 123.96852,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f18",
+    "feederNumber": "18",
+    "title": "MECO FEEDER 18",
+    "color": "#3b82f6",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Mactan Shrine / Expo / Gaisano Mactan)",
+    "areaEn": "Lapu-Lapu City (Mactan Shrine / Expo / Gaisano Mactan)",
+    "affectedJa": "マクタン・シュライン、Mactan Expo、ガイサノ・キャピタル・マクタン",
+    "affectedEn": "Mactan Shrine, Mactan Expo, Gaisano Capital Mactan",
+    "pins": [
+      {
+        "name": "Mactan Shrine (Liberty Shrine)",
+        "lat": 10.30643,
+        "lng": 124.01612,
+        "radius": 200
+      },
+      {
+        "name": "Point 2",
+        "lat": 10.30403,
+        "lng": 124.01831,
+        "radius": 200
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.30593,
+        "lng": 124.02002,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.30778,
+        "lng": 124.01783,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.30977,
+        "lng": 124.01552,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-f19",
+    "feederNumber": "19",
+    "title": "MECO FEEDER 19",
+    "color": "#991b1b",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (Punta Engaño / Mactan Newtown / Shangri-La)",
+    "areaEn": "Lapu-Lapu City (Punta Engaño / Mactan Newtown / Shangri-La)",
+    "affectedJa": "Mactan Newtown, Shangri-La Mactan, Sheraton, Dusit Thani, Punta Engaño先端",
+    "affectedEn": "Mactan Newtown, Shangri-La Mactan, Sheraton, Dusit Thani, Punta Engaño tip",
+    "pins": [
+      {
+        "name": "The Mactan Newtown",
+        "lat": 10.31146,
+        "lng": 124.01959,
+        "radius": 300
+      },
+      {
+        "name": "Shangri-La Mactan Resort",
+        "lat": 10.3096,
+        "lng": 124.02097,
+        "radius": 250
+      },
+      {
+        "name": "Point 3",
+        "lat": 10.31251,
+        "lng": 124.02363,
+        "radius": 200
+      },
+      {
+        "name": "Point 4",
+        "lat": 10.31437,
+        "lng": 124.02204,
+        "radius": 200
+      },
+      {
+        "name": "Point 5",
+        "lat": 10.31589,
+        "lng": 124.02427,
+        "radius": 200
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.31403,
+        "lng": 124.02595,
+        "radius": 200
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.31787,
+        "lng": 124.02659,
+        "radius": 200
+      },
+      {
+        "name": "Point 8",
+        "lat": 10.31606,
+        "lng": 124.02822,
+        "radius": 200
+      },
+      {
+        "name": "Point 9",
+        "lat": 10.31707,
+        "lng": 124.03105,
+        "radius": 200
+      },
+      {
+        "name": "Point 10",
+        "lat": 10.31965,
+        "lng": 124.02886,
+        "radius": 200
+      },
+      {
+        "name": "Point 11",
+        "lat": 10.32117,
+        "lng": 124.03131,
+        "radius": 200
+      },
+      {
+        "name": "Point 12",
+        "lat": 10.31897,
+        "lng": 124.03346,
+        "radius": 200
+      },
+      {
+        "name": "Point 13",
+        "lat": 10.32319,
+        "lng": 124.03358,
+        "radius": 200
+      },
+      {
+        "name": "Point 14",
+        "lat": 10.32117,
+        "lng": 124.03539,
+        "radius": 200
+      },
+      {
+        "name": "Point 15",
+        "lat": 10.32556,
+        "lng": 124.03509,
+        "radius": 200
+      },
+      {
+        "name": "Point 16",
+        "lat": 10.32383,
+        "lng": 124.0371,
+        "radius": 200
+      },
+      {
+        "name": "Point 17",
+        "lat": 10.32737,
+        "lng": 124.03723,
+        "radius": 200
+      },
+      {
+        "name": "Point 18",
+        "lat": 10.32636,
+        "lng": 124.03895,
+        "radius": 200
+      },
+      {
+        "name": "Point 19",
+        "lat": 10.32923,
+        "lng": 124.03946,
+        "radius": 200
+      },
+      {
+        "name": "Point 20",
+        "lat": 10.32847,
+        "lng": 124.04118,
+        "radius": 200
+      },
+      {
+        "name": "Point 21",
+        "lat": 10.33083,
+        "lng": 124.0417,
+        "radius": 200
+      },
+      {
+        "name": "Point 22",
+        "lat": 10.33062,
+        "lng": 124.04307,
+        "radius": 200
+      },
+      {
+        "name": "Point 23",
+        "lat": 10.33302,
+        "lng": 124.04393,
+        "radius": 200
+      }
+    ]
+  },
+  {
+    "groupId": "meco-mez1",
+    "feederNumber": "MEZ1",
+    "title": "MEZ 1 (Mactan Economic Zone 1)",
+    "color": "#b48b3b",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (MEZ 1 / MEPZ 1 経済特区 / Ibo / Pusok東部)",
+    "areaEn": "Lapu-Lapu City (MEZ 1 / MEPZ 1 Economic Zone / Ibo / East Pusok)",
+    "affectedJa": "MEZ 1, MEPZ 1, PEZA Administration Office, EAUC Power Plant, Mactan Marina Mall, Ibo Gate",
+    "affectedEn": "MEZ 1, MEPZ 1, PEZA Administration Office, EAUC Power Plant, Mactan Marina Mall, Ibo Gate",
+    "pins": [
+      {
+        "name": "MEZ 1 Main Gate (Marina Mall side)",
+        "lat": 10.32425,
+        "lng": 123.9784,
+        "radius": 250
+      },
+      {
+        "name": "PEZA Administration Building",
+        "lat": 10.32763,
+        "lng": 123.97848,
+        "radius": 250
+      },
+      {
+        "name": "EAUC Power Plant / MEZ 1 Substation",
+        "lat": 10.32501,
+        "lng": 123.98363,
+        "radius": 400
+      },
+      {
+        "name": "MEZ 1 North (Ibo Gate)",
+        "lat": 10.32965,
+        "lng": 123.98209,
+        "radius": 250
+      },
+      {
+        "name": "MEZ 1 South (Pusok side)",
+        "lat": 10.32138,
+        "lng": 123.98127,
+        "radius": 250
+      },
+      {
+        "name": "Point 6",
+        "lat": 10.3305,
+        "lng": 123.98655,
+        "radius": 350
+      },
+      {
+        "name": "Point 7",
+        "lat": 10.32725,
+        "lng": 123.98784,
+        "radius": 300
+      }
+    ]
+  },
+  {
+    "groupId": "meco-acoland",
+    "feederNumber": "ACOLAND",
+    "title": "ACOLAND (MEZ 2 / Pueblo Verde)",
+    "color": "#a855f7",
+    "city": "lapulapu",
+    "areaJa": "ラプラプ市 (MEZ 2 / ACOLAND 工業団地 / プエブロ・ベルデ)",
+    "areaEn": "Lapu-Lapu City (MEZ 2 / ACOLAND Industrial Estate / Pueblo Verde)",
+    "affectedJa": "MEZ 2, Pueblo Verde, The Outlets at Pueblo Verde, Aboitiz InfraCapital, Basak Gate",
+    "affectedEn": "MEZ 2, Pueblo Verde, The Outlets at Pueblo Verde, Aboitiz InfraCapital, Basak Gate",
+    "pins": [
+      {
+        "name": "The Outlets at Pueblo Verde",
+        "lat": 10.30069,
+        "lng": 123.96462,
+        "radius": 250
+      },
+      {
+        "name": "MEZ 2 Main Gate (Basak Road)",
+        "lat": 10.30361,
+        "lng": 123.96209,
+        "radius": 250
+      },
+      {
+        "name": "MEZ 2 Industrial Park Central",
+        "lat": 10.30264,
+        "lng": 123.96638,
+        "radius": 250
+      },
+      {
+        "name": "AboitizLand / MEZ 2 Administration",
+        "lat": 10.30568,
+        "lng": 123.96372,
+        "radius": 250
+      }
+    ]
+  }
+]
