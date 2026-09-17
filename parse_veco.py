@@ -97,6 +97,47 @@ pht_tz = datetime.timezone(datetime.timedelta(hours=8))
 CURRENT_YEAR = datetime.datetime.now(pht_tz).year
 
 # ==========================================
+# 🗺️ VECO輪番停電マスターデータ & 地図URLキャッシュ
+# ==========================================
+MASTER_FILE = os.path.join(os.path.dirname(__file__), 'veco_groups_master.json')
+DEFAULT_MASTER_GROUPS = []
+if os.path.exists(MASTER_FILE):
+    try:
+        with open(MASTER_FILE, 'r', encoding='utf-8') as _mf:
+            DEFAULT_MASTER_GROUPS = json.load(_mf)
+    except Exception as e:
+        print(f"⚠️ veco_groups_master.json 読み込みエラー: {e}")
+
+MAP_URL_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'map_url_cache.json')
+builtin_map_cache = {}
+if os.path.exists(MAP_URL_CACHE_FILE):
+    try:
+        with open(MAP_URL_CACHE_FILE, 'r', encoding='utf-8') as _mcf:
+            builtin_map_cache = json.load(_mcf)
+    except Exception as e:
+        print(f"⚠️ map_url_cache.json 読み込みエラー: {e}")
+
+def resolve_map_link(u):
+    if not u:
+        return u
+    if u in builtin_map_cache:
+        return builtin_map_cache[u]
+    try:
+        resp = requests.head(u, allow_redirects=True, timeout=5)
+        final_url = resp.url
+        if "google" in final_url:
+            builtin_map_cache[u] = final_url
+            try:
+                with open(MAP_URL_CACHE_FILE, 'w', encoding='utf-8') as _mcf:
+                    json.dump(builtin_map_cache, _mcf, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
+            return final_url
+    except Exception:
+        pass
+    return u
+
+# ==========================================
 # 🔄 翻訳キャッシュシステム（永続ディスクキャッシュ）
 # ==========================================
 translation_cache = {}
@@ -1773,6 +1814,9 @@ def fetch_veco_calendar_outages(today_str):
         print("⚠️ カレンダー取得失敗のため、フォールバックで従来スクレイピングを実行します...")
         return fetch_veco_legacy_scraping(today_str)
 
+    # マスターデータの高速検索用マップ（Google Drive URL -> グループ情報）
+    master_by_map_url = {g.get('mapUrl'): g for g in DEFAULT_MASTER_GROUPS if g.get('mapUrl')}
+
     calendar_outages = []
     for idx, r in enumerate(main_rows):
         exact_date = r.get('exactDate')
@@ -1798,21 +1842,6 @@ def fetch_veco_calendar_outages(today_str):
         except Exception:
             day_str = ""
 
-        area_en, area_ja = parse_area_summary(locations)
-        
-        if "rotational" in category:
-            details_en = "Rotational Brownouts / Grid Alert"
-            details_ja = "計画的な供給制限（輪番停電）です。"
-            if not title:
-                title = details_en
-        else:
-            details_en = title if title else "Scheduled Distribution System Maintenance"
-            details_ja = cached_translate(details_en)
-            details_ja = clean_translated_japanese(details_ja)
-
-        affected_ja = cached_translate(locations)
-        affected_ja = clean_translated_japanese(affected_ja)
-
         clean_status = "SCHEDULED"
         if "NOT IMPLEMENTED" in status.upper() or "REMAINED ON" in status.upper() or "GRID CONDITIONS" in status.upper():
             clean_status = "AVOIDED"
@@ -1825,34 +1854,79 @@ def fetch_veco_calendar_outages(today_str):
         elif "CANCELLED" in status.upper():
             clean_status = "CANCELLED"
 
-        item = {
-            "id": 1000 + idx,
-            "type": "electricity",
-            "date": date_formatted,
-            "day": day_str,
-            "time": parsed_time,
-            "areaEn": area_en,
-            "areaJa": area_ja,
-            "affectedEn": locations,
-            "affectedJa": affected_ja,
-            "detailsEn": details_en,
-            "detailsJa": details_ja,
-            "mapUrl": map_link,
-            "status": clean_status
-        }
-        calendar_outages.append(item)
+        # mapLinks に含まれるURLを抽出
+        found_urls = re.findall(r'https?://[^\s,]+', map_link)
+
+        # 輪番停電で複数の図面URLが含まれている場合は、1グループ＝1件として個別に完全展開
+        if "rotational" in category and len(found_urls) > 1:
+            for u in found_urls:
+                drive_url = resolve_map_link(u)
+                matched_grp = master_by_map_url.get(drive_url)
+
+                if matched_grp:
+                    sub_area_en = matched_grp.get('areaEn') or matched_grp.get('areaJa') or ''
+                    sub_area_ja = matched_grp.get('areaJa') or sub_area_en
+                    sub_aff_en = matched_grp.get('affectedEn') or ''
+                    sub_aff_ja = matched_grp.get('affectedJa') or sub_aff_en
+                else:
+                    sub_area_en, sub_area_ja = parse_area_summary(locations)
+                    sub_aff_en = locations
+                    sub_aff_ja = clean_translated_japanese(cached_translate(locations))
+
+                calendar_outages.append({
+                    "id": 1000 + len(calendar_outages),
+                    "type": "electricity",
+                    "date": date_formatted,
+                    "day": day_str,
+                    "time": parsed_time,
+                    "areaEn": sub_area_en,
+                    "areaJa": sub_area_ja,
+                    "affectedEn": sub_aff_en,
+                    "affectedJa": sub_aff_ja,
+                    "detailsEn": "Rotational Brownouts / Grid Alert",
+                    "detailsJa": "計画的な供給制限（輪番停電）です。",
+                    "mapUrl": drive_url,
+                    "status": clean_status
+                })
+        else:
+            drive_url = resolve_map_link(found_urls[0]) if found_urls else map_link
+            matched_grp = master_by_map_url.get(drive_url) if drive_url else None
+
+            if matched_grp and "rotational" in category:
+                area_en = matched_grp.get('areaEn') or matched_grp.get('areaJa') or ''
+                area_ja = matched_grp.get('areaJa') or area_en
+                affected_en = matched_grp.get('affectedEn') or ''
+                affected_ja = matched_grp.get('affectedJa') or affected_en
+            else:
+                area_en, area_ja = parse_area_summary(locations)
+                affected_en = locations
+                affected_ja = clean_translated_japanese(cached_translate(locations))
+
+            if "rotational" in category:
+                details_en = "Rotational Brownouts / Grid Alert"
+                details_ja = "計画的な供給制限（輪番停電）です。"
+            else:
+                details_en = title if title else "Scheduled Distribution System Maintenance"
+                details_ja = clean_translated_japanese(cached_translate(details_en))
+
+            calendar_outages.append({
+                "id": 1000 + len(calendar_outages),
+                "type": "electricity",
+                "date": date_formatted,
+                "day": day_str,
+                "time": parsed_time,
+                "areaEn": area_en,
+                "areaJa": area_ja,
+                "affectedEn": affected_en,
+                "affectedJa": affected_ja,
+                "detailsEn": details_en,
+                "detailsJa": details_ja,
+                "mapUrl": drive_url,
+                "status": clean_status
+            })
 
     print(f"✅ カレンダーから本日および未来の停電スケジュール {len(calendar_outages)} 件を生成しました。")
     return calendar_outages
-
-
-# 60グループ全件精密ピン＆半径マスターデータ（外部JSONファイルから読み込み）
-MASTER_FILE = os.path.join(os.path.dirname(__file__), 'veco_groups_master.json')
-if os.path.exists(MASTER_FILE):
-    with open(MASTER_FILE, 'r', encoding='utf-8') as _mf:
-        DEFAULT_MASTER_GROUPS = json.load(_mf)
-else:
-    DEFAULT_MASTER_GROUPS = []
 
 def main():
     pht_tz = datetime.timezone(datetime.timedelta(hours=8))
