@@ -7,6 +7,8 @@ import sys
 import io
 import unicodedata  # 特殊ユニコード太字を標準英字に直すために追加
 from urllib.parse import urljoin
+import urllib.request
+import subprocess
 from curl_cffi import requests
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
@@ -107,6 +109,15 @@ if os.path.exists(MASTER_FILE):
             DEFAULT_MASTER_GROUPS = json.load(_mf)
     except Exception as e:
         print(f"⚠️ veco_groups_master.json 読み込みエラー: {e}")
+
+MECO_MASTER_FILE = os.path.join(os.path.dirname(__file__), 'meco_groups_master.json')
+DEFAULT_MECO_GROUPS = []
+if os.path.exists(MECO_MASTER_FILE):
+    try:
+        with open(MECO_MASTER_FILE, 'r', encoding='utf-8') as _mf:
+            DEFAULT_MECO_GROUPS = json.load(_mf)
+    except Exception as e:
+        print(f"⚠️ meco_groups_master.json 読み込みエラー: {e}")
 
 MAP_URL_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'map_url_cache.json')
 builtin_map_cache = {}
@@ -1856,10 +1867,15 @@ def fetch_veco_calendar_outages(today_str):
 
         # mapLinks に含まれるURLを抽出
         found_urls = re.findall(r'https?://[^\s,]+', map_link)
+        loc_lines = [line.strip() for line in locations.splitlines() if line.strip()]
 
-        # 輪番停電で複数の図面URLが含まれている場合は、1グループ＝1件として個別に完全展開
-        if "rotational" in category and len(found_urls) > 1:
-            for u in found_urls:
+        # 輪番停電で複数の地域・図面URLが含まれている場合は、1地域/1グループ＝1件として個別に完全展開
+        if "rotational" in category and (len(found_urls) > 1 or len(loc_lines) > 1):
+            count_items = max(len(found_urls), len(loc_lines))
+            for u_idx in range(count_items):
+                u = found_urls[u_idx] if u_idx < len(found_urls) else (found_urls[0] if found_urls else map_link)
+                this_loc = loc_lines[u_idx] if u_idx < len(loc_lines) else (loc_lines[0] if loc_lines else locations)
+
                 drive_url = resolve_map_link(u)
                 matched_grp = master_by_map_url.get(drive_url)
 
@@ -1869,9 +1885,9 @@ def fetch_veco_calendar_outages(today_str):
                     sub_aff_en = matched_grp.get('affectedEn') or ''
                     sub_aff_ja = matched_grp.get('affectedJa') or sub_aff_en
                 else:
-                    sub_area_en, sub_area_ja = parse_area_summary(locations)
-                    sub_aff_en = locations
-                    sub_aff_ja = clean_translated_japanese(cached_translate(locations))
+                    sub_area_en, sub_area_ja = parse_area_summary(this_loc)
+                    sub_aff_en = this_loc
+                    sub_aff_ja = clean_translated_japanese(cached_translate(this_loc))
 
                 calendar_outages.append({
                     "id": 1000 + len(calendar_outages),
@@ -1928,6 +1944,263 @@ def fetch_veco_calendar_outages(today_str):
     print(f"✅ カレンダーから本日および未来の停電スケジュール {len(calendar_outages)} 件を生成しました。")
     return calendar_outages
 
+# ==========================================
+# ⚡ MECO（マクタン島：ラプラプ市・コルドバ）公式停電告知スクレイピング & OCR解析
+# ==========================================
+MECO_OCR_CACHE_FILE = os.path.join(os.path.dirname(__file__), "meco_ocr_cache.json")
+meco_ocr_cache = {}
+if os.path.exists(MECO_OCR_CACHE_FILE):
+    try:
+        with open(MECO_OCR_CACHE_FILE, "r", encoding="utf-8") as f:
+            meco_ocr_cache = json.load(f)
+    except Exception:
+        pass
+
+MECO_LANDMARK_TO_FEEDER = {
+    "RENDEZVOUS": "meco-f06",
+    "CUSTOM": "meco-f07",
+    "CUSTOMS": "meco-f07",
+    "BLISS": "meco-f17",
+    "COAST PACIFIC": "meco-f17",
+    "MALINAO": "meco-f12",
+    "AGUS": "meco-f12",
+    "PUNTA ENGANO": "meco-f19",
+    "SHANGRI-LA": "meco-f19",
+    "NEWTOWN": "meco-f19",
+    "JPARK": "meco-f14",
+    "MARIBAGO": "meco-f14",
+    "BUYONG": "meco-f14",
+    "PLANTATION": "meco-f06",
+    "AIRPORT": "meco-f08",
+    "PUSOK": "meco-f08",
+    "MARINA MALL": "meco-f08",
+    "MEPZ 1": "meco-mez1",
+    "MEPZ 2": "meco-acoland",
+    "PUEBLO VERDE": "meco-f10a",
+    "CLIP": "meco-f01",
+    "TANGKE": "meco-f01",
+    "SUDTUNGGAN": "meco-f01",
+    "BASAK": "meco-f01",
+    "PAJO": "meco-f02",
+    "CAGUDOY": "meco-f03",
+    "BANKAL": "meco-f04",
+    "HOOPS DOME": "meco-f07",
+    "CANJULAO": "meco-f07",
+    "BABAG": "meco-f16",
+    "CALAWISAN": "meco-f16",
+    "CORDOVA": "meco-f17",
+    "GABI": "meco-f17",
+    "BUAYA": "meco-f13",
+    "MACTAN SHRINE": "meco-f18"
+}
+
+def ocr_meco_image(img_url, local_filename):
+    if img_url in meco_ocr_cache and meco_ocr_cache[img_url]:
+        return meco_ocr_cache[img_url]
+
+    local_path = os.path.abspath(local_filename)
+    try:
+        req = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp, open(local_path, "wb") as out:
+            out.write(resp.read())
+    except Exception as e:
+        print(f"⚠️ MECO画像ダウンロードエラー ({img_url}): {e}")
+        return ""
+
+    ps_script_path = os.path.join(os.path.dirname(__file__), "meco_ocr.ps1")
+    if not os.path.exists(ps_script_path):
+        return ""
+
+    cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ps_script_path, "-ImagePath", local_path]
+    try:
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=25, encoding="utf-8", errors="replace")
+        text = res.stdout.strip()
+        if text:
+            meco_ocr_cache[img_url] = text
+            try:
+                with open(MECO_OCR_CACHE_FILE, "w", encoding="utf-8") as f:
+                    json.dump(meco_ocr_cache, f, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+        return text
+    except Exception as e:
+        print(f"⚠️ MECO OCR実行エラー: {e}")
+        return ""
+
+def fetch_meco_outages():
+    print("📡 MECO（マクタン島）公式告知APIから停電情報を取得中...")
+    pht_tz = datetime.timezone(datetime.timedelta(hours=8))
+    now = datetime.datetime.now(pht_tz)
+    today_str = now.strftime("%Y/%m/%d")
+
+    groups_by_id = {g['groupId']: g for g in DEFAULT_MECO_GROUPS}
+    
+    months = {
+        'january': '01', 'february': '02', 'march': '03', 'april': '04',
+        'may': '05', 'june': '06', 'july': '07', 'august': '08',
+        'september': '09', 'october': '10', 'november': '11', 'december': '12'
+    }
+
+    posts_url = "https://mecomactan.com/wp-json/wp/v2/posts?per_page=10"
+    try:
+        req = urllib.request.Request(posts_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            posts = json.loads(resp.read().decode('utf-8'))
+    except Exception as e:
+        print(f"⚠️ MECO公式API接続エラー: {e}")
+        return []
+
+    outages = []
+    idx = 0
+
+    for post in posts:
+        pid = post.get('id')
+        post_date = post.get('date', '')[:10].replace('-', '/')
+        content_html = post.get('content', {}).get('rendered', '')
+        soup = BeautifulSoup(content_html, 'html.parser')
+        img_urls = [img.get('src') for img in soup.find_all('img') if img.get('src')]
+
+        for img_url in img_urls:
+            idx += 1
+            tmp_img = os.path.join(os.path.dirname(__file__), f"meco_tmp_{idx}.jpg")
+            raw_text = ocr_meco_image(img_url, tmp_img)
+            if not raw_text:
+                continue
+
+            clean = re.sub(r'\s+', ' ', raw_text)
+
+            # 1. Date
+            m_d = re.search(r'DATE\s*:?\s*([A-Za-z]+)?\s*(\d{1,2})\s*,?\s*([A-Za-z]+)\s*,?\s*(\d{4})', clean, re.I)
+            date_str = ''
+            day_str = ''
+            if m_d:
+                day, mon, yr = m_d.group(2), m_d.group(3), m_d.group(4)
+                m_num = months.get(mon.lower(), '09')
+                date_str = f"{yr}/{m_num}/{int(day):02d}"
+                try:
+                    dt_obj = datetime.date(int(yr), int(m_num), int(day))
+                    day_str = dt_obj.strftime("%a")
+                except Exception:
+                    day_str = 'Wed'
+            elif post_date:
+                date_str = post_date
+                try:
+                    parts = date_str.split('/')
+                    dt_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+                    day_str = dt_obj.strftime("%a")
+                except Exception:
+                    day_str = 'Wed'
+
+            # 2. Time
+            m_t = re.search(r'TIME\s*:?\s*(\d{1,2}\s*:\s*\d{2}\s*(?:AM|PM))\s*[^A-Za-z0-9]*\s*(\d{1,2}\s*:\s*\d{2}\s*(?:AM|PM))', clean, re.I)
+            time_str = ''
+            time_end_pos = -1
+            start_dt = None
+            end_dt = None
+            if m_t:
+                t1 = re.sub(r'\s+', '', m_t.group(1))
+                t2 = re.sub(r'\s+', '', m_t.group(2))
+                time_str = f"{t1} - {t2}"
+                time_end_pos = m_t.end()
+                if date_str:
+                    try:
+                        start_dt = datetime.datetime.strptime(f"{date_str} {t1}", "%Y/%m/%d %I:%M%p").replace(tzinfo=pht_tz)
+                        end_dt = datetime.datetime.strptime(f"{date_str} {t2}", "%Y/%m/%d %I:%M%p").replace(tzinfo=pht_tz)
+                    except Exception:
+                        pass
+
+            # 3. Affected Area (Between Time and Reason)
+            reason_pos = clean.find('REASON:')
+            affected_str = ''
+            if time_end_pos != -1 and reason_pos != -1 and reason_pos > time_end_pos:
+                raw_aff = clean[time_end_pos:reason_pos]
+                affected_str = re.sub(r'^[^\w]+', '', raw_aff).strip()
+                affected_str = re.sub(r'^[E\[\]\(\)]\s*', '', affected_str).strip()
+
+            # 4. Reason
+            reason_str = ''
+            m_r = re.search(r'REASON:\s*(.+?)(?=TICKET|#|WWW|$)', clean, re.I)
+            if m_r:
+                reason_str = m_r.group(1).strip()
+                if 'BLISS CORDOVA' in reason_str:
+                    affected_str = (affected_str + ', BLISS CORDOVA').strip(', ')
+                    reason_str = reason_str.replace('BLISS CORDOVA', '').strip()
+
+            # 5. Feeder matching
+            matched = None
+            best_score = 0
+            aff_upper = (affected_str + ' ' + reason_str).upper()
+
+            for lm, gid in MECO_LANDMARK_TO_FEEDER.items():
+                if lm in aff_upper:
+                    matched = groups_by_id.get(gid)
+                    best_score = 100
+                    break
+
+            if not matched:
+                for g in DEFAULT_MECO_GROUPS:
+                    score = 0
+                    f_num = g.get('feederNumber', '')
+                    if f"FEEDER {f_num}" in clean.upper() or f"F-{f_num}" in clean.upper():
+                        score += 15
+                    search_corpus = (g.get('affectedEn', '') + ' ' + g.get('areaEn', '') + ' ' + g.get('title', '') + ' ' + str(g.get('pins', ''))).upper()
+                    tokens = [t.strip() for t in re.split(r'[,/ ]+', aff_upper) if len(t.strip()) >= 4]
+                    for tok in tokens:
+                        if tok not in ['NEAR', 'STREET', 'ROAD', 'BARANGAY', 'AREA', 'EMERGENCY', 'POWER', 'INTERRUPTION']:
+                            if tok in search_corpus:
+                                score += 5
+                    if score > best_score:
+                        best_score = score
+                        matched = g
+
+            # Status calculation
+            status = "FINISHED"
+            if start_dt and end_dt:
+                if now < start_dt:
+                    status = "SCHEDULED"
+                elif start_dt <= now <= end_dt:
+                    status = "ONGOING"
+                else:
+                    status = "FINISHED"
+            elif date_str:
+                if date_str > today_str:
+                    status = "SCHEDULED"
+                elif date_str == today_str:
+                    status = "ONGOING"
+                else:
+                    status = "FINISHED"
+
+            gid = matched.get('groupId') if matched else ''
+            feeder_num = matched.get('feederNumber') if matched else ''
+            feeder_title = matched.get('title') if matched else 'MECO 停電'
+            area_ja = matched.get('areaJa') if matched else 'ラプラプ市 / マクタン島'
+            area_en = matched.get('areaEn') if matched else 'Lapu-Lapu City / Mactan'
+
+            outages.append({
+                "id": f"meco-{pid}-{idx}",
+                "type": "electricity",
+                "company": "MECO",
+                "date": date_str,
+                "day": day_str,
+                "time": time_str,
+                "status": status,
+                "title": f"{feeder_title} 停電告知",
+                "groupId": gid,
+                "feederNumber": feeder_num,
+                "feederTitle": feeder_title,
+                "areaJa": area_ja,
+                "areaEn": area_en,
+                "affectedJa": affected_str,
+                "affectedEn": affected_str,
+                "detailsJa": clean_translated_japanese(cached_translate(reason_str)) if reason_str else "設備メンテナンス・点検作業",
+                "detailsEn": reason_str if reason_str else "Scheduled Distribution System Maintenance",
+                "imageUrl": img_url,
+                "mapUrl": img_url
+            })
+
+    print(f"✅ MECO公式告知から {len(outages)} 件の停電データを生成しました。")
+    return outages
+
 def main():
     pht_tz = datetime.timezone(datetime.timedelta(hours=8))
     today = datetime.datetime.now(pht_tz)
@@ -1936,26 +2209,22 @@ def main():
     # 1. 電気（VECO公式カレンダー）情報の取得
     final_veco_outages = fetch_veco_calendar_outages(today_str)
 
-    # 2. 水道（MCWD）情報の取得
+    # 2. 電気（MECOマクタン島公式告知）情報の取得
     try:
-        final_mcwd_outages = scrape_mcwd_water_interruptions(today_str)
+        final_meco_outages = fetch_meco_outages()
+    except Exception as e:
+        print(f"⚠️ MECO取得スキップ: {e}")
+        final_meco_outages = []
+
+    # 3. 水道（MCWD）情報の取得
+    try:
+        final_mcwd_outages = scrape_mcwd_water_interruptions(today_str) if 'scrape_mcwd_water_interruptions' in globals() else []
     except Exception as e:
         print(f"⚠️ MCWD取得スキップ: {e}")
         final_mcwd_outages = []
 
-    # 3. 終了済み過去イベントのステータス更新（夜間に予定が全滅するのを防止）
-    now_dt = datetime.datetime.now(pht_tz)
-    filtered_outages = []
-    for item in (final_veco_outages + final_mcwd_outages):
-        time_slot = item.get("time", "")
-        m = re.search(r"(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})", time_slot)
-        if m and item.get("date") == today_str:
-            end_h = int(m.group(3))
-            end_m = int(m.group(4))
-            end_dt = now_dt.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
-            if now_dt > end_dt:
-                item["status"] = "RESTORED"
-        filtered_outages.append(item)
+    # 3. イベントリストのマージ（VECO公式の発表ステータスをそのまま維持）
+    filtered_outages = final_veco_outages + final_mcwd_outages
 
     builtin_map_cache = {
     "https://tinyurl.com/2h9zdv3n": "https://lh3.googleusercontent.com/d/1hT5Tf0SAx1lR9fGAziRkAmJsIzyV3Hi_",
@@ -2063,9 +2332,11 @@ def main():
 
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
+    meco_outages_str = json.dumps(final_meco_outages, ensure_ascii=False, indent=2)
     
     # 60グループマスターの内蔵データ（外部JSONファイル不要の完全自己完結仕様）
     groups_master_str = json.dumps(DEFAULT_MASTER_GROUPS, ensure_ascii=False, indent=2)
+    meco_groups_master_str = json.dumps(DEFAULT_MECO_GROUPS, ensure_ascii=False, indent=2)
 
     new_data_js_content = f"""/**
  * Cebu Infrastructure Checker - Integrated Data Source
@@ -2074,7 +2345,11 @@ export const CEBU_AREAS = {cebu_areas_str};
 
 export const VECO_OUTAGES = {outages_json_str};
 
+export const MECO_OUTAGES = {meco_outages_str};
+
 export const VECO_GROUPS_MASTER = {groups_master_str};
+
+export const MECO_GROUPS_MASTER = {meco_groups_master_str};
 """
 
     with open('data.js', 'w', encoding='utf-8') as f:
@@ -2089,7 +2364,8 @@ export const VECO_GROUPS_MASTER = {groups_master_str};
         print(f"⚠️ キャッシュの保存に失敗しました: {e}")
 
     print("\n--- 【すべてのパイプライン処理が正常に完了しました】 ---")
-    print(f"   ✅ 電気（都市・時間・終了済マージ処理後）: {len(final_veco_outages)} 件")
+    print(f"   ✅ 電気（VECO公式カレンダー）: {len(final_veco_outages)} 件")
+    print(f"   ✅ 電気（MECOマクタン島公式告知）: {len(final_meco_outages)} 件")
     print(f"   ✅ 水道（MCWD計画断水情報）: {len(final_mcwd_outages)} 件")
     print(f"   💾 ファイル保存先: data.js")
 
