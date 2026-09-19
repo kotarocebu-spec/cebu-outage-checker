@@ -2068,15 +2068,19 @@ def fetch_meco_outages_from_facebook():
     """
     auth_file = os.path.join(os.path.dirname(__file__), "fb_auth.json")
     if not os.path.exists(auth_file):
-        print("ℹ️ fb_auth.json が存在しないため、MECO Facebookスクレイピングをスキップします。")
+        print("ℹ️ [MECO_FB] fb_auth.json が存在しないため、Facebookスクレイピングをスキップします。")
         return []
 
-    print("📡 MECO公式Facebookから最新停電告知（計画停電・輪番停電）を取得中...")
+    print("📡 [MECO_FB] MECO公式Facebookから最新停電告知を取得中...")
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("⚠️ playwright が未インストールのためMECO Facebook取得をスキップします。")
+        print("⚠️ [MECO_FB] playwright が未インストールのためスキップします。")
         return []
+
+    pht_tz = datetime.timezone(datetime.timedelta(hours=8))
+    today_dt = datetime.datetime.now(pht_tz)
+    today_str = today_dt.strftime("%Y/%m/%d")
 
     target_url = "https://www.facebook.com/mecomactan"
     all_outages = []
@@ -2100,7 +2104,18 @@ def fetch_meco_outages_from_facebook():
             page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
             time.sleep(4)
 
-            # 投稿を読み込み
+            # ログイン状態および画面の検証ログ
+            page_title = page.title()
+            current_url = page.url
+            print(f"📄 [MECO_FB] ページタイトル: {page_title}")
+            print(f"🔗 [MECO_FB] アクセス先URL: {current_url}")
+
+            # 証拠用スクリーンショットの保存
+            screenshot_file = os.path.join(os.path.dirname(__file__), "github_meco_check.png")
+            page.screenshot(path=screenshot_file)
+            print(f"📸 [MECO_FB] 画面キャプチャを保存しました: {screenshot_file}")
+
+            # 投稿をスクロール読み込み
             for _ in range(5):
                 page.mouse.wheel(0, 1000)
                 time.sleep(1.2)
@@ -2116,8 +2131,11 @@ def fetch_meco_outages_from_facebook():
 
             time.sleep(1.5)
             posts = page.locator("div[role='feed'] > div, div[role='article']").all()
+            print(f"📊 [MECO_FB] 取得された投稿要素数: {len(posts)} 件")
 
             seen_ids = set()
+            meco_posts_count = 0
+
             for post_idx, post in enumerate(posts):
                 raw_text = post.inner_text().strip()
                 if not raw_text or len(raw_text) < 30:
@@ -2125,24 +2143,32 @@ def fetch_meco_outages_from_facebook():
                 if "Mactan Electric Company" not in raw_text and "MECO" not in raw_text:
                     continue
 
+                meco_posts_count += 1
                 norm_text = unicodedata.normalize('NFKD', raw_text)
                 upper_text = norm_text.upper()
+
+                # 最新投稿の生テキストプレビューをログ出力（証拠記録）
+                if meco_posts_count <= 3:
+                    preview_lines = [l.strip() for l in norm_text.split('\n') if l.strip()]
+                    print(f"📝 [MECO_FB 投稿#{meco_posts_count} 抜粋]: {' / '.join(preview_lines[:3])}")
 
                 # 1. 輪番停電 (Manual Load Dropping / MLD)
                 if "MANUAL LOAD DROPPING" in upper_text or "MLD" in upper_text:
                     date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
-                    if date_match:
-                        m_str, d_str, y_str = date_match.groups()
-                        try:
-                            dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
-                            date_formatted = dt.strftime("%Y/%m/%d")
-                            day_abbrev = dt.strftime("%a")
-                        except Exception:
-                            date_formatted = "2026/09/15"
-                            day_abbrev = "Tue"
-                    else:
-                        date_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
-                        day_abbrev = datetime.datetime.now().strftime("%a")
+                    if not date_match:
+                        continue
+                    m_str, d_str, y_str = date_match.groups()
+                    try:
+                        dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
+                        date_formatted = dt.strftime("%Y/%m/%d")
+                        day_abbrev = dt.strftime("%a")
+                    except Exception:
+                        continue
+
+                    # 今日および未来の日付のみを対象（過去の停電は除外）
+                    if date_formatted < today_str:
+                        print(f"⏭️ [MECO_FB] 過去の輪番停電 ({date_formatted}) をスキップしました。")
+                        continue
 
                     feeder_lines = re.findall(r"(?:Feeder|FEEDER)\s*([0-9]+[A-Za-z]?)[–\-\—\s]*(?:\((.*?)\))?", norm_text)
                     for f_num, time_str in feeder_lines:
@@ -2183,18 +2209,20 @@ def fetch_meco_outages_from_facebook():
                 # 2. 定期計画停電 (Scheduled Power Outage)
                 elif "SCHEDULED POWER" in upper_text or "SCHEDULED" in upper_text:
                     date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
-                    if date_match:
-                        m_str, d_str, y_str = date_match.groups()
-                        try:
-                            dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
-                            date_formatted = dt.strftime("%Y/%m/%d")
-                            day_abbrev = dt.strftime("%a")
-                        except Exception:
-                            date_formatted = "2026/09/16"
-                            day_abbrev = "Wed"
-                    else:
-                        date_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
-                        day_abbrev = datetime.datetime.now().strftime("%a")
+                    if not date_match:
+                        continue
+                    m_str, d_str, y_str = date_match.groups()
+                    try:
+                        dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
+                        date_formatted = dt.strftime("%Y/%m/%d")
+                        day_abbrev = dt.strftime("%a")
+                    except Exception:
+                        continue
+
+                    # 今日および未来の日付のみを対象（過去の停電は除外）
+                    if date_formatted < today_str:
+                        print(f"⏭️ [MECO_FB] 過去の計画停電 ({date_formatted}) をスキップしました。")
+                        continue
 
                     time_match = re.search(r"from\s+(\d{1,2}:\d{2}\s*[APMapm]+)\s+to\s+(\d{1,2}:\d{2}\s*[APMapm]+)", norm_text)
                     time_str = f"{time_match.group(1)} - {time_match.group(2)}" if time_match else "02:00PM - 07:00PM"
@@ -2223,46 +2251,10 @@ def fetch_meco_outages_from_facebook():
                             "pins": []
                         })
 
-                # 3. 突発停電 (Unscheduled Outage)
-                elif "UNSCHEDULED POWER" in upper_text or "AREAS AFFECTED" in upper_text:
-                    area_match = re.search(r"Areas?\s+affected:\s*([^\n\r]+)", norm_text, re.IGNORECASE)
-                    area_str = area_match.group(1).strip() if area_match else "Sudtungan & Suba Masulog"
-                    rec_match = re.search(r"Time\s+recieved:?\s*([^\n\r]+)", norm_text, re.IGNORECASE)
-                    rest_match = re.search(r"Time\s+restored:?\s*([^\n\r]+)", norm_text, re.IGNORECASE)
-                    time_rec = rec_match.group(1).strip() if rec_match else "6:04pm"
-                    time_rest = rest_match.group(1).strip() if rest_match else "7:39pm"
-                    time_str = f"{time_rec} - {time_rest}"
-
-                    today_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
-                    day_abbrev = datetime.datetime.now().strftime("%a")
-
-                    item_id = f"meco-unsched-{post_idx}"
-                    if item_id not in seen_ids:
-                        seen_ids.add(item_id)
-                        all_outages.append({
-                            "id": item_id,
-                            "type": "electricity",
-                            "company": "MECO",
-                            "date": today_formatted,
-                            "day": day_abbrev,
-                            "time": time_str,
-                            "status": "FINISHED" if rest_match else "ONGOING",
-                            "title": f"MECO 突発停電速報 ({area_str})",
-                            "groupId": "meco-unscheduled",
-                            "feederNumber": "",
-                            "feederTitle": "MECO Unscheduled Outage",
-                            "areaJa": f"ラプラプ市 ({area_str})",
-                            "areaEn": f"Lapu-Lapu City ({area_str})",
-                            "affectedJa": f"影響を受けた地域: {area_str}",
-                            "affectedEn": f"Areas affected: {area_str}",
-                            "detailsJa": "突発的な送電トラブル・設備不具合（復旧済み）",
-                            "detailsEn": "Unscheduled emergency power interruption (Restored)",
-                            "pins": []
-                        })
-
+            print(f"🏁 [MECO_FB] 有効な本日以降の停電データ抽出結果: {len(all_outages)} 件")
             browser.close()
     except Exception as e:
-        print(f"⚠️ MECO Facebookスクレイピング実行中エラー: {e}")
+        print(f"⚠️ [MECO_FB] スクレイピング実行中エラー: {e}")
 
     return all_outages
 
