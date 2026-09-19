@@ -20,6 +20,14 @@ jobs:
       - name: Install Playwright browsers & system dependencies
         run: |
           python -m playwright install --with-deps chromium
+      - name: Restore Facebook Session
+        env:
+          FB_AUTH_JSON: ${{ secrets.FB_AUTH_JSON }}
+        run: |
+          if [ -n "$FB_AUTH_JSON" ]; then
+            echo "$FB_AUTH_JSON" > fb_auth.json
+            echo "Facebook session restored."
+          fi
       - name: Run Scraper
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
