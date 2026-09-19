@@ -32,6 +32,13 @@ jobs:
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: python parse_veco.py
+      - name: Upload Facebook Check Screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meco-facebook-screenshot
+          path: github_meco_check.png
+          if-no-files-found: ignore
       - name: Upload data.js to Sakura Server
         uses: appleboy/scp-action@v0.1.7
         with:
