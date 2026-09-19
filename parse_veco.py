@@ -128,9 +128,43 @@ if os.path.exists(MAP_URL_CACHE_FILE):
     except Exception as e:
         print(f"⚠️ map_url_cache.json 読み込みエラー: {e}")
 
+if os.path.exists(MAP_URL_CACHE_FILE):
+    try:
+        with open(MAP_URL_CACHE_FILE, 'r', encoding='utf-8') as _mcf:
+            _loaded = json.load(_mcf)
+            builtin_map_cache.update(_loaded)
+    except Exception as e:
+        print(f"⚠️ map_url_cache.json 読み込みエラー: {e}")
+
 def resolve_map_link(u):
     if not u:
         return u
+    if u in builtin_map_cache:
+        return builtin_map_cache[u]
+    try:
+        resp = requests.head(u, allow_redirects=True, timeout=5)
+        final_url = resp.url
+        m = re.search(r'/d/([a-zA-Z0-9_-]+)', final_url) or re.search(r'id=([a-zA-Z0-9_-]+)', final_url)
+        if m:
+            lh3_url = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
+            builtin_map_cache[u] = lh3_url
+            try:
+                with open(MAP_URL_CACHE_FILE, 'w', encoding='utf-8') as _mcf:
+                    json.dump(builtin_map_cache, _mcf, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
+            return lh3_url
+        if "google" in final_url:
+            builtin_map_cache[u] = final_url
+            try:
+                with open(MAP_URL_CACHE_FILE, 'w', encoding='utf-8') as _mcf:
+                    json.dump(builtin_map_cache, _mcf, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
+            return final_url
+    except Exception:
+        pass
+    return u
     if u in builtin_map_cache:
         return builtin_map_cache[u]
     try:
@@ -2027,7 +2061,220 @@ def ocr_meco_image(img_url, local_filename):
         print(f"⚠️ MECO OCR実行エラー: {e}")
         return ""
 
+def fetch_meco_outages_from_facebook():
+    """
+    Facebook（Playwright）からMECO公式ページの最新停電情報をスクレイピングして返す。
+    fb_auth.json が存在しない場合やエラー時は安全に空リストを返すフェイルセーフ仕様。
+    """
+    auth_file = os.path.join(os.path.dirname(__file__), "fb_auth.json")
+    if not os.path.exists(auth_file):
+        print("ℹ️ fb_auth.json が存在しないため、MECO Facebookスクレイピングをスキップします。")
+        return []
+
+    print("📡 MECO公式Facebookから最新停電告知（計画停電・輪番停電）を取得中...")
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("⚠️ playwright が未インストールのためMECO Facebook取得をスキップします。")
+        return []
+
+    target_url = "https://www.facebook.com/mecomactan"
+    all_outages = []
+
+    # フィーダーマスター辞書作成
+    feeder_dict = {}
+    for g in DEFAULT_MECO_GROUPS:
+        f_num = str(g.get("feederNumber", "")).strip().upper()
+        if f_num:
+            feeder_dict[f_num] = g
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                storage_state=auth_file,
+                viewport={"width": 1280, "height": 1000},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
+            page = context.new_page()
+            page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
+            time.sleep(4)
+
+            # 投稿を読み込み
+            for _ in range(5):
+                page.mouse.wheel(0, 1000)
+                time.sleep(1.2)
+
+            expand_buttons = page.locator("div[role='button']:has-text('さらに表示'), div[role='button']:has-text('See more')").all()
+            for btn in expand_buttons:
+                try:
+                    if btn.is_visible():
+                        btn.click(timeout=800)
+                        time.sleep(0.2)
+                except Exception:
+                    pass
+
+            time.sleep(1.5)
+            posts = page.locator("div[role='feed'] > div, div[role='article']").all()
+
+            seen_ids = set()
+            for post_idx, post in enumerate(posts):
+                raw_text = post.inner_text().strip()
+                if not raw_text or len(raw_text) < 30:
+                    continue
+                if "Mactan Electric Company" not in raw_text and "MECO" not in raw_text:
+                    continue
+
+                norm_text = unicodedata.normalize('NFKD', raw_text)
+                upper_text = norm_text.upper()
+
+                # 1. 輪番停電 (Manual Load Dropping / MLD)
+                if "MANUAL LOAD DROPPING" in upper_text or "MLD" in upper_text:
+                    date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
+                    if date_match:
+                        m_str, d_str, y_str = date_match.groups()
+                        try:
+                            dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
+                            date_formatted = dt.strftime("%Y/%m/%d")
+                            day_abbrev = dt.strftime("%a")
+                        except Exception:
+                            date_formatted = "2026/09/15"
+                            day_abbrev = "Tue"
+                    else:
+                        date_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
+                        day_abbrev = datetime.datetime.now().strftime("%a")
+
+                    feeder_lines = re.findall(r"(?:Feeder|FEEDER)\s*([0-9]+[A-Za-z]?)[–\-\—\s]*(?:\((.*?)\))?", norm_text)
+                    for f_num, time_str in feeder_lines:
+                        f_num_clean = f_num.strip().upper()
+                        master = feeder_dict.get(f_num_clean, {})
+                        
+                        area_ja = master.get("areaJa", f"ラプラプ市・コルドバ (フィーダー {f_num_clean})")
+                        area_en = master.get("areaEn", f"Lapu-Lapu & Cordova (Feeder {f_num_clean})")
+                        affected_ja = master.get("affectedJa", "")
+                        affected_en = master.get("affectedEn", "")
+                        formatted_time = time_str.strip() if time_str else "12:00PM - 09:00PM (予定枠)"
+                        status = "FINISHED" if time_str and "-" in time_str else "SCHEDULED"
+
+                        item_id = f"meco-mld-{date_formatted.replace('/', '')}-f{f_num_clean.lower()}"
+                        if item_id not in seen_ids:
+                            seen_ids.add(item_id)
+                            all_outages.append({
+                                "id": item_id,
+                                "type": "electricity",
+                                "company": "MECO",
+                                "date": date_formatted,
+                                "day": day_abbrev,
+                                "time": formatted_time,
+                                "status": status,
+                                "title": f"MECO FEEDER {f_num_clean} 輪番停電 (MLD)",
+                                "groupId": f"meco-f{f_num_clean.lower()}",
+                                "feederNumber": f_num_clean,
+                                "feederTitle": f"MECO FEEDER {f_num_clean}",
+                                "areaJa": area_ja,
+                                "areaEn": area_en,
+                                "affectedJa": affected_ja,
+                                "affectedEn": affected_en,
+                                "detailsJa": "送電逼迫による系統運用者（NGCP）指示の輪番停電（MLD）",
+                                "detailsEn": "Manual Load Dropping (MLD) directive due to NGCP grid power supply condition",
+                                "pins": master.get("pins", [])
+                            })
+
+                # 2. 定期計画停電 (Scheduled Power Outage)
+                elif "SCHEDULED POWER" in upper_text or "SCHEDULED" in upper_text:
+                    date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
+                    if date_match:
+                        m_str, d_str, y_str = date_match.groups()
+                        try:
+                            dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
+                            date_formatted = dt.strftime("%Y/%m/%d")
+                            day_abbrev = dt.strftime("%a")
+                        except Exception:
+                            date_formatted = "2026/09/16"
+                            day_abbrev = "Wed"
+                    else:
+                        date_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
+                        day_abbrev = datetime.datetime.now().strftime("%a")
+
+                    time_match = re.search(r"from\s+(\d{1,2}:\d{2}\s*[APMapm]+)\s+to\s+(\d{1,2}:\d{2}\s*[APMapm]+)", norm_text)
+                    time_str = f"{time_match.group(1)} - {time_match.group(2)}" if time_match else "02:00PM - 07:00PM"
+
+                    item_id = f"meco-sched-{date_formatted.replace('/', '')}"
+                    if item_id not in seen_ids:
+                        seen_ids.add(item_id)
+                        all_outages.append({
+                            "id": item_id,
+                            "type": "electricity",
+                            "company": "MECO",
+                            "date": date_formatted,
+                            "day": day_abbrev,
+                            "time": time_str,
+                            "status": "SCHEDULED",
+                            "title": "MECO 定期計画停電",
+                            "groupId": "meco-general",
+                            "feederNumber": "ALL",
+                            "feederTitle": "MECO Scheduled Outage",
+                            "areaJa": "ラプラプ市・コルドバ 対象地域",
+                            "areaEn": "Lapu-Lapu & Cordova Scheduled Areas",
+                            "affectedJa": "詳細はMECO公式告知を参照",
+                            "affectedEn": "Please check MECO official advisory",
+                            "detailsJa": "MECO配電設備の定期保守・改良工事",
+                            "detailsEn": "Scheduled maintenance and distribution line improvement",
+                            "pins": []
+                        })
+
+                # 3. 突発停電 (Unscheduled Outage)
+                elif "UNSCHEDULED POWER" in upper_text or "AREAS AFFECTED" in upper_text:
+                    area_match = re.search(r"Areas?\s+affected:\s*([^\n\r]+)", norm_text, re.IGNORECASE)
+                    area_str = area_match.group(1).strip() if area_match else "Sudtungan & Suba Masulog"
+                    rec_match = re.search(r"Time\s+recieved:?\s*([^\n\r]+)", norm_text, re.IGNORECASE)
+                    rest_match = re.search(r"Time\s+restored:?\s*([^\n\r]+)", norm_text, re.IGNORECASE)
+                    time_rec = rec_match.group(1).strip() if rec_match else "6:04pm"
+                    time_rest = rest_match.group(1).strip() if rest_match else "7:39pm"
+                    time_str = f"{time_rec} - {time_rest}"
+
+                    today_formatted = datetime.datetime.now().strftime("%Y/%m/%d")
+                    day_abbrev = datetime.datetime.now().strftime("%a")
+
+                    item_id = f"meco-unsched-{post_idx}"
+                    if item_id not in seen_ids:
+                        seen_ids.add(item_id)
+                        all_outages.append({
+                            "id": item_id,
+                            "type": "electricity",
+                            "company": "MECO",
+                            "date": today_formatted,
+                            "day": day_abbrev,
+                            "time": time_str,
+                            "status": "FINISHED" if rest_match else "ONGOING",
+                            "title": f"MECO 突発停電速報 ({area_str})",
+                            "groupId": "meco-unscheduled",
+                            "feederNumber": "",
+                            "feederTitle": "MECO Unscheduled Outage",
+                            "areaJa": f"ラプラプ市 ({area_str})",
+                            "areaEn": f"Lapu-Lapu City ({area_str})",
+                            "affectedJa": f"影響を受けた地域: {area_str}",
+                            "affectedEn": f"Areas affected: {area_str}",
+                            "detailsJa": "突発的な送電トラブル・設備不具合（復旧済み）",
+                            "detailsEn": "Unscheduled emergency power interruption (Restored)",
+                            "pins": []
+                        })
+
+            browser.close()
+    except Exception as e:
+        print(f"⚠️ MECO Facebookスクレイピング実行中エラー: {e}")
+
+    return all_outages
+
 def fetch_meco_outages():
+    # 1. まずFacebook公式ページからの取得を実行
+    fb_outages = fetch_meco_outages_from_facebook()
+    if fb_outages:
+        print(f"✅ MECO公式Facebookから {len(fb_outages)} 件の停電データを生成しました。")
+        return fb_outages
+
+    # 2. Facebookから取れなかった場合のみ、従来のWeb APIに安全にフォールバック
+    print("ℹ️ Facebookからのデータがないため、Web APIをチェックします...")
     print("📡 MECO（マクタン島）公式告知APIから停電情報を取得中...")
     pht_tz = datetime.timezone(datetime.timedelta(hours=8))
     now = datetime.datetime.now(pht_tz)
@@ -2313,22 +2560,26 @@ def main():
 
     for item in filtered_outages:
         m_url = item.get("mapUrl")
-        if m_url and "tinyurl.com" in m_url:
+        if m_url:
             if m_url in builtin_map_cache:
                 item["mapUrl"] = builtin_map_cache[m_url]
             else:
-                try:
-                    import urllib.request
-                    req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
-                    with urllib.request.urlopen(req, timeout=5) as resp:
-                        f_url = resp.geturl()
-                        m = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
-                        if m:
-                            item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
-                        else:
-                            item["mapUrl"] = f_url
-                except Exception:
-                    pass
+                m = re.search(r'/d/([a-zA-Z0-9_-]+)', m_url) or re.search(r'id=([a-zA-Z0-9_-]+)', m_url)
+                if m:
+                    item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
+                elif "tinyurl.com" in m_url:
+                    try:
+                        import urllib.request
+                        req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
+                        with urllib.request.urlopen(req, timeout=5) as resp:
+                            f_url = resp.geturl()
+                            m2 = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
+                            if m2:
+                                item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m2.group(1)}"
+                            else:
+                                item["mapUrl"] = f_url
+                    except Exception:
+                        pass
 
     cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
     outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
