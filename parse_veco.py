@@ -2104,16 +2104,23 @@ def fetch_meco_outages_from_facebook():
             page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
             time.sleep(4)
 
-            # ログイン状態および画面の検証ログ
+            # ログイン状態の自動チェック
             page_title = page.title()
             current_url = page.url
+            cookies = context.cookies()
+            cookie_names = [c["name"] for c in cookies]
+
+            is_logged_in = "c_user" in cookie_names and "login" not in current_url.lower() and "checkpoint" not in current_url.lower()
+
+            if not is_logged_in:
+                warning_msg = "Facebookのログインセッションが切れました。ローカルのrun_login.batを実行して再ログインし、GitHub Secrets(FB_AUTH_JSON)を更新してください。"
+                print(f"::warning title=Facebookセッション切れ検知::{warning_msg}")
+                print(f"⚠️ [MECO_FB] セッション切れ検知: {warning_msg}")
+                browser.close()
+                return []
+
             print(f"📄 [MECO_FB] ページタイトル: {page_title}")
             print(f"🔗 [MECO_FB] アクセス先URL: {current_url}")
-
-            # 証拠用スクリーンショットの保存
-            screenshot_file = os.path.join(os.path.dirname(__file__), "github_meco_check.png")
-            page.screenshot(path=screenshot_file)
-            print(f"📸 [MECO_FB] 画面キャプチャを保存しました: {screenshot_file}")
 
             # 投稿をスクロール読み込み
             for _ in range(5):
