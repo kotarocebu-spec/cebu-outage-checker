@@ -1902,6 +1902,21 @@ def fetch_veco_calendar_outages(today_str):
         # mapLinks に含まれるURLを抽出
         found_urls = re.findall(r'https?://[^\s,]+', map_link)
         loc_lines = [line.strip() for line in locations.splitlines() if line.strip()]
+        status_lines = [line.strip() for line in status.splitlines() if line.strip()]
+
+        def resolve_sub_status(raw_s):
+            raw_upper = (raw_s or '').upper()
+            if "NOT IMPLEMENTED" in raw_upper or "REMAINED ON" in raw_upper or "GRID CONDITIONS" in raw_upper:
+                return "AVOIDED"
+            elif "RESTORED" in raw_upper:
+                return "RESTORED"
+            elif "ONGOING" in raw_upper or "ACTIVE" in raw_upper:
+                return "ONGOING"
+            elif "UPCOMING" in raw_upper:
+                return "UPCOMING"
+            elif "CANCELLED" in raw_upper:
+                return "CANCELLED"
+            return "SCHEDULED"
 
         # 輪番停電で複数の地域・図面URLが含まれている場合は、1地域/1グループ＝1件として個別に完全展開
         if "rotational" in category and (len(found_urls) > 1 or len(loc_lines) > 1):
@@ -1909,6 +1924,10 @@ def fetch_veco_calendar_outages(today_str):
             for u_idx in range(count_items):
                 u = found_urls[u_idx] if u_idx < len(found_urls) else (found_urls[0] if found_urls else map_link)
                 this_loc = loc_lines[u_idx] if u_idx < len(loc_lines) else (loc_lines[0] if loc_lines else locations)
+
+                # 地域ごとに個別のステータスを正確に対応付ける
+                this_status_raw = status_lines[u_idx] if u_idx < len(status_lines) else (status_lines[0] if status_lines else status)
+                this_status = resolve_sub_status(this_status_raw)
 
                 drive_url = resolve_map_link(u)
                 matched_grp = master_by_map_url.get(drive_url)
@@ -1936,9 +1955,10 @@ def fetch_veco_calendar_outages(today_str):
                     "detailsEn": "Rotational Brownouts / Grid Alert",
                     "detailsJa": "計画的な供給制限（輪番停電）です。",
                     "mapUrl": drive_url,
-                    "status": clean_status
+                    "status": this_status
                 })
         else:
+            single_status = resolve_sub_status(status_lines[0] if status_lines else status)
             drive_url = resolve_map_link(found_urls[0]) if found_urls else map_link
             matched_grp = master_by_map_url.get(drive_url) if drive_url else None
 
@@ -1972,7 +1992,7 @@ def fetch_veco_calendar_outages(today_str):
                 "detailsEn": details_en,
                 "detailsJa": details_ja,
                 "mapUrl": drive_url,
-                "status": clean_status
+                "status": single_status
             })
 
     print(f"✅ カレンダーから本日および未来の停電スケジュール {len(calendar_outages)} 件を生成しました。")
@@ -2028,424 +2048,102 @@ MECO_LANDMARK_TO_FEEDER = {
     "MACTAN SHRINE": "meco-f18"
 }
 
-def ocr_meco_image(img_url, local_filename):
-    if img_url in meco_ocr_cache and meco_ocr_cache[img_url]:
-        return meco_ocr_cache[img_url]
-
-    local_path = os.path.abspath(local_filename)
-    try:
-        req = urllib.request.Request(img_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp, open(local_path, "wb") as out:
-            out.write(resp.read())
-    except Exception as e:
-        print(f"⚠️ MECO画像ダウンロードエラー ({img_url}): {e}")
-        return ""
-
-    ps_script_path = os.path.join(os.path.dirname(__file__), "meco_ocr.ps1")
-    if not os.path.exists(ps_script_path):
-        return ""
-
-    cmd = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ps_script_path, "-ImagePath", local_path]
-    try:
-        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=25, encoding="utf-8", errors="replace")
-        text = res.stdout.strip()
-        if text:
-            meco_ocr_cache[img_url] = text
-            try:
-                with open(MECO_OCR_CACHE_FILE, "w", encoding="utf-8") as f:
-                    json.dump(meco_ocr_cache, f, ensure_ascii=False, indent=2)
-            except Exception:
-                pass
-        return text
-    except Exception as e:
-        print(f"⚠️ MECO OCR実行エラー: {e}")
-        return ""
-
-def fetch_meco_outages_from_facebook():
-    """
-    Facebook（Playwright）からMECO公式ページの最新停電情報をスクレイピングして返す。
-    fb_auth.json が存在しない場合やエラー時は安全に空リストを返すフェイルセーフ仕様。
-    """
-    auth_file = os.path.join(os.path.dirname(__file__), "fb_auth.json")
-    if not os.path.exists(auth_file):
-        print("ℹ️ [MECO_FB] fb_auth.json が存在しないため、Facebookスクレイピングをスキップします。")
-        return []
-
-    print("📡 [MECO_FB] MECO公式Facebookから最新停電告知を取得中...")
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("⚠️ [MECO_FB] playwright が未インストールのためスキップします。")
-        return []
-
-    pht_tz = datetime.timezone(datetime.timedelta(hours=8))
-    today_dt = datetime.datetime.now(pht_tz)
-    today_str = today_dt.strftime("%Y/%m/%d")
-
-    target_url = "https://www.facebook.com/mecomactan"
-    all_outages = []
-
-    # フィーダーマスター辞書作成
-    feeder_dict = {}
-    for g in DEFAULT_MECO_GROUPS:
-        f_num = str(g.get("feederNumber", "")).strip().upper()
-        if f_num:
-            feeder_dict[f_num] = g
-
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context(
-                storage_state=auth_file,
-                viewport={"width": 1280, "height": 1000},
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            )
-            page = context.new_page()
-            page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
-            time.sleep(4)
-
-            # ログイン状態の自動チェック
-            page_title = page.title()
-            current_url = page.url
-            cookies = context.cookies()
-            cookie_names = [c["name"] for c in cookies]
-
-            is_logged_in = "c_user" in cookie_names and "login" not in current_url.lower() and "checkpoint" not in current_url.lower()
-
-            if not is_logged_in:
-                warning_msg = "Facebookのログインセッションが切れました。ローカルのrun_login.batを実行して再ログインし、GitHub Secrets(FB_AUTH_JSON)を更新してください。"
-                print(f"::warning title=Facebookセッション切れ検知::{warning_msg}")
-                print(f"⚠️ [MECO_FB] セッション切れ検知: {warning_msg}")
-                browser.close()
-                return []
-
-            print(f"📄 [MECO_FB] ページタイトル: {page_title}")
-            print(f"🔗 [MECO_FB] アクセス先URL: {current_url}")
-
-            # 投稿をスクロール読み込み
-            for _ in range(5):
-                page.mouse.wheel(0, 1000)
-                time.sleep(1.2)
-
-            expand_buttons = page.locator("div[role='button']:has-text('さらに表示'), div[role='button']:has-text('See more')").all()
-            for btn in expand_buttons:
-                try:
-                    if btn.is_visible():
-                        btn.click(timeout=800)
-                        time.sleep(0.2)
-                except Exception:
-                    pass
-
-            time.sleep(1.5)
-            posts = page.locator("div[role='feed'] > div, div[role='article']").all()
-            print(f"📊 [MECO_FB] 取得された投稿要素数: {len(posts)} 件")
-
-            seen_ids = set()
-            meco_posts_count = 0
-
-            for post_idx, post in enumerate(posts):
-                raw_text = post.inner_text().strip()
-                if not raw_text or len(raw_text) < 30:
-                    continue
-                if "Mactan Electric Company" not in raw_text and "MECO" not in raw_text:
-                    continue
-
-                meco_posts_count += 1
-                norm_text = unicodedata.normalize('NFKD', raw_text)
-                upper_text = norm_text.upper()
-
-                # 最新投稿の生テキストプレビューをログ出力（証拠記録）
-                if meco_posts_count <= 3:
-                    preview_lines = [l.strip() for l in norm_text.split('\n') if l.strip()]
-                    print(f"📝 [MECO_FB 投稿#{meco_posts_count} 抜粋]: {' / '.join(preview_lines[:3])}")
-
-                # 1. 輪番停電 (Manual Load Dropping / MLD)
-                if "MANUAL LOAD DROPPING" in upper_text or "MLD" in upper_text:
-                    date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
-                    if not date_match:
-                        continue
-                    m_str, d_str, y_str = date_match.groups()
-                    try:
-                        dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
-                        date_formatted = dt.strftime("%Y/%m/%d")
-                        day_abbrev = dt.strftime("%a")
-                    except Exception:
-                        continue
-
-                    # 今日および未来の日付のみを対象（過去の停電は除外）
-                    if date_formatted < today_str:
-                        print(f"⏭️ [MECO_FB] 過去の輪番停電 ({date_formatted}) をスキップしました。")
-                        continue
-
-                    feeder_lines = re.findall(r"(?:Feeder|FEEDER)\s*([0-9]+[A-Za-z]?)[–\-\—\s]*(?:\((.*?)\))?", norm_text)
-                    for f_num, time_str in feeder_lines:
-                        f_num_clean = f_num.strip().upper()
-                        master = feeder_dict.get(f_num_clean, {})
-                        
-                        area_ja = master.get("areaJa", f"ラプラプ市・コルドバ (フィーダー {f_num_clean})")
-                        area_en = master.get("areaEn", f"Lapu-Lapu & Cordova (Feeder {f_num_clean})")
-                        affected_ja = master.get("affectedJa", "")
-                        affected_en = master.get("affectedEn", "")
-                        formatted_time = time_str.strip() if time_str else "12:00PM - 09:00PM (予定枠)"
-                        status = "FINISHED" if time_str and "-" in time_str else "SCHEDULED"
-
-                        item_id = f"meco-mld-{date_formatted.replace('/', '')}-f{f_num_clean.lower()}"
-                        if item_id not in seen_ids:
-                            seen_ids.add(item_id)
-                            all_outages.append({
-                                "id": item_id,
-                                "type": "electricity",
-                                "company": "MECO",
-                                "date": date_formatted,
-                                "day": day_abbrev,
-                                "time": formatted_time,
-                                "status": status,
-                                "title": f"MECO FEEDER {f_num_clean} 輪番停電 (MLD)",
-                                "groupId": f"meco-f{f_num_clean.lower()}",
-                                "feederNumber": f_num_clean,
-                                "feederTitle": f"MECO FEEDER {f_num_clean}",
-                                "areaJa": area_ja,
-                                "areaEn": area_en,
-                                "affectedJa": affected_ja,
-                                "affectedEn": affected_en,
-                                "detailsJa": "送電逼迫による系統運用者（NGCP）指示の輪番停電（MLD）",
-                                "detailsEn": "Manual Load Dropping (MLD) directive due to NGCP grid power supply condition",
-                                "pins": master.get("pins", [])
-                            })
-
-                # 2. 定期計画停電 (Scheduled Power Outage)
-                elif "SCHEDULED POWER" in upper_text or "SCHEDULED" in upper_text:
-                    date_match = re.search(r"([A-Za-z]+)\s+(\d{1,2}),?\s+(202\d)", norm_text)
-                    if not date_match:
-                        continue
-                    m_str, d_str, y_str = date_match.groups()
-                    try:
-                        dt = datetime.datetime.strptime(f"{m_str} {d_str} {y_str}", "%B %d %Y")
-                        date_formatted = dt.strftime("%Y/%m/%d")
-                        day_abbrev = dt.strftime("%a")
-                    except Exception:
-                        continue
-
-                    # 今日および未来の日付のみを対象（過去の停電は除外）
-                    if date_formatted < today_str:
-                        print(f"⏭️ [MECO_FB] 過去の計画停電 ({date_formatted}) をスキップしました。")
-                        continue
-
-                    time_match = re.search(r"from\s+(\d{1,2}:\d{2}\s*[APMapm]+)\s+to\s+(\d{1,2}:\d{2}\s*[APMapm]+)", norm_text)
-                    time_str = f"{time_match.group(1)} - {time_match.group(2)}" if time_match else "02:00PM - 07:00PM"
-
-                    item_id = f"meco-sched-{date_formatted.replace('/', '')}"
-                    if item_id not in seen_ids:
-                        seen_ids.add(item_id)
-                        all_outages.append({
-                            "id": item_id,
-                            "type": "electricity",
-                            "company": "MECO",
-                            "date": date_formatted,
-                            "day": day_abbrev,
-                            "time": time_str,
-                            "status": "SCHEDULED",
-                            "title": "MECO 定期計画停電",
-                            "groupId": "meco-general",
-                            "feederNumber": "ALL",
-                            "feederTitle": "MECO Scheduled Outage",
-                            "areaJa": "ラプラプ市・コルドバ 対象地域",
-                            "areaEn": "Lapu-Lapu & Cordova Scheduled Areas",
-                            "affectedJa": "詳細はMECO公式告知を参照",
-                            "affectedEn": "Please check MECO official advisory",
-                            "detailsJa": "MECO配電設備の定期保守・改良工事",
-                            "detailsEn": "Scheduled maintenance and distribution line improvement",
-                            "pins": []
-                        })
-
-            print(f"🏁 [MECO_FB] 有効な本日以降の停電データ抽出結果: {len(all_outages)} 件")
-            browser.close()
-    except Exception as e:
-        print(f"⚠️ [MECO_FB] スクレイピング実行中エラー: {e}")
-
-    return all_outages
-
 def fetch_meco_outages():
-    # 1. まずFacebook公式ページからの取得を実行
-    fb_outages = fetch_meco_outages_from_facebook()
-    if fb_outages:
-        print(f"✅ MECO公式Facebookから {len(fb_outages)} 件の停電データを生成しました。")
-        return fb_outages
+    """
+    手動入力されたMECO停電データを meco_current.json または既存の data.js から読み込み、
+    24時間以内または終了時刻が未来のものを保護・引き継ぐ。
+    古いデータ（24時間経過かつ終了済み）は自動で消去する。
+    """
+    current_json_path = os.path.join(os.path.dirname(__file__), 'meco_current.json')
+    data_js_path = os.path.join(os.path.dirname(__file__), 'data.js')
+    meco_list = []
 
-    # 2. Facebookから取れなかった場合のみ、従来のWeb APIに安全にフォールバック
-    print("ℹ️ Facebookからのデータがないため、Web APIをチェックします...")
-    print("📡 MECO（マクタン島）公式告知APIから停電情報を取得中...")
+    # 1. まず meco_current.json を確認
+    if os.path.exists(current_json_path):
+        try:
+            with open(current_json_path, 'r', encoding='utf-8') as f:
+                meco_list = json.load(f)
+        except Exception as e:
+            print(f"⚠️ meco_current.json 読み込みエラー: {e}")
+
+    # 1-2. GitHub Actions実行時などローカルに最新データが無い場合は本番サーバーから取得
+    if not meco_list:
+        remote_url = "https://office-luna.com/infra/meco_current.json"
+        try:
+            import urllib.request
+            req = urllib.request.Request(remote_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                if resp.status == 200:
+                    remote_data = json.loads(resp.read().decode('utf-8'))
+                    if isinstance(remote_data, list) and remote_data:
+                        meco_list = remote_data
+                        print(f"🌐 本番サーバー（office-luna.com）から最新MECOデータ（{len(meco_list)}件）を取得しました。")
+        except Exception:
+            pass
+
+    # 2. なければ data.js から読み込む
+    if not meco_list and os.path.exists(data_js_path):
+        try:
+            with open(data_js_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            m = re.search(r'export const MECO_OUTAGES = (\[.*?\]);', content, re.DOTALL)
+            if m:
+                meco_list = json.loads(m.group(1))
+        except Exception as e:
+            print(f"⚠️ data.js からのMECO読み込みエラー: {e}")
+
     pht_tz = datetime.timezone(datetime.timedelta(hours=8))
     now = datetime.datetime.now(pht_tz)
-    today_str = now.strftime("%Y/%m/%d")
+    now_epoch = int(now.timestamp())
 
-    groups_by_id = {g['groupId']: g for g in DEFAULT_MECO_GROUPS}
-    
-    months = {
-        'january': '01', 'february': '02', 'march': '03', 'april': '04',
-        'may': '05', 'june': '06', 'july': '07', 'august': '08',
-        'september': '09', 'october': '10', 'november': '11', 'december': '12'
-    }
+    protected_outages = []
+    for item in meco_list:
+        reg_epoch = item.get('registeredEpoch', 0)
+        end_iso = item.get('end_iso')
+        
+        # 1. 登録から24時間以内のデータは「絶対保護」
+        is_within_24h = (now_epoch - reg_epoch) < 86400 if reg_epoch else False
 
-    posts_url = "https://mecomactan.com/wp-json/wp/v2/posts?per_page=10"
-    try:
-        req = urllib.request.Request(posts_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            posts = json.loads(resp.read().decode('utf-8'))
-    except Exception as e:
-        print(f"⚠️ MECO公式API接続エラー: {e}")
-        return []
+        # 2. 終了予定時刻がまだ未来の場合も保護
+        is_future = False
+        if end_iso:
+            try:
+                end_dt = datetime.datetime.fromisoformat(end_iso)
+                if now < end_dt:
+                    is_future = True
+            except Exception:
+                pass
 
-    outages = []
-    idx = 0
-
-    for post in posts:
-        pid = post.get('id')
-        post_date = post.get('date', '')[:10].replace('-', '/')
-        content_html = post.get('content', {}).get('rendered', '')
-        soup = BeautifulSoup(content_html, 'html.parser')
-        img_urls = [img.get('src') for img in soup.find_all('img') if img.get('src')]
-
-        for img_url in img_urls:
-            idx += 1
-            tmp_img = os.path.join(os.path.dirname(__file__), f"meco_tmp_{idx}.jpg")
-            raw_text = ocr_meco_image(img_url, tmp_img)
-            if not raw_text:
-                continue
-
-            clean = re.sub(r'\s+', ' ', raw_text)
-
-            # 1. Date
-            m_d = re.search(r'DATE\s*:?\s*([A-Za-z]+)?\s*(\d{1,2})\s*,?\s*([A-Za-z]+)\s*,?\s*(\d{4})', clean, re.I)
-            date_str = ''
-            day_str = ''
-            if m_d:
-                day, mon, yr = m_d.group(2), m_d.group(3), m_d.group(4)
-                m_num = months.get(mon.lower(), '09')
-                date_str = f"{yr}/{m_num}/{int(day):02d}"
+        if is_within_24h or is_future:
+            start_iso = item.get('start_iso')
+            if start_iso and end_iso:
                 try:
-                    dt_obj = datetime.date(int(yr), int(m_num), int(day))
-                    day_str = dt_obj.strftime("%a")
+                    s_dt = datetime.datetime.fromisoformat(start_iso)
+                    e_dt = datetime.datetime.fromisoformat(end_iso)
+                    if now < s_dt:
+                        item['status'] = 'SCHEDULED'
+                    elif s_dt <= now <= e_dt:
+                        item['status'] = 'ONGOING'
+                    else:
+                        item['status'] = 'FINISHED'
                 except Exception:
-                    day_str = 'Wed'
-            elif post_date:
-                date_str = post_date
-                try:
-                    parts = date_str.split('/')
-                    dt_obj = datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
-                    day_str = dt_obj.strftime("%a")
-                except Exception:
-                    day_str = 'Wed'
+                    pass
+            protected_outages.append(item)
+            print(f"🛡️ [MECO保護] 手動登録データ (Feeder {item.get('feeder')}: {item.get('time')}) を引き継ぎました。")
+        else:
+            print(f"🧹 [MECO自動消去] 期限切れの過去データ (Feeder {item.get('feeder')}: {item.get('date')}) を自動クリアしました。")
 
-            # 2. Time
-            m_t = re.search(r'TIME\s*:?\s*(\d{1,2}\s*:\s*\d{2}\s*(?:AM|PM))\s*[^A-Za-z0-9]*\s*(\d{1,2}\s*:\s*\d{2}\s*(?:AM|PM))', clean, re.I)
-            time_str = ''
-            time_end_pos = -1
-            start_dt = None
-            end_dt = None
-            if m_t:
-                t1 = re.sub(r'\s+', '', m_t.group(1))
-                t2 = re.sub(r'\s+', '', m_t.group(2))
-                time_str = f"{t1} - {t2}"
-                time_end_pos = m_t.end()
-                if date_str:
-                    try:
-                        start_dt = datetime.datetime.strptime(f"{date_str} {t1}", "%Y/%m/%d %I:%M%p").replace(tzinfo=pht_tz)
-                        end_dt = datetime.datetime.strptime(f"{date_str} {t2}", "%Y/%m/%d %I:%M%p").replace(tzinfo=pht_tz)
-                    except Exception:
-                        pass
+    # 期限切れでクリアされた場合は meco_current.json も空にリセット
+    if len(protected_outages) != len(meco_list) and os.path.exists(current_json_path):
+        try:
+            with open(current_json_path, 'w', encoding='utf-8') as f:
+                json.dump(protected_outages, f, ensure_ascii=False, indent=2)
+            print("💾 meco_current.json のクリーンアップが完了しました。")
+        except Exception:
+            pass
 
-            # 3. Affected Area (Between Time and Reason)
-            reason_pos = clean.find('REASON:')
-            affected_str = ''
-            if time_end_pos != -1 and reason_pos != -1 and reason_pos > time_end_pos:
-                raw_aff = clean[time_end_pos:reason_pos]
-                affected_str = re.sub(r'^[^\w]+', '', raw_aff).strip()
-                affected_str = re.sub(r'^[E\[\]\(\)]\s*', '', affected_str).strip()
-
-            # 4. Reason
-            reason_str = ''
-            m_r = re.search(r'REASON:\s*(.+?)(?=TICKET|#|WWW|$)', clean, re.I)
-            if m_r:
-                reason_str = m_r.group(1).strip()
-                if 'BLISS CORDOVA' in reason_str:
-                    affected_str = (affected_str + ', BLISS CORDOVA').strip(', ')
-                    reason_str = reason_str.replace('BLISS CORDOVA', '').strip()
-
-            # 5. Feeder matching
-            matched = None
-            best_score = 0
-            aff_upper = (affected_str + ' ' + reason_str).upper()
-
-            for lm, gid in MECO_LANDMARK_TO_FEEDER.items():
-                if lm in aff_upper:
-                    matched = groups_by_id.get(gid)
-                    best_score = 100
-                    break
-
-            if not matched:
-                for g in DEFAULT_MECO_GROUPS:
-                    score = 0
-                    f_num = g.get('feederNumber', '')
-                    if f"FEEDER {f_num}" in clean.upper() or f"F-{f_num}" in clean.upper():
-                        score += 15
-                    search_corpus = (g.get('affectedEn', '') + ' ' + g.get('areaEn', '') + ' ' + g.get('title', '') + ' ' + str(g.get('pins', ''))).upper()
-                    tokens = [t.strip() for t in re.split(r'[,/ ]+', aff_upper) if len(t.strip()) >= 4]
-                    for tok in tokens:
-                        if tok not in ['NEAR', 'STREET', 'ROAD', 'BARANGAY', 'AREA', 'EMERGENCY', 'POWER', 'INTERRUPTION']:
-                            if tok in search_corpus:
-                                score += 5
-                    if score > best_score:
-                        best_score = score
-                        matched = g
-
-            # Status calculation
-            status = "FINISHED"
-            if start_dt and end_dt:
-                if now < start_dt:
-                    status = "SCHEDULED"
-                elif start_dt <= now <= end_dt:
-                    status = "ONGOING"
-                else:
-                    status = "FINISHED"
-            elif date_str:
-                if date_str > today_str:
-                    status = "SCHEDULED"
-                elif date_str == today_str:
-                    status = "ONGOING"
-                else:
-                    status = "FINISHED"
-
-            gid = matched.get('groupId') if matched else ''
-            feeder_num = matched.get('feederNumber') if matched else ''
-            feeder_title = matched.get('title') if matched else 'MECO 停電'
-            area_ja = matched.get('areaJa') if matched else 'ラプラプ市 / マクタン島'
-            area_en = matched.get('areaEn') if matched else 'Lapu-Lapu City / Mactan'
-
-            outages.append({
-                "id": f"meco-{pid}-{idx}",
-                "type": "electricity",
-                "company": "MECO",
-                "date": date_str,
-                "day": day_str,
-                "time": time_str,
-                "status": status,
-                "title": f"{feeder_title} 停電告知",
-                "groupId": gid,
-                "feederNumber": feeder_num,
-                "feederTitle": feeder_title,
-                "areaJa": area_ja,
-                "areaEn": area_en,
-                "affectedJa": affected_str,
-                "affectedEn": affected_str,
-                "detailsJa": clean_translated_japanese(cached_translate(reason_str)) if reason_str else "設備メンテナンス・点検作業",
-                "detailsEn": reason_str if reason_str else "Scheduled Distribution System Maintenance",
-                "imageUrl": img_url,
-                "mapUrl": img_url
-            })
-
-    print(f"✅ MECO公式告知から {len(outages)} 件の停電データを生成しました。")
-    return outages
+    print(f"✅ 有効なマクタン島（MECO）停電データ: {len(protected_outages)} 件を引き継ぎました。")
+    return protected_outages
 
 def main():
     pht_tz = datetime.timezone(datetime.timedelta(hours=8))
