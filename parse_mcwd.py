@@ -91,7 +91,9 @@ def scrape_mcwd_water_interruptions(target_date_str=None, max_days_history=3):
             page.goto(url, timeout=45000, wait_until='domcontentloaded')
             page.wait_for_timeout(4000)
 
-            cards = page.query_selector_all('.t-Cards-item, .t-Card, .a-CardView-item')
+            cards = page.query_selector_all('.t-Card')
+            if not cards:
+                cards = page.query_selector_all('.t-Cards-item') or page.query_selector_all('.a-CardView-item')
             if cards:
                 for c in cards:
                     txt = c.inner_text()
