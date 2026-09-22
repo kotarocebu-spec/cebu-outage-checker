@@ -54,17 +54,19 @@ def detect_area(affected_text, reason_text):
     return "セブ水道区 (MCWD供給地域)", "Cebu Water District (MCWD Grid)"
 
 def extract_time_and_etr(raw_str):
-    # 1. 開始時間 - 復旧見込み時刻 (例: 12:00PM. - (ETR) 3:00PM や 8:04am-EST,5:00PM)
-    m = re.search(r'(\d{1,2}(?::\d{2})?\s*[apAP][mM])(?:\.|\s)*[-–to]+(?:\s*\(?(?:ETR|EST)\)?\s*,?\s*)?(\d{1,2}(?::\d{2})?\s*[apAP][mM])', raw_str)
-    if m:
-        t1 = m.group(1).upper()
-        t2 = m.group(2).upper()
+    # 1. 翌日跨ぎ (例: 10:00pm-23Sept,5:00am や 10:00pm-EST, Sept.19.,06:00am)
+    m_cross = re.search(r'(\d{1,2}(?::\d{2})?\s*[apAP][mM])\s*[-–to]+.*?(?:Sept|tomorrow|next day).*?(\d{1,2}(?::\d{2})?\s*[apAP][mM])', raw_str, re.I)
+    if m_cross:
+        t1 = m_cross.group(1).upper()
+        t2 = m_cross.group(2).upper()
+        return f"{t1} - 翌{t2}"
+
+    # 2. 当日開始時間 - 復旧見込み時刻 (例: 12:00PM. - (ETR) 3:00PM や 8:04am-EST,5:00PM)
+    m_std = re.search(r'(\d{1,2}(?::\d{2})?\s*[apAP][mM])[^a-zA-Z0-9]*[-–to]+[^0-9apAPmM]*(?:ETR|EST)?[^0-9apAPmM]*(\d{1,2}(?::\d{2})?\s*[apAP][mM])', raw_str, re.I)
+    if m_std:
+        t1 = m_std.group(1).upper()
+        t2 = m_std.group(2).upper()
         return f"{t1} - {t2} (復旧見込)"
-    
-    # 2. 翌日跨ぎ (例: 10:00pm-23Sept,5:00am)
-    m2 = re.search(r'(\d{1,2}(?::\d{2})?\s*[apAP][mM])\s*[-–to]+\s*\d{1,2}[A-Za-z]+,?\s*(\d{1,2}(?::\d{2})?\s*[apAP][mM])', raw_str)
-    if m2:
-        return f"{m2.group(1).upper()} - 翌{m2.group(2).upper()}"
 
     # 3. 復旧作業中 (例: 4:30AM-ongoing や 8:04am-EST)
     m3 = re.search(r'(\d{1,2}(?::\d{2})?\s*[apAP][mM])\s*[-–to]+\s*([A-Za-z]+)?', raw_str)
@@ -188,9 +190,82 @@ def scrape_mcwd_water_interruptions(target_date_str=None, max_days_history=3):
         area_ja, area_en = detect_area(affected_str, reason_str)
         title = f"MCWD {outage_type_label} ({area_ja.split(' ')[-1].strip('()')})"
 
-        # 7. ステータス (本日実施中は ONGOING、未来日は SCHEDULED)
+        # 7. ステータス (現在時刻と告知の終了見込み時刻 ETR を比較してリアルタイム判定)
         if parsed_dt == target_dt:
-            status = "ONGOING"
+            now_dt = datetime.datetime.now(pht_tz)
+            now_mins = now_dt.hour * 60 + now_dt.minute
+            
+            is_overnight = '翌' in time_str or 'next day' in time_str.lower()
+            m_end = re.search(r'[-–to]+\s*(?:翌)?(\d{1,2})(?::(\d{2}))?\s*([apAP][mM])', time_str)
+            if m_end and not is_overnight:
+                h = int(m_end.group(1))
+                m = int(m_end.group(2)) if m_end.group(2) else 0
+                ampm = m_end.group(3).lower()
+                if ampm == 'pm' and h < 12:
+                    h += 12
+                if ampm == 'am' and h == 12:
+                    h = 0
+                end_mins = h * 60 + m
+                if now_mins > end_mins:
+                    status = "RESTORED"
+                else:
+                    # 開始前か実施中か
+                    m_start = re.search(r'(\d{1,2})(?::(\d{2}))?\s*([apAP][mM])', time_str)
+                    if m_start:
+                        sh = int(m_start.group(1))
+                        sm = int(m_start.group(2)) if m_start.group(2) else 0
+                        sampm = m_start.group(3).lower()
+                        if sampm == 'pm' and sh < 12: sh += 12
+                        if sampm == 'am' and sh == 12: sh = 0
+                        status = "ONGOING" if now_mins >= (sh * 60 + sm) else "SCHEDULED"
+                    else:
+                        status = "ONGOING"
+            elif is_overnight:
+                m_start = re.search(r'(\d{1,2})(?::(\d{2}))?\s*([apAP][mM])', time_str)
+                m_end = re.search(r'[-–to]+\s*(?:翌)?(\d{1,2})(?::(\d{2}))?\s*([apAP][mM])', time_str)
+                if m_start:
+                    sh = int(m_start.group(1))
+                    sm = int(m_start.group(2)) if m_start.group(2) else 0
+                    sampm = m_start.group(3).lower()
+                    if sampm == 'pm' and sh < 12: sh += 12
+                    if sampm == 'am' and sh == 12: sh = 0
+                    start_mins = sh * 60 + sm
+
+                    eh = 5 # default 5am
+                    em = 0
+                    if m_end:
+                        eh = int(m_end.group(1))
+                        em = int(m_end.group(2)) if m_end.group(2) else 0
+                        eampm = m_end.group(3).lower()
+                        if eampm == 'pm' and eh < 12: eh += 12
+                        if eampm == 'am' and eh == 12: eh = 0
+                    end_mins = eh * 60 + em
+
+                    if now_mins >= start_mins or now_mins < end_mins:
+                        status = "ONGOING"
+                    elif now_mins >= end_mins and now_mins < start_mins:
+                        status = "RESTORED"
+                    else:
+                        status = "SCHEDULED"
+                else:
+                    status = "ONGOING"
+            else:
+                m_start = re.search(r'(\d{1,2})(?::(\d{2}))?\s*([apAP][mM])', time_str)
+                if m_start:
+                    sh = int(m_start.group(1))
+                    sm = int(m_start.group(2)) if m_start.group(2) else 0
+                    sampm = m_start.group(3).lower()
+                    if sampm == 'pm' and sh < 12: sh += 12
+                    if sampm == 'am' and sh == 12: sh = 0
+                    start_mins = sh * 60 + sm
+                    if now_mins - start_mins > 8 * 60:
+                        status = "RESTORED"
+                    elif now_mins >= start_mins:
+                        status = "ONGOING"
+                    else:
+                        status = "SCHEDULED"
+                else:
+                    status = "ONGOING"
         elif parsed_dt > target_dt:
             status = "SCHEDULED"
         else:
