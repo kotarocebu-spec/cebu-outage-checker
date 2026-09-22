@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -40,10 +43,12 @@ jobs:
       - name: Commit and Push cache & MECO status
         continue-on-error: true
         run: |
+          set +e
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add translation_cache.json meco_current.json
+          git add translation_cache.json meco_current.json 2>/dev/null || true
           if ! git diff --cached --quiet; then
-            git commit -m "Update outage data and cache [skip ci]"
-            git push origin HEAD:main || git push
+            git commit -m "Update outage data and cache [skip ci]" || true
+            git push origin main || true
           fi
+          exit 0
