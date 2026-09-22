@@ -13,6 +13,7 @@ from curl_cffi import requests
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
+from parse_mcwd import scrape_mcwd_water_interruptions
 try:
     from dotenv import load_dotenv  # ローカル環境変数読み込み用
     load_dotenv()
