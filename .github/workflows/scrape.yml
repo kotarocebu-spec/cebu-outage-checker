@@ -1,6 +1,8 @@
 name: Cebu Outage Scraper
+
 on:
   workflow_dispatch:
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
@@ -9,29 +11,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.10'
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Install Playwright browsers & system dependencies
-        run: |
           python -m playwright install --with-deps chromium
-      - name: Restore Facebook Session
-        env:
-          FB_AUTH_JSON: ${{ secrets.FB_AUTH_JSON }}
-        run: |
-          if [ -n "$FB_AUTH_JSON" ]; then
-            echo "$FB_AUTH_JSON" > fb_auth.json
-            echo "Facebook session restored."
-          fi
+
       - name: Run Scraper
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: python parse_veco.py
+
       - name: Upload data.js to Sakura Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -40,15 +36,13 @@ jobs:
           password: ${{ secrets.SAKURA_PASSWORD }}
           source: "data.js"
           target: "/home/saisa/www/office-luna.com/infra/"
-      - name: Commit and Push cache only
+
+      - name: Commit and Push cache & MECO status
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git stash
-          git fetch origin main
-          git rebase origin/main
-          git add translation_cache.json
+          git add translation_cache.json meco_current.json
           if ! git diff --cached --quiet; then
-            git commit -m "Update translation cache"
+            git commit -m "Update outage data and cache [skip ci]"
             git push
           fi
