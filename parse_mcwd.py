@@ -154,9 +154,14 @@ def scrape_mcwd_water_interruptions(target_date_str=None, max_days_history=3):
         if not parsed_dt:
             parsed_dt = target_dt
 
-        # 古すぎる過去データ（3日以上前）は除外して現在有効な断水に絞り込む
-        if parsed_dt < min_date:
+        # 今日より前の過去データは除外（昨日開始で現在進行中の夜間跨ぎ案件のみ許可）
+        yesterday_dt = target_dt - datetime.timedelta(days=1)
+        if parsed_dt < yesterday_dt:
             continue
+        if parsed_dt == yesterday_dt:
+            time_str_peek = extract_time_and_etr(raw_str)
+            if '翌' not in time_str_peek and 'next day' not in time_str_peek.lower():
+                continue
 
         date_str = parsed_dt.strftime("%Y/%m/%d")
         day_str = parsed_dt.strftime("%a")
