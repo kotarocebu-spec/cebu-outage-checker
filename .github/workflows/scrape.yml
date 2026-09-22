@@ -10,7 +10,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -38,11 +38,12 @@ jobs:
           target: "/home/saisa/www/office-luna.com/infra/"
 
       - name: Commit and Push cache & MECO status
+        continue-on-error: true
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add translation_cache.json meco_current.json
           if ! git diff --cached --quiet; then
             git commit -m "Update outage data and cache [skip ci]"
-            git push
+            git push origin HEAD:main || git push
           fi
