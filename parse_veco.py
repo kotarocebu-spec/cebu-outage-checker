@@ -24,8 +24,10 @@ except ImportError:
 # 🛡️ Windows環境でのエンコードエラー (CP932) 回避設定
 # ==========================================
 if sys.platform.startswith('win'):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # ローカル実行時に同じフォルダの .env ファイルから環境変数を自動ロード
 
@@ -1923,17 +1925,23 @@ def fetch_veco_calendar_outages(today_str):
         if "rotational" in category and (len(found_urls) > 1 or len(loc_lines) > 1):
             count_items = max(len(found_urls), len(loc_lines))
             for u_idx in range(count_items):
-                u = found_urls[u_idx] if u_idx < len(found_urls) else (found_urls[0] if found_urls else map_link)
+                # URLが足りない行に先頭URLを使い回さず、独立して判定する
+                u = found_urls[u_idx] if u_idx < len(found_urls) else ""
                 this_loc = loc_lines[u_idx] if u_idx < len(loc_lines) else (loc_lines[0] if loc_lines else locations)
 
                 # 地域ごとに個別のステータスを正確に対応付ける
                 this_status_raw = status_lines[u_idx] if u_idx < len(status_lines) else (status_lines[0] if status_lines else status)
                 this_status = resolve_sub_status(this_status_raw)
 
-                drive_url = resolve_map_link(u)
-                matched_grp = master_by_map_url.get(drive_url)
+                drive_url = resolve_map_link(u) if u else ""
+                matched_grp = master_by_map_url.get(drive_url) if drive_url else None
 
-                if matched_grp:
+                # スプレッドシートに具体的な地域名が記載されている場合は、スプレッドシートの生テキストを最優先
+                if this_loc and len(this_loc.strip()) > 3:
+                    sub_area_en, sub_area_ja = parse_area_summary(this_loc)
+                    sub_aff_en = this_loc
+                    sub_aff_ja = clean_translated_japanese(cached_translate(this_loc))
+                elif matched_grp:
                     sub_area_en = matched_grp.get('areaEn') or matched_grp.get('areaJa') or ''
                     sub_area_ja = matched_grp.get('areaJa') or sub_area_en
                     sub_aff_en = matched_grp.get('affectedEn') or ''
@@ -1963,7 +1971,11 @@ def fetch_veco_calendar_outages(today_str):
             drive_url = resolve_map_link(found_urls[0]) if found_urls else map_link
             matched_grp = master_by_map_url.get(drive_url) if drive_url else None
 
-            if matched_grp and "rotational" in category:
+            if locations and len(locations.strip()) > 3:
+                area_en, area_ja = parse_area_summary(locations)
+                affected_en = locations
+                affected_ja = clean_translated_japanese(cached_translate(locations))
+            elif matched_grp and "rotational" in category:
                 area_en = matched_grp.get('areaEn') or matched_grp.get('areaJa') or ''
                 area_ja = matched_grp.get('areaJa') or area_en
                 affected_en = matched_grp.get('affectedEn') or ''
