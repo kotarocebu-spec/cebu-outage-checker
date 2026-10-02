@@ -1687,17 +1687,19 @@ def fetch_veco_legacy_scraping(today_str):
                     is_area = line.lower().startswith("areas affected:") or line.lower().startswith("portion") or \
                               any(k in line for k in ["Brgy", "St.", "Road", "Avenue", "Ave", "Subd", "City", "Liloan", "Talisay", "Minglanilla"])
                 
-                    # すでにデータが埋まっている状態で、次の項目（To.. や Portion..）が来たら
-                    # 同じ時間帯を引き継いだまま、新しい別の工事としてレコードを切り分ける
-                    if (is_purpose and active_item["purpose"]) or (is_area and active_item["area"]):
+                    # すでにエリアが埋まっている状態で「新しい目的（To ...）」または「新しいエリア宣言（Portion of ...）」が来た場合のみ別レコードに切り分ける
+                    # （"along portions of..." 等の通り名・補足行は前のエリアの続きとして結合する）
+                    is_new_purpose = is_purpose and bool(active_item["area"])
+                    is_new_area_block = clean_line.lower().startswith("portion") and bool(active_item["area"])
+                    if is_new_purpose or is_new_area_block:
                         if active_item.get("area"):
                             veco_outages.append(active_item)
                         active_item = {
                             "date_raw": current_date,
                             "time_raw": current_time,
-                            "purpose": active_item["purpose"],
+                            "purpose": "" if is_new_purpose else active_item["purpose"],
                             "area": "",
-                            "cancelled": active_item["cancelled"]
+                            "cancelled": False if is_new_purpose else active_item["cancelled"]
                         }
                 
                     if is_purpose:
