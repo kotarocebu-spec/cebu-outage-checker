@@ -1105,21 +1105,68 @@ def scrape_veco_raw_content():
                 article = detail_soup.find('article')
                 target_area = article if article else detail_soup
                 
-                # --- [改善①: 連続重複のみを排除し、別日程での同じ時間表現は残す] ---
+                # --- [テーブル構造（table）からの構造化抽出 & マップURL取得] ---
+                tables = target_area.find_all('table')
+                if tables:
+                    current_date = None
+                    article_table_items = []
+                    
+                    for child in target_area.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'table']):
+                        if child.name in ['p', 'h1', 'h2', 'h3', 'h4']:
+                            text = unicodedata.normalize('NFKC', child.get_text(strip=True))
+                            m = re.search(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}', text, re.IGNORECASE)
+                            if m and '-' not in text and 'Service' not in text:
+                                current_date = text
+                        elif child.name == 'table':
+                            item = {
+                                'date_raw': current_date,
+                                'time_raw': '',
+                                'purpose': '',
+                                'area': '',
+                                'map_url': '',
+                                'cancelled': False
+                            }
+                            for tr in child.find_all('tr'):
+                                cells = tr.find_all(['td', 'th'])
+                                if not cells: continue
+                                label = unicodedata.normalize('NFKC', cells[0].get_text(strip=True)).lower()
+                                val = unicodedata.normalize('NFKC', cells[1].get_text(strip=True)) if len(cells) > 1 else ''
+                                
+                                # 地図画像の抽出 (Wixのオリジナル高解像度URLを取得)
+                                found_imgs = tr.find_all('img')
+                                if found_imgs:
+                                    img_src = found_imgs[0].get('src', '')
+                                    orig_url = re.sub(r'/v1/fill/.*', '', img_src)
+                                    item['map_url'] = orig_url if orig_url else img_src
+                                
+                                if 'time' in label:
+                                    item['cancelled'] = 'CANCELLED' in val.upper() or 'CANCELLED' in label.upper()
+                                    item['time_raw'] = re.sub(r'CANCELLED', '', val, flags=re.IGNORECASE).strip()
+                                elif 'purpose' in label:
+                                    item['purpose'] = val
+                                elif 'area' in label:
+                                    item['area'] = val
+                            
+                            if item['area'] or item['time_raw']:
+                                article_table_items.append(item)
+                    
+                    if article_table_items:
+                        articles_data.append({"type": "table_items", "items": article_table_items})
+                        continue
+                
+                # --- [フォールバック: テーブルが存在しない旧記事フォーマット用のテキスト抽出] ---
                 article_lines = []
                 last_line = None
                 for s in target_area.stripped_strings:
                     s_clean = s.strip()
-                    # 特殊フォントUnicode (mathematical bold等) をNFKCで即座に英字に正規化
                     s_clean = unicodedata.normalize('NFKC', s_clean)
                     if s_clean and len(s_clean) > 5:
-                        # 連続する同一テキストのみ排除
                         if s_clean != last_line:
                             article_lines.append(s_clean)
                             last_line = s_clean
                 
                 if article_lines:
-                    articles_data.append(article_lines)
+                    articles_data.append({"type": "text_lines", "items": article_lines})
             except Exception as e:
                 print(f"⚠️ 記事の取得中にエラーが発生しました ({url}): {e}")
                 
@@ -1589,7 +1636,47 @@ def fetch_veco_legacy_scraping(today_str):
         veco_fb_raw = []
     if veco_raw_articles:
         print("\n⚡ 3. VECO停電スケジュールデータの解析処理中...")
-        for veco_raw in veco_raw_articles:
+        for article_entry in veco_raw_articles:
+            # テーブル構造から抽出されたレコード群がある場合
+            if isinstance(article_entry, dict) and article_entry.get("type") == "table_items":
+                for raw in article_entry.get("items", []):
+                    date_formatted, day_abbrev = parse_date(raw.get("date_raw", ""))
+                    if not date_formatted or date_formatted < today_str:
+                        continue
+                    
+                    affected_en = clean_text_pipeline(raw.get("area", ""))
+                    details_en = clean_text_pipeline(raw.get("purpose", ""))
+                    if not affected_en:
+                        continue
+                        
+                    affected_ja = clean_translated_japanese(cached_translate(affected_en))
+                    details_ja = clean_translated_japanese(cached_translate(details_en))
+                    
+                    if raw.get("cancelled"):
+                        details_en = f"【CANCELLED】{details_en}"
+                        details_ja = f"【中止】{details_ja}"
+                        
+                    time_formatted = parse_time(raw.get("time_raw", ""))
+                    area_en, area_ja = parse_area_summary(affected_en)
+                    
+                    final_veco_outages.append({
+                        "id": 0,
+                        "type": "electricity",
+                        "date": date_formatted,
+                        "day": day_abbrev,
+                        "time": time_formatted,
+                        "areaEn": area_en,
+                        "areaJa": area_ja,
+                        "affectedEn": affected_en,
+                        "affectedJa": affected_ja,
+                        "detailsEn": details_en,
+                        "detailsJa": details_ja,
+                        "mapUrl": raw.get("map_url", "")
+                    })
+                continue
+
+            # フォールバック: テキスト行形式の解析
+            veco_raw = article_entry.get("items", []) if isinstance(article_entry, dict) else article_entry
             article_text = "\n".join(veco_raw)
             article_text_lower = article_text.lower()
 
@@ -1755,7 +1842,8 @@ def fetch_veco_legacy_scraping(today_str):
                     "affectedEn": affected_en,
                     "affectedJa": affected_ja,
                     "detailsEn": details_en,
-                    "detailsJa": details_ja
+                    "detailsJa": details_ja,
+                    "mapUrl": ""
                 })
 
 
@@ -2119,8 +2207,9 @@ def fetch_meco_outages():
         # 1. 登録から24時間以内のデータは「絶対保護」
         is_within_24h = (now_epoch - reg_epoch) < 86400 if reg_epoch else False
 
-        # 2. 終了予定時刻がまだ未来の場合も保護
-        is_future = False
+        # 2. 対象日（date）が今日以降、または終了予定時刻がまだ未来の場合も保護
+        item_date = item.get('date', '')
+        is_future = bool(item_date and item_date >= now.strftime("%Y/%m/%d"))
         if end_iso:
             try:
                 end_dt = datetime.datetime.fromisoformat(end_iso)
@@ -2247,90 +2336,4 @@ def main():
     "https://tinyurl.com/mryfdv22": "https://lh3.googleusercontent.com/d/1WiVuO2PzeSi_1dMw00u5LcRneHN5MOib",
     "https://tinyurl.com/2p8wt7t": "https://lh3.googleusercontent.com/d/1Wd1B3-hSrGHPzoiW9sgQZy6uAg3xN82P",
     "https://tinyurl.com/48um3ve7": "https://lh3.googleusercontent.com/d/1y5VPZNSEp7fPIeKZmrSLPK-bY6MZUP6I",
-    "https://tinyurl.com/42ct5fy4": "https://lh3.googleusercontent.com/d/1LkDpfbMoie8-5OB4M004Qyp0kRWU0__Q",
-    "https://tinyurl.com/wn6cb5t3": "https://lh3.googleusercontent.com/d/1GZLOpLALJI8D2k29z2R7EryufAL_r6hF",
-    "https://tinyurl.com/3mbf7dnx": "https://lh3.googleusercontent.com/d/1RoshZeayPcNMNh6LB39av8J1bGUPPUFB",
-    "https://tinyurl.com/3wefpxxz": "https://lh3.googleusercontent.com/d/1qd6d_PWRzSPnanQrC7eHzox69D4j9Owv",
-    "https://tinyurl.com/3df7bsy2": "https://lh3.googleusercontent.com/d/1W68EXJJs0kr5oZGo9m0qMmeV8iHUUv96",
-    "https://tinyurl.com/tz6wx679": "https://lh3.googleusercontent.com/d/1YPhVsi4-8BbD-oQAsWdFLY4NaeIjhDeU",
-    "https://tinyurl.com/55bmvnz4": "https://lh3.googleusercontent.com/d/1Wr44lH5KGu6zHMDMiRL0R9H0vhCfIaHE",
-    "https://tinyurl.com/3vtvdehy": "https://lh3.googleusercontent.com/d/1y9PP_ANb_LyV_-pAl6rGjV2ODt5nhTx7",
-    "https://tinyurl.com/4d59vxkw": "https://lh3.googleusercontent.com/d/1bkOrEIhqt6eE-wxCYtYeBeeFt7c7qP8A",
-    "https://tinyurl.com/bddh2uhe": "https://lh3.googleusercontent.com/d/1HNQSg0yXmDlBELemL_dI6ArNBx8OOyfm",
-    "https://tinyurl.com/mvn3w4wd": "https://lh3.googleusercontent.com/d/1xZSEPeFQkGvfhWN6SmJDFnch0o88cVak",
-    "https://tinyurl.com/mrxhmyzj": "https://lh3.googleusercontent.com/d/1Hv7sUtYAnL8CtngEswsnaw3kcwkSgmqK",
-    "https://tinyurl.com/jwzunj94": "https://lh3.googleusercontent.com/d/1dJC7ipQosG6fvT6vCMcCbxgS7sWVxABK",
-    "https://tinyurl.com/zrsynjkz": "https://lh3.googleusercontent.com/d/11HxDGqsTey_GFlsU15B8hMIiPfcUQZua",
-    "https://tinyurl.com/2juf42jp": "https://lh3.googleusercontent.com/d/1Y_G-zehUK0EaYQVN7ZLis1cp2ky8VtSX",
-    "https://tinyurl.com/yumy9kbz": "https://lh3.googleusercontent.com/d/1OyUUdRdLpyyYcuphzvxtlc_qBi22sT5N",
-    "https://tinyurl.com/y44remc9": "https://lh3.googleusercontent.com/d/1figI5aBfDLVAfmoSQZbDUQ4WfU8Vsovj",
-    "https://tinyurl.com/ymvw23zk": "https://lh3.googleusercontent.com/d/1FAhPtDWYaHDyT0ifyPT6s4tokjsYl2Hs",
-    "https://tinyurl.com/38xxe3xh": "https://lh3.googleusercontent.com/d/1pf1mrh7v69_e7MmNT1YgJz2Fhz8OjbO9",
-    "https://tinyurl.com/mvjshuy2": "https://lh3.googleusercontent.com/d/11zLKH72SWPNYr_w_eHd7bYBDAVMnaumL",
-    "https://tinyurl.com/4mb9j7km": "https://lh3.googleusercontent.com/d/1lebHAjo5MqS8EKH0yGpZZsQQVL6wHsBI"
-}
-
-    for item in filtered_outages:
-        m_url = item.get("mapUrl")
-        if m_url:
-            if m_url in builtin_map_cache:
-                item["mapUrl"] = builtin_map_cache[m_url]
-            else:
-                m = re.search(r'/d/([a-zA-Z0-9_-]+)', m_url) or re.search(r'id=([a-zA-Z0-9_-]+)', m_url)
-                if m:
-                    item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
-                elif "tinyurl.com" in m_url:
-                    try:
-                        import urllib.request
-                        req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
-                        with urllib.request.urlopen(req, timeout=5) as resp:
-                            f_url = resp.geturl()
-                            m2 = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
-                            if m2:
-                                item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m2.group(1)}"
-                            else:
-                                item["mapUrl"] = f_url
-                    except Exception:
-                        pass
-
-    cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
-    outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
-    meco_outages_str = json.dumps(final_meco_outages, ensure_ascii=False, indent=2)
-    
-    # 60グループマスターの内蔵データ（外部JSONファイル不要の完全自己完結仕様）
-    groups_master_str = json.dumps(DEFAULT_MASTER_GROUPS, ensure_ascii=False, indent=2)
-    meco_groups_master_str = json.dumps(DEFAULT_MECO_GROUPS, ensure_ascii=False, indent=2)
-
-    new_data_js_content = f"""/**
- * Cebu Infrastructure Checker - Integrated Data Source
- */
-export const CEBU_AREAS = {cebu_areas_str};
-
-export const VECO_OUTAGES = {outages_json_str};
-
-export const MECO_OUTAGES = {meco_outages_str};
-
-export const VECO_GROUPS_MASTER = {groups_master_str};
-
-export const MECO_GROUPS_MASTER = {meco_groups_master_str};
-"""
-
-    with open('data.js', 'w', encoding='utf-8') as f:
-        f.write(new_data_js_content)
-
-    # 翻訳キャッシュの保存
-    try:
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(translation_cache, f, ensure_ascii=False, indent=2)
-        print(f"💾 翻訳ディスクキャッシュを保存しました（計 {len(translation_cache)} 件の履歴）")
-    except Exception as e:
-        print(f"⚠️ キャッシュの保存に失敗しました: {e}")
-
-    print("\n--- 【すべてのパイプライン処理が正常に完了しました】 ---")
-    print(f"   ✅ 電気（VECO公式カレンダー）: {len(final_veco_outages)} 件")
-    print(f"   ✅ 電気（MECOマクタン島公式告知）: {len(final_meco_outages)} 件")
-    print(f"   ✅ 水道（MCWD計画断水情報）: {len(final_mcwd_outages)} 件")
-    print(f"   💾 ファイル保存先: data.js")
-
-if __name__ == "__main__":
-    main()
+    "https://tinyurl.com/42ct5fy4": "https://lh3.googleusercontent.com/d/1
