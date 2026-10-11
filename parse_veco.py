@@ -2336,4 +2336,90 @@ def main():
     "https://tinyurl.com/mryfdv22": "https://lh3.googleusercontent.com/d/1WiVuO2PzeSi_1dMw00u5LcRneHN5MOib",
     "https://tinyurl.com/2p8wt7t": "https://lh3.googleusercontent.com/d/1Wd1B3-hSrGHPzoiW9sgQZy6uAg3xN82P",
     "https://tinyurl.com/48um3ve7": "https://lh3.googleusercontent.com/d/1y5VPZNSEp7fPIeKZmrSLPK-bY6MZUP6I",
-    "https://tinyurl.com/42ct5fy4": "https://lh3.googleusercontent.com/d/1
+    "https://tinyurl.com/42ct5fy4": "https://lh3.googleusercontent.com/d/1LkDpfbMoie8-5OB4M004Qyp0kRWU0__Q",
+    "https://tinyurl.com/wn6cb5t3": "https://lh3.googleusercontent.com/d/1GZLOpLALJI8D2k29z2R7EryufAL_r6hF",
+    "https://tinyurl.com/3mbf7dnx": "https://lh3.googleusercontent.com/d/1RoshZeayPcNMNh6LB39av8J1bGUPPUFB",
+    "https://tinyurl.com/3wefpxxz": "https://lh3.googleusercontent.com/d/1qd6d_PWRzSPnanQrC7eHzox69D4j9Owv",
+    "https://tinyurl.com/3df7bsy2": "https://lh3.googleusercontent.com/d/1W68EXJJs0kr5oZGo9m0qMmeV8iHUUv96",
+    "https://tinyurl.com/tz6wx679": "https://lh3.googleusercontent.com/d/1YPhVsi4-8BbD-oQAsWdFLY4NaeIjhDeU",
+    "https://tinyurl.com/55bmvnz4": "https://lh3.googleusercontent.com/d/1Wr44lH5KGu6zHMDMiRL0R9H0vhCfIaHE",
+    "https://tinyurl.com/3vtvdehy": "https://lh3.googleusercontent.com/d/1y9PP_ANb_LyV_-pAl6rGjV2ODt5nhTx7",
+    "https://tinyurl.com/4d59vxkw": "https://lh3.googleusercontent.com/d/1bkOrEIhqt6eE-wxCYtYeBeeFt7c7qP8A",
+    "https://tinyurl.com/bddh2uhe": "https://lh3.googleusercontent.com/d/1HNQSg0yXmDlBELemL_dI6ArNBx8OOyfm",
+    "https://tinyurl.com/mvn3w4wd": "https://lh3.googleusercontent.com/d/1xZSEPeFQkGvfhWN6SmJDFnch0o88cVak",
+    "https://tinyurl.com/mrxhmyzj": "https://lh3.googleusercontent.com/d/1Hv7sUtYAnL8CtngEswsnaw3kcwkSgmqK",
+    "https://tinyurl.com/jwzunj94": "https://lh3.googleusercontent.com/d/1dJC7ipQosG6fvT6vCMcCbxgS7sWVxABK",
+    "https://tinyurl.com/zrsynjkz": "https://lh3.googleusercontent.com/d/11HxDGqsTey_GFlsU15B8hMIiPfcUQZua",
+    "https://tinyurl.com/2juf42jp": "https://lh3.googleusercontent.com/d/1Y_G-zehUK0EaYQVN7ZLis1cp2ky8VtSX",
+    "https://tinyurl.com/yumy9kbz": "https://lh3.googleusercontent.com/d/1OyUUdRdLpyyYcuphzvxtlc_qBi22sT5N",
+    "https://tinyurl.com/y44remc9": "https://lh3.googleusercontent.com/d/1figI5aBfDLVAfmoSQZbDUQ4WfU8Vsovj",
+    "https://tinyurl.com/ymvw23zk": "https://lh3.googleusercontent.com/d/1FAhPtDWYaHDyT0ifyPT6s4tokjsYl2Hs",
+    "https://tinyurl.com/38xxe3xh": "https://lh3.googleusercontent.com/d/1pf1mrh7v69_e7MmNT1YgJz2Fhz8OjbO9",
+    "https://tinyurl.com/mvjshuy2": "https://lh3.googleusercontent.com/d/11zLKH72SWPNYr_w_eHd7bYBDAVMnaumL",
+    "https://tinyurl.com/4mb9j7km": "https://lh3.googleusercontent.com/d/1lebHAjo5MqS8EKH0yGpZZsQQVL6wHsBI"
+}
+
+    for item in filtered_outages:
+        m_url = item.get("mapUrl")
+        if m_url:
+            if m_url in builtin_map_cache:
+                item["mapUrl"] = builtin_map_cache[m_url]
+            else:
+                m = re.search(r'/d/([a-zA-Z0-9_-]+)', m_url) or re.search(r'id=([a-zA-Z0-9_-]+)', m_url)
+                if m:
+                    item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m.group(1)}"
+                elif "tinyurl.com" in m_url:
+                    try:
+                        import urllib.request
+                        req = urllib.request.Request(m_url, headers={"User-Agent": "Mozilla/5.0"})
+                        with urllib.request.urlopen(req, timeout=5) as resp:
+                            f_url = resp.geturl()
+                            m2 = re.search(r'/d/([a-zA-Z0-9_-]+)', f_url) or re.search(r'id=([a-zA-Z0-9_-]+)', f_url)
+                            if m2:
+                                item["mapUrl"] = f"https://lh3.googleusercontent.com/d/{m2.group(1)}"
+                            else:
+                                item["mapUrl"] = f_url
+                    except Exception:
+                        pass
+
+    cebu_areas_str = json.dumps(CEBU_AREAS, ensure_ascii=False, indent=2)
+    outages_json_str = json.dumps(filtered_outages, ensure_ascii=False, indent=2)
+    meco_outages_str = json.dumps(final_meco_outages, ensure_ascii=False, indent=2)
+    
+    # 60グループマスターの内蔵データ（外部JSONファイル不要の完全自己完結仕様）
+    groups_master_str = json.dumps(DEFAULT_MASTER_GROUPS, ensure_ascii=False, indent=2)
+    meco_groups_master_str = json.dumps(DEFAULT_MECO_GROUPS, ensure_ascii=False, indent=2)
+
+    new_data_js_content = f"""/**
+ * Cebu Infrastructure Checker - Integrated Data Source
+ */
+export const CEBU_AREAS = {cebu_areas_str};
+
+export const VECO_OUTAGES = {outages_json_str};
+
+export const MECO_OUTAGES = {meco_outages_str};
+
+export const VECO_GROUPS_MASTER = {groups_master_str};
+
+export const MECO_GROUPS_MASTER = {meco_groups_master_str};
+"""
+
+    with open('data.js', 'w', encoding='utf-8') as f:
+        f.write(new_data_js_content)
+
+    # 翻訳キャッシュの保存
+    try:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(translation_cache, f, ensure_ascii=False, indent=2)
+        print(f"💾 翻訳ディスクキャッシュを保存しました（計 {len(translation_cache)} 件の履歴）")
+    except Exception as e:
+        print(f"⚠️ キャッシュの保存に失敗しました: {e}")
+
+    print("\n--- 【すべてのパイプライン処理が正常に完了しました】 ---")
+    print(f"   ✅ 電気（VECO公式カレンダー）: {len(final_veco_outages)} 件")
+    print(f"   ✅ 電気（MECOマクタン島公式告知）: {len(final_meco_outages)} 件")
+    print(f"   ✅ 水道（MCWD計画断水情報）: {len(final_mcwd_outages)} 件")
+    print(f"   💾 ファイル保存先: data.js")
+
+if __name__ == "__main__":
+    main()
