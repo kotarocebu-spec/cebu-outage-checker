@@ -1054,124 +1054,125 @@ def remove_tbd_duplicates(outages):
 # 🌐 VECO公式サイト スクレイピング部 (接続タイムアウト・ネットワーク遅延耐久強化)
 # ==========================================
 def scrape_veco_raw_content():
+    """
+    VECO公式サイト（Wix）の最新記事をスクレイピングします。
+    CloudflareのBot判定・Managed Challengeを回避するため、
+    実機ChromeのTLS/JA3フィンガープリントを完全エミュレートする curl_cffi を使用します。
+    """
     base_url = "https://www.visayanelectric.com"
     advisory_url = f"{base_url}/customer-services/service-advisory"
     
-    print("\n⚡ 1. VECO公式サイトのスクレイピングを開始します...")
+    print("\n⚡ 1. VECO公式サイトのスクレイピングを開始します (Anti-Bot: curl_cffi)...")
     articles_data = [] # 各記事の行データを個別で保持する二次元リスト
     
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            viewport={"width": 1280, "height": 800}
-        )
-        page = context.new_page()
+    try:
+        from curl_cffi import requests as cffi_requests
+    except ImportError:
+        import requests as cffi_requests
+
+    # 1. 一覧ページから停電記事のURLを取得
+    links = []
+    try:
+        r = cffi_requests.get(advisory_url, impersonate="chrome120", timeout=20)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, 'html.parser')
+            for a in soup.find_all('a'):
+                href = a.get('href')
+                text = a.get_text(strip=True)
+                if href and ("Service Interruption" in text or "Interruption" in text):
+                    full_url = urljoin(base_url, href)
+                    if full_url not in links:
+                        links.append(full_url)
+        else:
+            print(f"⚠️ 一覧ページ取得エラー: HTTP {r.status_code}")
+    except Exception as e:
+        print(f"⚠️ VECO公式サイトへの接続に失敗しました: {e}")
+        return []
+
+    if not links:
+        print("❌ VECOの停電リンクが見つかりませんでした。")
+        return []
         
+    target_links = links[:3]
+    print(f"👉 VECO最新の {len(target_links)} 件の記事を巡回スクレイピングします...")
+    
+    for url in target_links:
+        print(f"   - 巡回中: {url}")
         try:
-            page.goto(advisory_url, timeout=30000, wait_until="domcontentloaded")
-            # 計画停電の個別記事リンク（hrefに "/post/" を含むaタグ）が描画されるまで待つ
-            page.wait_for_selector('a[href*="/post/"]', timeout=15000)
-            soup = BeautifulSoup(page.content(), 'html.parser')
-        except Exception as e:
-            print(f"⚠️ VECO公式サイトへの接続に失敗しました: {e}")
-            browser.close()
-            return []
-        
-        links = []
-        for a in soup.find_all('a'):
-            href = a.get('href')
-            text = a.get_text(strip=True)
-            if href and ("Service Interruption" in text or "Interruption" in text):
-                full_url = urljoin(base_url, href)
-                if full_url not in links:
-                    links.append(full_url)
-        
-        if not links:
-            print("❌ VECOの停電リンクが見つかりませんでした。")
-            browser.close()
-            return []
+            r_detail = cffi_requests.get(url, impersonate="chrome120", timeout=20)
+            if r_detail.status_code != 200:
+                print(f"   ⚠️ 記事取得エラー: HTTP {r_detail.status_code}")
+                continue
+                
+            detail_soup = BeautifulSoup(r_detail.text, 'html.parser')
+            article = detail_soup.find('article', attrs={'data-hook': 'post'}) or detail_soup.find('article')
+            target_area = article if article else detail_soup
             
-        target_links = links[:3]
-        print(f"👉 VECO最新の {len(target_links)} 件の記事を巡回スクレイピングします...")
-        
-        for url in target_links:
-            print(f"   - 巡回中: {url}")
-            try:
-                page.goto(url, timeout=30000, wait_until="domcontentloaded")
-                page.wait_for_selector("article", timeout=10000) # articleが画面に出るまで待機
+            # --- [テーブル構造（table）からの構造化抽出 & マップURL取得] ---
+            tables = target_area.find_all('table')
+            if tables:
+                current_date = None
+                article_table_items = []
                 
-                detail_soup = BeautifulSoup(page.content(), 'html.parser')
-                article = detail_soup.find('article')
-                target_area = article if article else detail_soup
-                
-                # --- [テーブル構造（table）からの構造化抽出 & マップURL取得] ---
-                tables = target_area.find_all('table')
-                if tables:
-                    current_date = None
-                    article_table_items = []
-                    
-                    for child in target_area.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'table']):
-                        if child.name in ['p', 'h1', 'h2', 'h3', 'h4']:
-                            text = unicodedata.normalize('NFKC', child.get_text(strip=True))
-                            m = re.search(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}', text, re.IGNORECASE)
-                            if m and '-' not in text and 'Service' not in text:
-                                current_date = text
-                        elif child.name == 'table':
-                            item = {
-                                'date_raw': current_date,
-                                'time_raw': '',
-                                'purpose': '',
-                                'area': '',
-                                'map_url': '',
-                                'cancelled': False
-                            }
-                            for tr in child.find_all('tr'):
-                                cells = tr.find_all(['td', 'th'])
-                                if not cells: continue
-                                label = unicodedata.normalize('NFKC', cells[0].get_text(strip=True)).lower()
-                                val = unicodedata.normalize('NFKC', cells[1].get_text(strip=True)) if len(cells) > 1 else ''
-                                
-                                # 地図画像の抽出 (Wixのオリジナル高解像度URLを取得)
-                                found_imgs = tr.find_all('img')
-                                if found_imgs:
-                                    img_src = found_imgs[0].get('src', '')
-                                    orig_url = re.sub(r'/v1/fill/.*', '', img_src)
-                                    item['map_url'] = orig_url if orig_url else img_src
-                                
-                                if 'time' in label:
-                                    item['cancelled'] = 'CANCELLED' in val.upper() or 'CANCELLED' in label.upper()
-                                    item['time_raw'] = re.sub(r'CANCELLED', '', val, flags=re.IGNORECASE).strip()
-                                elif 'purpose' in label:
-                                    item['purpose'] = val
-                                elif 'area' in label:
-                                    item['area'] = val
+                for child in target_area.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'table']):
+                    if child.name in ['p', 'h1', 'h2', 'h3', 'h4']:
+                        text = unicodedata.normalize('NFKC', child.get_text(strip=True))
+                        m = re.search(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}', text, re.IGNORECASE)
+                        if m and '-' not in text and 'Service' not in text:
+                            current_date = text
+                    elif child.name == 'table':
+                        item = {
+                            'date_raw': current_date,
+                            'time_raw': '',
+                            'purpose': '',
+                            'area': '',
+                            'map_url': '',
+                            'cancelled': False
+                        }
+                        for tr in child.find_all('tr'):
+                            cells = tr.find_all(['td', 'th'])
+                            if not cells: continue
+                            label = unicodedata.normalize('NFKC', cells[0].get_text(strip=True)).lower()
+                            val = unicodedata.normalize('NFKC', cells[1].get_text(strip=True)) if len(cells) > 1 else ''
                             
-                            if item['area'] or item['time_raw']:
-                                article_table_items.append(item)
-                    
-                    if article_table_items:
-                        articles_data.append({"type": "table_items", "items": article_table_items})
-                        continue
+                            # 地図画像の抽出 (Wixのオリジナル高解像度URLを取得)
+                            found_imgs = tr.find_all('img')
+                            if found_imgs:
+                                img_src = found_imgs[0].get('src', '')
+                                orig_url = re.sub(r'/v1/fill/.*', '', img_src)
+                                item['map_url'] = orig_url if orig_url else img_src
+                            
+                            if 'time' in label:
+                                item['cancelled'] = 'CANCELLED' in val.upper() or 'CANCELLED' in label.upper()
+                                item['time_raw'] = re.sub(r'CANCELLED', '', val, flags=re.IGNORECASE).strip()
+                            elif 'purpose' in label:
+                                item['purpose'] = val
+                            elif 'area' in label:
+                                item['area'] = val
+                        
+                        if item['area'] or item['time_raw']:
+                            article_table_items.append(item)
                 
-                # --- [フォールバック: テーブルが存在しない旧記事フォーマット用のテキスト抽出] ---
-                article_lines = []
-                last_line = None
-                for s in target_area.stripped_strings:
-                    s_clean = s.strip()
-                    s_clean = unicodedata.normalize('NFKC', s_clean)
-                    if s_clean and len(s_clean) > 5:
-                        if s_clean != last_line:
-                            article_lines.append(s_clean)
-                            last_line = s_clean
-                
-                if article_lines:
-                    articles_data.append({"type": "text_lines", "items": article_lines})
-            except Exception as e:
-                print(f"⚠️ 記事の取得中にエラーが発生しました ({url}): {e}")
-                
-        browser.close()
-        
+                if article_table_items:
+                    articles_data.append({"type": "table_items", "items": article_table_items})
+                    continue
+            
+            # --- [フォールバック: テーブルが存在しない旧記事フォーマット用のテキスト抽出] ---
+            article_lines = []
+            last_line = None
+            for s in target_area.stripped_strings:
+                s_clean = s.strip()
+                s_clean = unicodedata.normalize('NFKC', s_clean)
+                if s_clean and len(s_clean) > 5:
+                    if s_clean != last_line:
+                        article_lines.append(s_clean)
+                        last_line = s_clean
+            
+            if article_lines:
+                articles_data.append({"type": "text_lines", "items": article_lines})
+        except Exception as e:
+            print(f"⚠️ 記事の取得中にエラーが発生しました ({url}): {e}")
+            
     return articles_data
 
 # ==========================================
